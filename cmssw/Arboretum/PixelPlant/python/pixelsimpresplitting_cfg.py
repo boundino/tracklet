@@ -13,7 +13,6 @@ process.load("Configuration.StandardSequences.Reconstruction_cff")
 process.load("Configuration.StandardSequences.Services_cff")
 
 process.load("SimGeneral.HepPDTESSource.pythiapdt_cfi")
-process.load("RecoLocalTracker.Configuration.RecoLocalTracker_cff")
 
 process.maxEvents = cms.untracked.PSet(
     input = cms.untracked.int32(-1)
@@ -21,8 +20,13 @@ process.maxEvents = cms.untracked.PSet(
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        'file:step3_apprximateCluster_22.root',
-    )
+		'file:step3_apprximateCluster_22.root',
+        # 'file:PbPb_MINIAODSIM_mb_PAT_22.root',
+        # 'file:mb_AOD_22.root',
+    ),
+    # secondaryFileNames = cms.untracked.vstring(
+    #     'file:step3_apprximateCluster_22.root',
+    # )
 )
 
 process.TFileService = cms.Service('TFileService',
@@ -39,7 +43,7 @@ process.GlobalTag = GlobalTag(
 )
 
 process.pixel = cms.EDAnalyzer('PixelPlant',
-	fillhf = cms.bool(False),
+	fillhf = cms.bool(True),
     fillgen = cms.bool(True),
 	fillhlt = cms.bool(False),
     # hlt_tag = cms.InputTag("TriggerResults::HLT"),
@@ -49,9 +53,16 @@ process.pixel = cms.EDAnalyzer('PixelPlant',
 
 process.rawtodigi = cms.Path(
 	# process.RawToDigi
-    # process.hcalDigis +
-    # process.ecalDigis +
+    process.hcalDigis +
+    process.ecalDigis +
     process.siPixelDigis 
+)
+
+process.recotowers = cms.Path(
+	process.bunchSpacingProducer *
+	process.calolocalreco *
+	process.hcalGlobalRecoSequence *
+	process.caloTowersRec
 )
 
 process.p1 = cms.Path(
@@ -65,6 +76,7 @@ process.output = cms.EndPath(
 
 process.schedule = cms.Schedule(
     process.rawtodigi,
+	process.recotowers,
 	process.p1,
     process.output
 )
