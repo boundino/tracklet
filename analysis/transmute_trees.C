@@ -3,7 +3,6 @@
 #include "TRandom.h"
 #include "TMath.h"
 #include "TH3.h"
-#include <iostream>
 
 #define PIXELS1P(EXPAND)   \
    BPIX1P(EXPAND)          \
@@ -37,8 +36,8 @@ int transmute_trees(const char* input,
                     const char* output,
                     uint64_t start = 0,
                     uint64_t end = 1000000000,
-                    int sample = 0,
-                    bool reweight = 1,
+                    int sample = -1,
+                    bool reweight = 0,
                     float pileup = 0.0f,
                     bool random = 0,
                     float split = 0,
@@ -46,9 +45,7 @@ int transmute_trees(const char* input,
                     bool smear = 0
                     PIXELS1P(BKG_ARG))
 {
-  std::cout<<"$ input > "<<input<<std::endl;
-  std::cout<<"$ output > "<<output<<std::endl;
-  printf("................................................................\n");
+   printf("................................................................\n");
 
    TFile* finput = TFile::Open(input);
    TTree* t = (TTree*)finput->Get("pixel/PixelTree");
@@ -155,13 +152,13 @@ int transmute_trees(const char* input,
 
       for (const auto& event : events) {
          t->GetEntry(event);
-         // if (event % 1000 == 0)
+         if (event % 10 == 0)
             printf("   run: %i, entry: %lu\n", par.run, event);
 
-// #ifdef  CENTRALITY
-//          if (hfbin(par.hft) != CENTRALITY)
-//             continue;
-// #endif  // CENTRALITY 
+#ifdef  CENTRALITY
+         if (hfbin(par.hft) != CENTRALITY)
+            continue;
+#endif  /* CENTRALITY */
 
          if (par.nhits1 > 200 + 1.9 * par.nhits5 ||
              par.nhits1 < -144 + 1.9/1.5 * par.nhits5)
@@ -176,8 +173,8 @@ int transmute_trees(const char* input,
                                                                               \
          if (bkghits##q != 0) {                                               \
             for (int j=par.nhits##q; j<par.nhits##q + bkghits##q; ++j) {      \
-              double eta, phi, r;                                             \
-              hl##q->GetRandom3(r, eta, phi);                                 \
+               double eta, phi, r;                                            \
+               hl##q->GetRandom3(r, eta, phi);                                \
                par.eta##q[j] = eta;                                           \
                par.phi##q[j] = phi;                                           \
                par.r##q[j] = r;                                               \
@@ -194,9 +191,9 @@ int transmute_trees(const char* input,
          hftsum += par.hft;
       }
 
-// #ifdef  CENTRALITY
-//       if (hftsum == 0) { continue; }
-// #endif  // CENTRALITY 
+#ifdef  CENTRALITY
+      if (hftsum == 0) { continue; }
+#endif  /* CENTRALITY */
 
       if (layer1.size() > MAXH)
          continue;
@@ -233,7 +230,7 @@ int transmute_trees(const char* input,
       if (reweight) {
          float event_vz = (vz < -98 ? par.vz[0] : vz) + vz_shift;
 
-         // run 304906 
+         /* run 304906 */
          double data_pdf = TMath::Gaus(event_vz, -0.0063239, 4.67374, 1);
          double mc_pdf = TMath::Gaus(event_vz, vzpar[sample][0], vzpar[sample][1], 1);
 
@@ -324,9 +321,7 @@ int transmute_trees(const char* input,
 
 int main(int argc, char* argv[]) {
    if (argc == 3) {
-     std::cout<<"argc3"<<std::endl;
-     transmute_trees(argv[1], argv[2]);
-     return 0;
+      return transmute_trees(argv[1], argv[2]);
    } else if (argc == 5) {
       return transmute_trees(argv[1], argv[2], atoi(argv[3]), atoi(argv[4]));
    } else if (argc == 7) {
