@@ -339,10 +339,10 @@ void PixelPlant::fill_hf(const edm::Event& iEvent) {
       if (cal.ietaAbs() < 30) { continue; }
 
       if (cal.zside() > 0) {
-         if (cal.energy() > 3.) { nhfp++; }
+         if (cal.energy() > 4.) { nhfp++; }
          hftp += cal.pt();
       } else {
-         if (cal.energy() > 3.) { nhfn++; }
+         if (cal.energy() > 4.) { nhfn++; }
          hftm += cal.pt();
       }
    }
