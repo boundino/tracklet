@@ -18,6 +18,7 @@
 
 #include "include/cosmetics.h"
 #include "include/defines.h"
+#include "include/xjjmypdf.h"
 
 #define OPT(val)  options[opt].val
 #define CS(str)   str.data()
@@ -106,8 +107,10 @@ int compare_pixels(std::vector<varinfo_t> const& options,
 
    int cheight = OPT(flags) & 0x10 ? OPT(csize[1]) * 1.2 : OPT(csize[1]);
 
+   xjjroot::mypdf* pdf_DRAW_1D_PIXELS = new xjjroot::mypdf(Form("figs/pixel/pixel-%s-%s.pdf", OS(id), label), "c_DRAW_1D_PIXELS", OPT(csize[0]), cheight);
+
 #define DRAW_1D_PIXELS(q)                                                     \
-   TCanvas* c##q = new TCanvas("c" #q, "", OPT(csize[0]), cheight);           \
+    pdf_DRAW_1D_PIXELS->prepare();                                            \
    if (OPT(flags) & 0x10) {                                                   \
       TPad* t1 = new TPad("t" #q "1", "", 0, 0.25, 1, 1);                     \
       t1->SetTopMargin(0.11111); t1->SetBottomMargin(0);                      \
@@ -115,7 +118,7 @@ int compare_pixels(std::vector<varinfo_t> const& options,
       TPad* t2 = new TPad("t" #q "2", "", 0, 0, 1, 0.25);                     \
       t2->SetTopMargin(0); t2->SetBottomMargin(0.32);                         \
       t2->Draw(); t2->SetNumber(2);                                           \
-      c##q->cd(1);                                                            \
+      pdf_DRAW_1D_PIXELS->getc()->cd(1);                                      \
                                                                               \
       h##q[0]->SetLabelOffset(99, "X");                                       \
       h##q[0]->SetTitleOffset(99, "X");                                       \
@@ -139,7 +142,7 @@ int compare_pixels(std::vector<varinfo_t> const& options,
    lstyle(l##q, 43, 16); l##q->Draw();                                        \
                                                                               \
    if (OPT(flags) & 0x10) {                                                   \
-      c##q->cd(2);                                                            \
+      pdf_DRAW_1D_PIXELS->getc()->cd(2);                                      \
       for (std::size_t j = 1; j < nfiles; ++j) {                              \
          hr##q[j] = (TH1D*)h##q[j]->Clone(Form("hpr" #q "f%zu%s", j, idstr)); \
          hr##q[j]->Divide(h##q[0]);                                           \
@@ -148,11 +151,14 @@ int compare_pixels(std::vector<varinfo_t> const& options,
       }                                                                       \
    }                                                                          \
                                                                               \
-   c##q->SaveAs(Form("figs/pixel/pixel-%s-l" #q "-%s.png",                    \
-         OS(id), label));                                                     \
-   delete c##q;                                                               \
+   pdf_DRAW_1D_PIXELS->write();                                               \
+   // c##q->SaveAs(Form("figs/pixel/pixel-%s-l" #q "-%s.png",                    \
+   //       OS(id), label));                                                     \
+   // delete c##q;                                                               \
 
    PIXELS1P(DRAW_1D_PIXELS)
+   
+   pdf_DRAW_1D_PIXELS->close();
 
    TFile* fout = new TFile(Form("data/%s.root", label), "update");
 #define SAVE_1D_PIXELS(q)                                                     \
@@ -168,23 +174,23 @@ static const std::vector<varinfo_t> options_tracklet_1d = {
    {
       "deta", {"#Delta#eta"}, {"deta"},
       {{100, -0.5, 0.5}},
-      {600, 600}, 0x01, "abs(deta)<0.5", ""
+      {600, 600}, 0x11, "abs(deta)<0.5", ""
    }, {
       "dphi", {"#Delta#phi"}, {"dphi"},
       {{100, 0, 0.5}},
-      {600, 600}, 0x01, "abs(dphi)<0.5", ""
+      {600, 600}, 0x11, "abs(dphi)<0.5", ""
    }, {
       "dr", {"#Deltar"}, {"sqrt(dr2)"},
       {{100, 0, 0.5}},
-      {600, 600}, 0x01, "abs(dr2)<0.25", ""
+      {600, 600}, 0x11, "abs(dr2)<0.25", ""
    }, {
       "vz", {"v_{z}"}, {"vz[1]"},
       {{100, -15, 15}},
-      {600, 600}, 0x00, "(1)", ""
+      {600, 600}, 0x10, "(1)", ""
    }, {
       "vz-unw", {"v_{z}"}, {"vz[1]"},
       {{100, -15, 15}},
-      {600, 600}, 0x100, "(1)", ""
+      {600, 600}, 0x110, "(1)", ""
    }, {
       "ntracklet", {"number of tracklets"}, {"ntracklet"},
       {{100, 0, 10000}},
@@ -203,7 +209,7 @@ int compare_tracklets(std::vector<varinfo_t> const& options,
    if (!nfiles) { printf("error: no files provided!\n"); exit(1); }
 
    TCut fsel = OS(sel);
-   fsel = fsel && "abs(vz[1])<15 && hlt";
+   fsel = fsel && "abs(vz[1])<15 && hlt && nhfp > 2 && nhfn > 2";
    if (!(OPT(flags) & 0x100)) { fsel *= "weight"; }
 
    const char* idstr = OS(id);
@@ -239,8 +245,10 @@ int compare_tracklets(std::vector<varinfo_t> const& options,
 
    int cheight = OPT(flags) & 0x10 ? OPT(csize[1]) * 1.2 : OPT(csize[1]);
 
+   xjjroot::mypdf* pdf_DRAW_1D_TRACKLETS = new xjjroot::mypdf(Form("figs/tracklet/tracklet-%s-%s.pdf", OS(id), label), "c_DRAW_1D_TRACKLETS", OPT(csize[0]), cheight);
+
 #define DRAW_1D_TRACKLETS(q, w)                                               \
-   TCanvas* c##q##w = new TCanvas("c" #q #w, "", OPT(csize[0]), cheight);     \
+   pdf_DRAW_1D_TRACKLETS->prepare();                                          \
    if (OPT(flags) & 0x10) {                                                   \
       TPad* t1 = new TPad("t" #q #w "1", "", 0, 0.25, 1, 1);                  \
       t1->SetTopMargin(0.11111); t1->SetBottomMargin(0);                      \
@@ -248,7 +256,7 @@ int compare_tracklets(std::vector<varinfo_t> const& options,
       TPad* t2 = new TPad("t" #q #w "2", "", 0, 0, 1, 0.25);                  \
       t2->SetTopMargin(0); t2->SetBottomMargin(0.32);                         \
       t2->Draw(); t2->SetNumber(2);                                           \
-      c##q##w->cd(1);                                                         \
+      pdf_DRAW_1D_TRACKLETS->getc()->cd(1);                                   \
                                                                               \
       h##q##w[0]->SetLabelOffset(99, "X");                                    \
       h##q##w[0]->SetTitleOffset(99, "X");                                    \
@@ -272,7 +280,7 @@ int compare_tracklets(std::vector<varinfo_t> const& options,
    lstyle(l##q##w, 43, 16); l##q##w->Draw();                                  \
                                                                               \
    if (OPT(flags) & 0x10) {                                                   \
-      c##q##w->cd(2);                                                         \
+      pdf_DRAW_1D_TRACKLETS->getc()->cd(2);                                   \
       for (std::size_t j = 1; j < nfiles; ++j) {                              \
          hr##q##w[j] = (TH1D*)h##q##w[j]->Clone(                              \
                Form("htr" #q "f%zu%s", j, idstr));                            \
@@ -293,11 +301,14 @@ int compare_tracklets(std::vector<varinfo_t> const& options,
       line1->Draw();                                                          \
    }                                                                          \
                                                                               \
-   c##q##w->SaveAs(Form("figs/tracklet/tracklet-%s-t" #q #w "-%s.png",        \
-         OS(id), label));                                                     \
-   delete c##q##w;                                                            \
+   pdf_DRAW_1D_TRACKLETS->write();                                            \
+   // c##q##w->SaveAs(Form("figs/tracklet/tracklet-%s-t" #q #w "-%s.png",        \
+   //       OS(id), label));                                                     \
+   // delete c##q##w;                                                            \
 
    TRKLTS2P(DRAW_1D_TRACKLETS)
+   pdf_DRAW_1D_TRACKLETS->close();
+
    TFile* fout = new TFile(Form("data/%s.root", label), "update");
 #define SAVE_1D_TRACKLETS(q, w)                                               \
    for (std::size_t j = 0; j < nfiles; ++j)                                   \
@@ -388,15 +399,16 @@ int map_pixels(std::vector<varinfo_t> const& options,
 
    PIXELS1P(SETUP_2D_PIXELS)
 
+     xjjroot::mypdf* pdf_DRAW_2D_PIXELS = new xjjroot::mypdf(Form("figs/pixel/pixel-%s-%s.pdf", OS(id), label), "c_DRAW_2D_PIXELS",  OPT(csize[0]), OPT(csize[1]));
+
 #define DRAW_2D_PIXELS(q)                                                     \
    t->Draw(Form("%s:%s>>h" #q "%s", CS(y##q), CS(x##q), idstr),               \
          fsel##q, "goff");                                                    \
                                                                               \
-   TCanvas* c##q = new TCanvas("c" #q, "", OPT(csize[0]), OPT(csize[1]));     \
+   pdf_DRAW_2D_PIXELS->prepare();                                             \
    h##q->Draw(OS(gopt));                                                      \
-   c##q->SaveAs(Form("figs/pixel/pixel-%s-l" #q "-%s.png",                    \
-         OS(id), label));                                                     \
-   delete c##q;                                                               \
+                                                                              \
+   pdf_DRAW_2D_PIXELS->write();                                               \
 
    if (OPT(flags) & 0x1) { BPIX1P(DRAW_2D_PIXELS) }
    if (OPT(flags) & 0x2) { FPIX1P(DRAW_2D_PIXELS) }
@@ -410,12 +422,16 @@ int map_pixels(std::vector<varinfo_t> const& options,
       if (OPT(flags) & 0x10) { BPIX1P(OVERLAY_2D_PIXELS) }
       if (OPT(flags) & 0x20) { FPIX1P(OVERLAY_2D_PIXELS) }
 
-      TCanvas* call = new TCanvas("call", "", OPT(csize[0]), OPT(csize[1]));
+      // TCanvas* call = new TCanvas("call", "", OPT(csize[0]), OPT(csize[1]));
+      pdf_DRAW_2D_PIXELS->prepare();
       hall->Draw(OS(gopt));
-      call->SaveAs(Form("figs/pixel/pixel-%s-all-%s.png",
-            OS(id), label));
-      delete call;
+
+      pdf_DRAW_2D_PIXELS->write();
+      // call->SaveAs(Form("figs/pixel/pixel-%s-all-%s.png",
+      //       OS(id), label));
+      // delete call;
    }
+   pdf_DRAW_2D_PIXELS->close();
 
    TFile* fout = new TFile(Form("data/%s.root", label), "update");
 #define SAVE_2D_PIXELS(q) h##q->Write("", TObject::kOverwrite);
@@ -443,7 +459,7 @@ static const std::vector<varinfo_t> options_tracklet_2d = {
 int map_tracklets(std::vector<varinfo_t> const& options,
       const char* input, const char* label, int opt) {
    TCut fsel = OS(sel);
-   fsel = fsel && "abs(vz[1])<15 && hlt";
+   fsel = fsel && "abs(vz[1])<15 && hlt && nhfp > 2 && nhfn > 2";
    fsel *= "weight";
 
    const char* l0str = OS(label[0]);
@@ -464,17 +480,23 @@ int map_tracklets(std::vector<varinfo_t> const& options,
 
    TRKLTS2P(SETUP_2D_TRACKLETS)
 
+   xjjroot::mypdf* pdf_DRAW_2D_TRACKLETS = new xjjroot::mypdf(Form("figs/tracklet/tracklet-%s-%s.pdf", OS(id), label), "c_DRAW_2D_TRACKLETS", 600, 600);
+
 #define DRAW_2D_TRACKLETS(q, w)                                               \
    t##q##w->Draw(Form("%s:%s>>h" #q #w "%s", OS(var[1]), OS(var[0]), idstr),  \
          fsel, "goff");                                                       \
                                                                               \
-   TCanvas* c##q##w = new TCanvas("c" #q #w, "", 600, 600);                   \
+   pdf_DRAW_2D_TRACKLETS->prepare();                                          \
    h##q##w->Draw(OS(gopt));                                                   \
-   c##q##w->SaveAs(Form("figs/tracklet/tracklet-%s-t" #q #w "-%s.png",        \
-         OS(id), label));                                                     \
-   delete c##q##w;                                                            \
+                                                                              \
+   pdf_DRAW_2D_TRACKLETS->write();                                            \
+   // c##q##w->SaveAs(Form("figs/tracklet/tracklet-%s-t" #q #w "-%s.png",        \
+   //       OS(id), label));                                                     \
+   // delete c##q##w;                                                            \
 
    TRKLTS2P(DRAW_2D_TRACKLETS)
+
+   pdf_DRAW_2D_TRACKLETS->close();
 
    TFile* fout = new TFile(Form("data/%s.root", label), "update");
 #define SAVE_2D_TRACKLETS(q, w) h##q##w->Write("", TObject::kOverwrite);
