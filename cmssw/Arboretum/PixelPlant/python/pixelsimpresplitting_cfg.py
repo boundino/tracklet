@@ -80,3 +80,15 @@ process.schedule = cms.Schedule(
 	process.p1,
     process.output
 )
+
+import FWCore.ParameterSet.VarParsing as VarParsing
+ivars = VarParsing.VarParsing('analysis')
+
+ivars.maxEvents = -1
+ivars.outputFile='pixelsim_presplitting.root'
+ivars.inputFiles='/store/user/subehera/MB_Hydjet_Run3_GENSIM/MB_Hydjet_Run3_DIGIRAW_approxSiStripClusters/220910_091752/0000/step3_apprximateCluster_22.root'
+ivars.parseArguments()
+
+process.source.fileNames = cms.untracked.vstring(ivars.inputFiles)
+process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(ivars.maxEvents))
+process.TFileService.fileName = cms.string(ivars.outputFile)
