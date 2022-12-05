@@ -7,16 +7,18 @@ then
 fi
 
 #
-MAXFILENO=5
+MAXFILENO=100000
 
 #
 movetosubmit=${1:-0}
 runjobs=${2:-0}
 
-PRIMARY="tt_20221123"
+PRIMARY="tt_20221204"
 
 INPUTS=(
-    "/mnt/T2_US_MIT/hadoop/cms/store/user/wangj/MB_Hydjet_Run3_GENSIM/crab_tracklet_20221122_MB_Hydjet_Run3_subehera/221122_210901/000*/"
+    # "/mnt/T2_US_MIT/hadoop/cms/store/user/wangj/MB_Hydjet_Run3_GENSIM/crab_tracklet_20221122_MB_Hydjet_Run3_subehera/221122_210901/000*/"
+    "/mnt/T2_US_MIT/hadoop/cms/store/user/wangj/MB_Hydjet_Run3_GENSIM/crab_pixelpre_20221201_MB_Hydjet_Run3_subehera_Th4/221205_003620/000*/"
+    "/mnt/T2_US_MIT/hadoop/cms/store/user/wangj/HITestRaw0/crab_pixelpre_221201_HITestRaw0_HIRun2022A_MBPVfilTh4_362294/221201_192201/000*/"
 )
 
 WORKDIR="/work/submit/$USER/tracklet/"
