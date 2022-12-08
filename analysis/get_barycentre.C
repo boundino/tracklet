@@ -1,40 +1,182 @@
-#include <TH1D.h>
+#include <TH2D.h>
+#include <TH3D.h>
 #include <TCanvas.h>
+#include <TTree.h>
 
-#include "include/compare.h"
+// #include "include/compare.h"
+#include "include/xjjcuti.h"
 #include "include/xjjrootuti.h"
-#include "include/xjjanauti.h"
+#include "include/xjjmypdf.h"
+#include "include/sconfig.h"
 
-int macro(std::string input="data/362294t.root::ht12f0vz-unw#TH1D,data/362294t.root::ht12f1vz-unw#TH1D",
-          std::string tag="362294t")
+// #include "include/defines.h"
+
+#define BPIX1P(EXPAND)                          \
+  EXPAND(1)                                     \
+  //   EXPAND(2)                                \
+  //   EXPAND(3)                                \
+  //   EXPAND(4)                                \
+
+#define MAXEVT 50
+#define NBINS 1000
+
+const Color_t cc[] = {kBlack, kRed, kBlue};
+
+enum opt { file, tagname };
+
+int maphits(std::vector<TTree*>& t, std::string var, std::vector<std::array<float, 4>> bins, xjjroot::mypdf* pdf);
+int mapvertex(std::vector<TTree*>& t, std::vector<std::array<float, 2>> bins, xjjroot::mypdf* pdf);
+
+int macro(std::string input="/eos/cms/store/group/phys_heavyions/wangj/tracklet2022/pixelpre_221201_HITestRaw0_HIRun2022A_MBPVfilTh4_362294.root#Data,/eos/cms/store/group/phys_heavyions/wangj/tracklet2022/pixelpre_221207_MB_Hydjet_Run3_subehera_Th4.root#MC",
+          std::string tag="362294vHydjet")
 {
-  xjjroot::compare comp(input);
-  auto ymax = xjjana::sethsmax(comp.vh);
-  auto hempty = (TH1D*)comp.vh[0]->Clone("hempty");
-  xjjroot::sethempty(hempty);
-  hempty->SetLabelOffset();
-  hempty->SetMinimum(0);
-  hempty->SetMaximum(ymax*1.2);
-
-  //
-  std::vector<TF1*> fs(comp.n());
-  for(int i=0; i<comp.n(); i++)
+  xjjc::sconfig conf(input);
+  std::vector<TTree*> t(conf.n());
+  for(int i=0; i<conf.n(); i++)
     {
-      fs[i] = new TF1(Form("f%d",i), "gaus", -15, 15);
-      fs[i]->SetParameters(1, 0, 5);
-      comp.vh[i]->Fit(Form("f%d",i), "N");
-      fs[i]->SetLineColor(comp.vh[i]->GetLineColor());
+      auto inf = new TFile(conf.value[i][file].c_str(), "read");
+      t[i] = (TTree*)inf->Get("pixel/PixelTree");
     }
 
   xjjroot::setgstyle(1);
-  TCanvas* c = new TCanvas("c", "", 600, 600);
-  hempty->Draw("AXIS");
-  comp.draw();
-  for(auto ff : fs) ff->Draw("same");
-  xjjroot::saveas(c, "figs/tracklet/tracklet-vzshift-"+tag+".pdf");
+  xjjroot::mypdf* pdf = new xjjroot::mypdf(Form("figs/pixel/pixel-barycentre-%s.pdf", tag.c_str()), "c", 600, 600);
+
+  maphits(t, "r@*sin(phi@):r@*cos(phi@),x,y,x,y", {{-5, 5, -5, 5}, {-10, 10, -10, 10}, {-15, 15, -15, 15}, {-20, 20, -20, 20}},  pdf);
+  maphits(t, "r@*sin(phi@)-bsy:r@*cos(phi@)-bsx,xbsx,ybsy,x - x_{BS},y - y_{BS}", {{-5, 5, -5, 5}, {-10, 10, -10, 10}, {-15, 15, -15, 15}, {-20, 20, -20, 20}},  pdf);
+  maphits(t, "r@:r@/tan(2*atan(exp(-eta@))),z,r,z,r", {{-30, 30, 0, 5}, {-30, 30, 5, 10}, {-30, 30, 10, 15}, {-30, 30, 15, 20}}, pdf);
+  maphits(t, "r@:r@/tan(2*atan(exp(-eta@)))-bsz,zbsz,r,z - z_{BS},r", {{-30, 30, 0, 5}, {-30, 30, 5, 10}, {-30, 30, 10, 15}, {-30, 30, 15, 20}}, pdf);
+
+  mapvertex(t, {{0, 0.3}, {-0.25, 0.05}, {-15, 15}}, pdf);
+
+  pdf->close();
 
   return 0;
 }
+
+int maphits(std::vector<TTree*>& t, std::string var, std::vector<std::array<float, 4>> bins, xjjroot::mypdf* pdf)
+{
+  int n = t.size();
+  auto vars = xjjc::str_divide(var, ",");
+
+#define SETUP_XY_PIXELS(q)                                              \
+  std::vector<TH2D*> hxy##q(n);                                         \
+    for(int i=0; i<n; i++)                                              \
+      {                                                                 \
+        hxy##q[i] = new TH2D(Form("h%s%s" #q "f%d", vars[1].c_str(), vars[2].c_str(), i), \
+                             Form(";%s (layer " #q ");%s (layer " #q ")", vars[3].c_str(), vars[4].c_str()), \
+                             NBINS, bins[atoi(#q)-1][0], bins[atoi(#q)-1][1], \
+                             NBINS, bins[atoi(#q)-1][2], bins[atoi(#q)-1][3]); \
+          xjjroot::sethempty(hxy##q[i]);                                \
+          hxy##q[i]->SetMarkerColor(cc[i]);                             \
+      }                                                                 \
+
+  BPIX1P(SETUP_XY_PIXELS)
+
+#define DRAW_XY_PIXELS(q)                                               \
+    std::string var##q = vars[0];                                       \
+      std::replace(var##q.begin(), var##q.end(), '@', #q[0]);           \
+      for(int i=0; i<n; i++)                                            \
+        {                                                               \
+          t[i]->Draw(Form("%s>>h%s%s" #q "f%d", var##q.c_str(), vars[1].c_str(), vars[2].c_str(), i), \
+                     "(nhfp > 1 && nhfn > 1)", "goff", MAXEVT);         \
+        }                                                               \
+      pdf->prepare();                                                   \
+      for(int i=0; i<n; i++)                                            \
+        { hxy##q[i]->Draw(i?"same":""); }                               \
+      xjjroot::drawCMSleft();                                           \
+      pdf->write();                                                     \
+  
+    BPIX1P(DRAW_XY_PIXELS)
+
+    return 0;
+}
+
+#define VTX1D(EXPAND)                           \
+  EXPAND(z)                                     \
+  EXPAND(x)                                     \
+  EXPAND(y)                                     \
+
+int mapvertex(std::vector<TTree*>& t, std::vector<std::array<float, 2>> bins, xjjroot::mypdf* pdf)
+{
+  int n = t.size();
+  std::vector<TH3D*> hv(n);
+  // std::vector<TH2D*> hvxy(n);
+  for(int i=0; i<n; i++)
+    {
+      hv[i] = new TH3D(Form("hvxyz%d", i), ";v_{x};v_{y};v_{z}", 
+                       NBINS, bins[0][0], bins[0][1],
+                       NBINS, bins[1][0], bins[1][1],
+                       100, bins[2][0], bins[2][1]);
+      xjjroot::sethempty(hv[i]);
+
+      t[i]->Draw(Form("vz[1]:vy[1]:vx[1]>>hvxyz%d", i), 
+                 "(nhfp > 1 && nhfn > 1 && fabs(vz[1])<15)", "goff");
+    }
+
+#define GET_BS(q)                                       \
+  std::vector<float> bs##q(n);                          \
+    for(int i=0; i<n; i++)                              \
+      {                                                 \
+        t[i]->SetBranchAddress("bs" #q, &(bs##q[i]));     \
+        t[i]->GetEntry(1);                              \
+      }                                                 \
+
+  VTX1D(GET_BS)
+
+    for(int i=0; i<n; i++)
+      std::cout<<bsx[i]<<" "<<bsy[i]<<" "<<bsz[i]<<std::endl;
+
+
+#define DRAW_1D_VTX(q)                                          \
+    std::vector<TH1D*> hv##q(n);                                \
+      for(int i=0; i<n; i++)                                    \
+        {                                                       \
+          hv##q[i] = (TH1D*)hv[i]->Project3D(#q);               \
+            hv##q[i]->Scale(1./hv##q[i]->Integral(), "width");  \
+              hv##q[i]->SetTitle("");                           \
+                xjjroot::sethempty(hv##q[i]);                   \
+                hv##q[i]->SetLineColor(cc[i]);                  \
+        }                                                       \
+      pdf->prepare();                                           \
+      for(int i=0; i<n; i++)                                    \
+        {                                                       \
+          hv##q[i]->SetMaximum(hv##q[n-1]->GetMaximum()*1.4);   \
+            hv##q[i]->Draw(i?"histe same":"histe");             \
+        }                                                       \
+      xjjroot::drawCMSleft();                                   \
+      pdf->write();                                             \
+  
+    VTX1D(DRAW_1D_VTX)
+ 
+#define DRAW_2D_VTX(q)                                          \
+    std::vector<TH2D*> hv##q(n);                                \
+      for(int i=0; i<n; i++)                                    \
+        {                                                       \
+          hv##q[i] = (TH2D*)hv[i]->Project3D(#q);               \
+            hv##q[i]->Scale(1./hv##q[i]->Integral(), "width");  \
+              hv##q[i]->SetTitle("");                           \
+                xjjroot::sethempty(hv##q[i]);                   \
+                hv##q[i]->SetMarkerColor(cc[i]);                \
+        }                                                       \
+      pdf->prepare();                                           \
+      for(int i=0; i<n; i++)                                    \
+        { hv##q[i]->Draw(i?"same":""); }                        \
+      xjjroot::drawCMSleft();                                   \
+      pdf->write();                                             \
+  
+    DRAW_2D_VTX(yx)
+
+    return 0;  
+}
+
+// for(int i=0; i<comp.n(); i++)
+//   {
+//     fs[i] = new TF1(Form("f%d",i), "gaus", -15, 15);
+//     fs[i]->SetParameters(1, 0, 5);
+//     comp.vh[i]->Fit(Form("f%d",i), "N");
+//     fs[i]->SetLineColor(comp.vh[i]->GetLineColor());
+//   }
+// for(auto ff : fs) ff->Draw("same");
 
 int main()
 {
