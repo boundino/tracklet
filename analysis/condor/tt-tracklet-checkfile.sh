@@ -15,10 +15,16 @@ set -x
 ./transmute_trees $INFILE $OUTFILE
 
 if [[ $(wc -c $OUTFILE | awk '{print $1}') -gt 700 ]]; then
-    SRM_PREFIX="/mnt/T2_US_MIT/hadoop/"
-    SRM_PATH=${DESTINATION#${SRM_PREFIX}}
-    LD_LIBRARY_PATH='' PYTHONPATH='' gfal-copy file://$PWD/${OUTFILE} gsiftp://se01.cmsaf.mit.edu:2811/${SRM_PATH}/${OUTFILE}
-    # cp $OUTFILE $DESTINATION/
+    if [[ $DESTINATION == /mnt/T2_US_MIT/* ]]
+    then
+        # gfal-copy
+        # SRM_PREFIX="/mnt/T2_US_MIT/hadoop/" ; SRM_PATH=${DESTINATION#${SRM_PREFIX}} ;
+        # LD_LIBRARY_PATH='' PYTHONPATH='' gfal-copy file://$PWD/${OUTFILE} gsiftp://se01.cmsaf.mit.edu:2811/${SRM_PATH}/${OUTFILE}
+
+        # xrdcp
+        SRM_PREFIX="/mnt/T2_US_MIT/hadoop/cms/" ; SRM_PATH=${DESTINATION#${SRM_PREFIX}} ;
+        xrdcp ${OUTFILE} root://xrootd.cmsaf.mit.edu//${SRM_PATH}/
+    fi
 fi
 set +x
 
