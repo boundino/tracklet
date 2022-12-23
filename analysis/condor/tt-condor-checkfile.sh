@@ -58,7 +58,8 @@ Error        = $LOGDIR/log-${infn}.err
 Log          = $LOGDIR/log-${infn}.log
 Rank         = Mips
 +AccountingGroup = "group_cmshi.$(whoami)"
-requirements = GLIDEIN_Site == "MIT_CampusFactory" && BOSCOGroup == "bosco_cmshi" && HAS_CVMFS_cms_cern_ch && BOSCOCluster == "ce03.cmsaf.mit.edu"
+Requirements = ( BOSCOCluster =!= "t3serv008.mit.edu" && BOSCOCluster =!= "ce03.cmsaf.mit.edu" && BOSCOCluster =!= "eofe8.mit.edu")
++DESIRED_Sites = "mit_tier2"
 job_lease_duration = 240
 should_transfer_files = YES
 transfer_input_files = transmute_trees,/tmp/$PROXYFILE
