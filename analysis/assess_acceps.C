@@ -19,7 +19,7 @@ void convert(TH2* h1) {
   for (int i=1; i<=h1->GetNbinsX(); ++i) {
     for (int j=1; j<=h1->GetNbinsY(); ++j) {
       // double data_pdf = TMath::Gaus(hvz->GetBinCenter(j), -0.0063239, 4.67374, 1);
-      double data_pdf = TMath::Gaus(hvz->GetBinCenter(j), -1.77108e-01, 5.03852, 1);
+      double data_pdf = TMath::Gaus(hvz->GetBinCenter(j), -1.76519e-01, 5.01265, 1);
       if (h1->GetBinContent(i, j)) { h1->SetBinContent(i, j, data_pdf); }
     }
   }
@@ -27,26 +27,16 @@ void convert(TH2* h1) {
   delete hvz;
 }
 
-int assess_acceps(bool create, int type, float maxdr2,
+int assess_acceps(bool recreate, int type, float maxdr2,
                   const char* data_list, const char* mc_list,
                   const char* path, const char* label) {
 
   TTree *tdata = 0, *tmc = 0;
   TFile* fout = 0;
-  if(create)
+  if(recreate)
     {
       tdata = (TTree*)TFile::Open(data_list)->Get(Form("TrackletTree%i", type));
       tmc = (TTree*)TFile::Open(mc_list)->Get(Form("TrackletTree%i", type));
-      // std::string line;
-      // TChain* tdata = new TChain(Form("TrackletTree%i", type));
-      // std::ifstream datastream(data_list);
-      // while (std::getline(datastream, line))
-      //     tdata->Add(line.data());
-      // TChain* tmc = new TChain(Form("TrackletTree%i", type));
-      // std::ifstream mcstream(mc_list);
-      // while (std::getline(mcstream, line))
-      //     tmc->Add(line.data());
-
       fout = new TFile(Form("%s/acceptance-%i.root", path, type), "recreate");
     }
   else
@@ -56,12 +46,9 @@ int assess_acceps(bool create, int type, float maxdr2,
 #define INCLUDE_ETA_RANGE
 #include "include/bins.h"
 
-  int nfeta = neta * 200;
-  int nfvz = nvz * 200;
-
   //
   TH2D *hdata, *hdatacoarse, *hmc, *hmccoarse;
-  if(!create)
+  if(!recreate)
     {
       hdata = (TH2D*)fout->Get("hdata");
       hdatacoarse = (TH2D*)fout->Get("hdatacoarse");
@@ -70,8 +57,11 @@ int assess_acceps(bool create, int type, float maxdr2,
     }
   else
     {
+      int nfeta = neta * 200;
+      int nfvz = nvz * 200;
+
       hdata = new TH2D("hdata", "", nfeta, etamin, etamax, nfvz, vzmin, vzmax);
-      tdata->Project("hdata", "vz[1]:eta1", Form("dr2<%f && abs(vz[1])<15", maxdr2));
+      tdata->Project("hdata", "vz[1]:eta1", Form("dr2<%f && abs(vz[1])<15", maxdr2), "");
       convert(hdata);
       htitle(hdata, ";#eta;v_{z}");
       hdatacoarse = (TH2D*)hdata->Clone("hdatacoarse");
@@ -79,7 +69,7 @@ int assess_acceps(bool create, int type, float maxdr2,
       hdatacoarse->RebinY(nfvz / nvz);
 
       hmc = new TH2D("hmc", "", nfeta, etamin, etamax, nfvz, vzmin, vzmax);
-      tmc->Project("hmc", "vz[1]:eta1", Form("dr2<%f && abs(vz[1])<15", maxdr2));
+      tmc->Project("hmc", "vz[1]:eta1", Form("dr2<%f && abs(vz[1])<15", maxdr2), "");
       convert(hmc);
       htitle(hmc, ";#eta;v_{z}");
       hmccoarse = (TH2D*)hmc->Clone("hmccoarse");
@@ -87,11 +77,13 @@ int assess_acceps(bool create, int type, float maxdr2,
       hmccoarse->RebinY(nfvz / nvz);
     }
 
-  TH2D* hratio = (TH2D*)hdatacoarse->Clone("hratio");
-  hratio->Divide(hmccoarse);
+  // TH2D* hratio = (TH2D*)hdatacoarse->Clone("hratio");
+  // hratio->Divide(hmccoarse);
+  TH2D* hratio = (TH2D*)hmccoarse->Clone("hratio");
+  hratio->Divide(hdatacoarse);
   hratio->SetStats(0);
 
-  if(create)
+  if(recreate)
     fout->Write("", TObject::kOverwrite);
 
   //
@@ -118,7 +110,7 @@ int assess_acceps(bool create, int type, float maxdr2,
   c2->SaveAs(Form("figs/geometric/geometric-%s-%i-binned.png", label, type));
 
   TCanvas* c3 = new TCanvas("c3", "", 600, 600);
-  hratio->SetMaximum(10);
+  hratio->SetMaximum(5);
   hratio->Draw("colz");
   c3->SaveAs(Form("figs/geometric/geometric-%s-%i.png", label, type));
 
