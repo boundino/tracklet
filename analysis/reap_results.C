@@ -189,13 +189,14 @@ int reap_results(int type,
    /* nevents                                                                 */
    TH1F* h1WEGevent = new TH1F("h1WEGevent", "", nvz, vzb);
    int nWEGentry = tinput->Draw("vz[1]>>h1WEGevent", "weight" * (esel && gsel), "goff");
-   float nWEGevent = h1WEGevent->Integral(0, h1WEGevent->GetNbinsX() + 1);
+   float nWEGevent = h1WEGevent->Integral(1, h1WEGevent->GetNbinsX() + 1); // !! overflow from 0 or from 1 
 
    TH1F* h1WGevent = new TH1F("h1WGevent", "", nvz, vzb);
    tinput->Draw("vz[1]>>h1WGevent", "weight" * (gsel), "goff");
-   float nWGevent = h1WGevent->Integral(0, h1WGevent->GetNbinsX() + 1);
+   float nWGevent = h1WGevent->Integral(1, h1WGevent->GetNbinsX() + 1); // !! overflow from 0 or from 1
 
    printf("$ weighted events: %f, entries: %i\n", nWEGevent, nWEGentry);
+   printf("$ weighted gen events: %f\n", nWGevent);
    if (nWEGentry < 1) { printf("  ! no events selected - stopping\n"); }
 
    /* set acceptance maps                                                     */
