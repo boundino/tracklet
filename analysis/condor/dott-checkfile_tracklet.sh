@@ -7,21 +7,32 @@ then
 fi
 
 #
-MAXFILENO=100000
+MAXFILENO=10000
 
 #
 movetosubmit=${1:-0}
 runjobs=${2:-0}
 
-PRIMARY="tt_20221204"
+# PRIMARY="tt_221218"
+PRIMARY="tt_221218_vzshift"
+# PRIMARY="tt_221218_vzshift_reweight"
 
 INPUTS=(
-    # "/mnt/T2_US_MIT/hadoop/cms/store/user/wangj/MB_Hydjet_Run3_GENSIM/crab_tracklet_20221122_MB_Hydjet_Run3_subehera/221122_210901/000*/"
-    "/mnt/T2_US_MIT/hadoop/cms/store/user/wangj/MB_Hydjet_Run3_GENSIM/crab_pixelpre_20221201_MB_Hydjet_Run3_subehera_Th4/221205_003620/000*/"
-    "/mnt/T2_US_MIT/hadoop/cms/store/user/wangj/HITestRaw0/crab_pixelpre_221201_HITestRaw0_HIRun2022A_MBPVfilTh4_362294/221201_192201/000*/"
+    "/mnt/T2_US_MIT/hadoop/cms/store/user/wangj/MinBias_Hydjet_Drum5F_PbPb_5360GeV/crab_pixelpre_221216_Hydjet_Drum5F_PbPb_5360GeV_1252p1_privateZ_Th4/221216_185332/000*/"
+    # "/mnt/T2_US_MIT/hadoop/cms/store/user/wangj/MB_Hydjet_Run3_GENSIM/crab_pixelpre_221207_MB_Hydjet_Run3_subehera_Th4/221207_170609/000*/"
+    # "/mnt/T2_US_MIT/hadoop/cms/store/user/wangj/HITestRaw0/crab_pixelpre_221201_HITestRaw0_HIRun2022A_MBPVfilTh4_362294/221201_192201/000*/"
+    # "/mnt/T2_US_MIT/hadoop/cms/store/user/wangj/HITestRaw1/crab_pixelpre_221201_HITestRaw1_HIRun2022A_MBPVfilTh4_362294/221205_222829/000*/"
+    # "/mnt/T2_US_MIT/hadoop/cms/store/user/wangj/HITestRaw2/crab_pixelpre_221201_HITestRaw2_HIRun2022A_MBPVfilTh4_362294/221222_173004/000*/"
+    # "/mnt/T2_US_MIT/hadoop/cms/store/user/wangj/HITestRaw3/crab_pixelpre_221201_HITestRaw3_HIRun2022A_MBPVfilTh4_362294/221222_193613/000*/"
+    # "/mnt/T2_US_MIT/hadoop/cms/store/user/wangj/HITestRaw4/crab_pixelpre_221201_HITestRaw4_HIRun2022A_MBPVfilTh4_362294/221222_200711/000*/"
+    # "/mnt/T2_US_MIT/hadoop/cms/store/user/wangj/HITestRaw5/crab_pixelpre_221201_HITestRaw5_HIRun2022A_MBPVfilTh4_362294/221222_201003/000*/"
+    # "/mnt/T2_US_MIT/hadoop/cms/store/user/wangj/HITestRaw6/crab_pixelpre_221201_HITestRaw6_HIRun2022A_MBPVfilTh4_362294/221222_201203/000*/"
 )
 
+OUTPUTPRIDIR="/mnt/T2_US_MIT/hadoop/cms/store/user/jwang/tracklet/"
 WORKDIR="/work/submit/$USER/tracklet/"
+
+#
 mkdir -p $WORKDIR
 
 for INPUTDIR in "${INPUTS[@]}"
@@ -39,7 +50,6 @@ do
     echo "$INPUTFILELIST"
     REQUESTNAME=${INPUTFILELIST##*filelist_} ; REQUESTNAME=${REQUESTNAME%%.txt} ;
     OUTPUTSUBDIR="${PRIMARY}_${REQUESTNAME}"
-    OUTPUTPRIDIR="/mnt/T2_US_MIT/hadoop/cms/store/user/jwang/tracklet/"
 
     ##
     OUTPUTDIR="${OUTPUTPRIDIR}/${OUTPUTSUBDIR}"
