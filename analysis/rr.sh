@@ -58,25 +58,25 @@ do
     do
         IFS=',' ; VINPUTS_MC=($jj) ; unset IFS ;
         INPUT_MC=${VINPUTS_MC[0]}
-        TAG_MC=${VINPUTS_MC[1]}_${tag}
+        TAG_MC=${VINPUTS_MC[1]}
 
         [[ ${2:-0} -eq 1 ]] && {
             for t in ${TYPES[@]}
             do
-                # ./reap_results $t $INPUT_DATA ${TAG_DATA}-${TAG_MC} 0 20 $TAG_MC 1 0 1 $TAG_MC 0 $maxdr2 ${tag} "null" 0 "(vz[1]<5 && vz[1]>-5)" &
-                # ./reap_results $t $INPUT_DATA ${TAG_DATA}-${TAG_MC} 0 20 $TAG_MC 1 0 1 $TAG_MC 0 $maxdr2 ${tag} "null" 0 "(1)" &
-                ./reap_results $t $INPUT_DATA ${TAG_DATA}-${TAG_MC} 0 20 $TAG_MC 1 1 1 $TAG_MC 0 $maxdr2 ${tag} "null" 0 "(1)" &
+                # ./reap_results $t $INPUT_DATA ${TAG_DATA}-${TAG_MC}_${tag} 0 20 ${TAG_MC}_${tag} 1 0 1 ${TAG_MC}_${tag} 0 $maxdr2 ${TAG_DATA}-${TAG_MC}_${tag} "null" 0 "(vz[1]<5 && vz[1]>-5)" &
+                # ./reap_results $t $INPUT_DATA ${TAG_DATA}-${TAG_MC}_${tag} 0 20 ${TAG_MC}_${tag} 1 0 1 ${TAG_MC}_${tag} 0 $maxdr2 ${TAG_DATA}-${TAG_MC}_${tag} "null" 0 "(1)" &
+                ./reap_results $t $INPUT_DATA ${TAG_DATA}-${TAG_MC}_${tag} 0 20 ${TAG_MC}_${tag} 1 1 1 ${TAG_MC}_${tag} 0 $maxdr2 ${TAG_DATA}-${TAG_MC}_${tag} "null" 0 "(1)" &
             done
             wait
         }
 
         [[ ${3:-0} -eq 1 ]] && {
-            ./merge_first output/correction-${TAG_MC}-12.root output/correction-${TAG_DATA}-${TAG_MC} "${TAG_DATA}-${TAG_MC}"
+            ./merge_first output/correction-${TAG_MC}_${tag}-12.root output/correction-${TAG_DATA}-${TAG_MC}_${tag} "${TAG_DATA}-${TAG_MC}_${tag}"
         }
 
         # for t in ${TYPES[@]}
         # do
-        #     ./assess_acceps 1 $t $maxdr2 $INPUT_DATA $INPUT_MC "output/acceptances/${tag}" "$TAG_MC" &
+        #     ./assess_acceps 1 $t $maxdr2 $INPUT_DATA $INPUT_MC "output/acceptances/${tag}" "${TAG_MC}_${tag}" &
         # done
         # wait
     done
