@@ -12,6 +12,7 @@
 #include <fstream>
 
 #include "include/cosmetics.h"
+#include "include/xjjrootuti.h"
 
 void convert(TH2* h1) {
   TH1D* hvz = (TH1D*)h1->ProjectionY("hvz");
@@ -37,6 +38,7 @@ int assess_acceps(bool recreate, int type, float maxdr2,
     {
       tdata = (TTree*)TFile::Open(data_list)->Get(Form("TrackletTree%i", type));
       tmc = (TTree*)TFile::Open(mc_list)->Get(Form("TrackletTree%i", type));
+      xjjroot::mkdir(Form("%s/acceptance-%i.root", path, type));
       fout = new TFile(Form("%s/acceptance-%i.root", path, type), "recreate");
     }
   else
@@ -57,8 +59,8 @@ int assess_acceps(bool recreate, int type, float maxdr2,
     }
   else
     {
-      int nfeta = neta * 200;
-      int nfvz = nvz * 200;
+      int nfeta = neta * 100;
+      int nfvz = nvz * 100;
 
       hdata = new TH2D("hdata", "", nfeta, etamin, etamax, nfvz, vzmin, vzmax);
       tdata->Project("hdata", "vz[1]:eta1", Form("dr2<%f && abs(vz[1])<15", maxdr2), "");
@@ -83,14 +85,20 @@ int assess_acceps(bool recreate, int type, float maxdr2,
   hratio->Divide(hdatacoarse);
   hratio->SetStats(0);
 
-  if(recreate)
-    fout->Write("", TObject::kOverwrite);
+  // if(recreate)
+  //   fout->Write("", TObject::kOverwrite);
 
   //
   hdata->SetStats(0);
   hdatacoarse->SetStats(0);
   hmc->SetStats(0);
   hmccoarse->SetStats(0);
+
+  fout->cd();
+  hdata->Write();
+  hdatacoarse->Write();
+  hmc->Write();
+  hmccoarse->Write();
 
   //
   TCanvas* c1 = new TCanvas("c1", "", 1200, 600);
