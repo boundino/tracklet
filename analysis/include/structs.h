@@ -1,9 +1,9 @@
 #ifndef STRUCTS_H
 #define STRUCTS_H
 
-#define MAXT   17000
+#define MAXT   30000
 #define MAXH   20000
-#define MAXP   20000
+#define MAXP   30000
 
 struct data_t {
   int run, event, lumi, bx;
