@@ -21,8 +21,9 @@
 #include "include/tracklet.h"
 #include "include/hf.h"
 
-#define NSAMPLES  4
+#define NSAMPLES  5
 static const float vzpar[NSAMPLES][2] = {
+   {0.932517, 3.79088},    /* private hydjet */
    {0.307252, 4.62656},    /* hydjet */
    {0.336693, 4.63967},    /* ampt, no melt */
    {0.352702, 4.63594},    /* ampt, string melt */
@@ -51,26 +52,34 @@ int transmute_trees(const char* input,
    TTree* t = (TTree*)finput->Get("pixel/PixelTree");
 
    float vz_shift = 0;
-   float vx, vy, vz;
+   float vx = 0, vy = 0, vz, recovx = -99, recovy = -99;
 
    if (t->GetEntries("run < 10") != 0) {
       printf("$ Monte Carlo analysis\n");
 
+      /* Realistic25ns13p6TeVEarly2022Collision */
+      /* Nominal2022PbPbCollision */
+      vx = 0.100629;
+      vy = -0.014995;
       /* RealisticXeXeCollision2017 */
-      vx = -0.026006;
-      vy = 0.0810894;
+      // vx = -0.026006;
+      // vy = 0.0810894;
+
+      vz_shift = -0.36;
 
       /* pixel barycentre */
-      vz_shift = -0.323346;
+      // vz_shift = -0.323346;
       /* x:  0.10882  */
       /* y: -0.110405 */
       /* z: -0.323346 */
    } else {
       printf("$ data analysis\n");
 
+      vx = 0.1729877;
+      vy = -0.182863;
       /* 94X_dataRun2_ReReco_EOY17_v2 */
-      vx = 0.0830378;
-      vy = -0.030276;
+      // vx = 0.0830378;
+      // vy = -0.030276;
 
       pileup = 0.0f;
       sample = -1;
@@ -152,7 +161,7 @@ int transmute_trees(const char* input,
 
       for (const auto& event : events) {
          t->GetEntry(event);
-         if (event % 10 == 0)
+         if (event % 100 == 0)
             printf("   run: %i, entry: %lu\n", par.run, event);
 
 #ifdef  CENTRALITY
@@ -218,7 +227,17 @@ int transmute_trees(const char* input,
          vz = reco_vertex(layer1v, layer2v, 0.09, 0.12);
       }
 
-#define SET_VERTEX(q, w) trkltdata##q##w.vz[1] = vz;
+#define SET_VERTEX(q, w)                                                \
+      trkltdata##q##w.vz[1] = vz;                                       \
+      trkltdata##q##w.vx[1] = recovx;                                   \
+      trkltdata##q##w.vy[1] = recovy;                                   \
+      for(int j=1; j<par.nv; j++)                                       \
+        {                                                               \
+          trkltdata##q##w.vx[j+1] = par.vx[j];                          \
+          trkltdata##q##w.vy[j+1] = par.vy[j];                          \
+          trkltdata##q##w.vz[j+1] = par.vz[j];                          \
+        }                                                               \
+      
       TRKLTS2P(SET_VERTEX);
 
       if (!reweight && sample != -1) {
@@ -229,12 +248,16 @@ int transmute_trees(const char* input,
       float event_weight = 1.;
       if (reweight) {
          float event_vz = (vz < -98 ? par.vz[0] : vz) + vz_shift;
-
-         /* run 304906 */
-         double data_pdf = TMath::Gaus(event_vz, -0.0063239, 4.67374, 1);
-         double mc_pdf = TMath::Gaus(event_vz, vzpar[sample][0], vzpar[sample][1], 1);
-
-         event_weight = event_weight * data_pdf / mc_pdf;
+         if(event_vz < -20 || event_vz > 20)
+           event_weight = 0;
+         else
+           {
+             /* run 362294 + bad private MC */
+             double data_pdf = TMath::Gaus(event_vz, -1.76519e-01, 5.01265, 1);
+             double mc_pdf = TMath::Gaus(event_vz, vzpar[sample][0], vzpar[sample][1], 1);
+             
+             event_weight = event_weight * data_pdf / mc_pdf;
+           }
       }
 
       auto sorteta = [](const rechit& a, const rechit& b) -> bool {
