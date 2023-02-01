@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [[ $# -ne 4 ]]; then
+if [[ $# -ne 5 ]]; then
     echo "usage: ./skim-skimd-checkfile.sh [input file] [output dir] [output filename] [ishi] [evtfilt] [hltfilt] [mvafilt] [ptcut] [removeevent] [proxy]"
     exit 1
 fi
@@ -10,9 +10,10 @@ DESTINATION=$2
 OUTFILE=$3
 export X509_USER_PROXY=${PWD}/${4}
 echo $X509_USER_PROXY
+USERANDOM=$5
 
 set -x
-./transmute_trees $INFILE $OUTFILE
+./transmute_trees $INFILE $OUTFILE 0 1000000000 -1 0 0 $USERANDOM
 
 if [[ $(wc -c $OUTFILE | awk '{print $1}') -gt 700 ]]; then
     if [[ $DESTINATION == /mnt/T2_US_MIT/* ]]

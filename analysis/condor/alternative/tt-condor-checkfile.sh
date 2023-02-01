@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [[ $# -ne 5 ]]; then
+if [[ $# -ne 4 ]]; then
     echo "usage: ./tt-condor-checkfile.sh [input dir] [output dir] [max jobs] [log dir] [ishi] [evtfilt] [hltfilt] [mvafilt] [ptcut] [removeevent]"
     exit 1
 fi
@@ -9,7 +9,6 @@ FILELIST=$1
 DESTINATION=$2
 MAXFILES=$3
 LOGDIR=$4
-USERANDOM=$5
 
 PROXYFILE=$(ls /tmp/ -lt | grep $USER | grep -m 1 x509 | awk '{print $NF}')
 
@@ -52,18 +51,20 @@ Universe     = vanilla
 Initialdir   = $PWD/
 Notification = Error
 Executable   = $PWD/tt-${tag}-checkfile.sh
-Arguments    = $inputname $DEST_CONDOR ${outputfile} $PROXYFILE $USERANDOM
+Arguments    = $inputname $DEST_CONDOR ${outputfile} $PROXYFILE 
 GetEnv       = True
 Output       = $LOGDIR/log-${infn}.out
 Error        = $LOGDIR/log-${infn}.err
 Log          = $LOGDIR/log-${infn}.log
 Rank         = Mips
 +AccountingGroup = "group_cmshi.$(whoami)"
-Requirements = ( BOSCOCluster =!= "t3serv008.mit.edu" && BOSCOCluster =!= "ce03.cmsaf.mit.edu" && BOSCOCluster =!= "eofe8.mit.edu")
-+DESIRED_Sites = "mit_tier2"
+requirements = GLIDEIN_Site == "MIT_CampusFactory" && BOSCOGroup == "bosco_cmshi" && HAS_CVMFS_cms_cern_ch && BOSCOCluster == "ce03.cmsaf.mit.edu"
 job_lease_duration = 240
 should_transfer_files = YES
 transfer_input_files = transmute_trees,/tmp/$PROXYFILE
+when_to_transfer_output = ON_EXIT
+transfer_output_remaps = "$outputfile = $DEST_CONDOR/$outputfile"
++DESIRED_Sites = "mit_tier3"
 Queue 
 EOF
 

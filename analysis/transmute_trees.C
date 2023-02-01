@@ -121,7 +121,8 @@ int transmute_trees(const char* input,
    truth_t truth;
    branch_event_truth(ttruth, truth);
 
-   gRandom->SetSeed(144);
+   // gRandom->SetSeed(144);
+   gRandom->SetSeed(std::hash<std::string>{}(input)); // cannot use fixed seed for condor jobs ...
    printf(" # init random: %f\n", gRandom->Rndm());
 
 #define PROJECT_BACKGROUND(q)                                                 \
