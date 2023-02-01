@@ -12,7 +12,10 @@
 #include <fstream>
 
 #include "include/cosmetics.h"
+#include "include/acceptance.h"
+
 #include "include/xjjrootuti.h"
+#include "include/xjjanauti.h"
 
 void convert(TH2* h1) {
   TH1D* hvz = (TH1D*)h1->ProjectionY("hvz");
@@ -79,14 +82,17 @@ int assess_acceps(bool recreate, int type, float maxdr2,
       hmccoarse->RebinY(nfvz / nvz);
     }
 
-  // TH2D* hratio = (TH2D*)hdatacoarse->Clone("hratio");
-  // hratio->Divide(hmccoarse);
   TH2D* hratio = (TH2D*)hmccoarse->Clone("hratio");
   hratio->Divide(hdatacoarse);
   hratio->SetStats(0);
 
-  // if(recreate)
-  //   fout->Write("", TObject::kOverwrite);
+  const int* amap = ext_accep_map(type);
+  auto h2amapxev = (TH2D*)hratio->Clone("h2amapxev");
+  for (int i=1; i<=neta; i++)
+    for (int j=1; j<=nvz; j++) {
+      h2amapxev->SetBinContent(i, j, amap[(nvz-j)*neta+i-1]);
+      h2amapxev->SetBinError(i, j, 0);
+    }
 
   //
   hdata->SetStats(0);
@@ -94,12 +100,14 @@ int assess_acceps(bool recreate, int type, float maxdr2,
   hmc->SetStats(0);
   hmccoarse->SetStats(0);
 
-  fout->cd();
-  hdata->Write();
-  hdatacoarse->Write();
-  hmc->Write();
-  hmccoarse->Write();
-
+  if(recreate)
+    {
+      fout->cd();
+      hdata->Write();
+      hdatacoarse->Write();
+      hmc->Write();
+      hmccoarse->Write();
+    }
   //
   TCanvas* c1 = new TCanvas("c1", "", 1200, 600);
   c1->Divide(2, 1);
@@ -118,8 +126,9 @@ int assess_acceps(bool recreate, int type, float maxdr2,
   c2->SaveAs(Form("figs/geometric/geometric-%s-%i-binned.png", label, type));
 
   TCanvas* c3 = new TCanvas("c3", "", 600, 600);
-  hratio->SetMaximum(5);
+  // hratio->SetMaximum(5);
   hratio->Draw("colz");
+  xjjana::drawhoutline(h2amapxev, kRed);
   c3->SaveAs(Form("figs/geometric/geometric-%s-%i.png", label, type));
 
   return 0;
