@@ -37,7 +37,8 @@ int reap_results(int type,
                  const char* accepdir = "drlt0p5", // acceptance correction path
                  const char* putag = "null",      // pileup correction
                  int ctable = 0,                  // centrality table
-                 const char* asel = "(1)")        // additional selection
+                 const char* asel = "(1)",        // additional selection
+                 Long64_t nentries = TTree::kMaxEntries)
 {
    TFile* finput = new TFile(input, "read");
    TTree* tinput = (TTree*)finput->Get(Form("TrackletTree%i", type));
@@ -162,7 +163,6 @@ int reap_results(int type,
             delete falpha[i][j];
 
             h1alpha[i][j] = (TH1F*)fcorr->Get(Form("alpha_%i_%i", i, j)); 
-            // std::cout<<i<<" "<<j<<" "<<h1alpha[i][j]<<std::endl;
             falpha[i][j] = (TF1*)fcorr->Get(Form("falpha_%i_%i", i, j));
          }
       }
@@ -188,20 +188,20 @@ int reap_results(int type,
 
    /* nevents                                                                 */
    TH1F* h1WEGevent = new TH1F("h1WEGevent", "", nvz, vzb);
-   int nWEGentry = tinput->Draw("vz[1]>>h1WEGevent", "weight" * (esel && gsel), "goff");
-   float nWEGevent = h1WEGevent->Integral(1, h1WEGevent->GetNbinsX() + 1); // !! overflow from 0 or from 1 
+   int nWEGentry = tinput->Draw("vz[1]>>h1WEGevent", "weight" * (esel && gsel), "goff", nentries);
+   float nWEGevent = h1WEGevent->Integral(0, h1WEGevent->GetNbinsX() + 1); // !! overflow from 0 or from 1 
 
    TH1F* h1WGevent = new TH1F("h1WGevent", "", nvz, vzb);
-   tinput->Draw("vz[1]>>h1WGevent", "weight" * (gsel), "goff");
-   float nWGevent = h1WGevent->Integral(1, h1WGevent->GetNbinsX() + 1); // !! overflow from 0 or from 1
+   tinput->Draw("vz[1]>>h1WGevent", "weight" * (gsel), "goff", nentries);
+   float nWGevent = h1WGevent->Integral(0, h1WGevent->GetNbinsX() + 1); // !! overflow from 0 or from 1
 
    printf("$ weighted events: %f, entries: %i\n", nWEGevent, nWEGentry);
    printf("$ weighted gen events: %f\n", nWGevent);
    if (nWEGentry < 1) { printf("  ! no events selected - stopping\n"); }
 
    /* set acceptance maps                                                     */
-   tinput->Project("h1WEvz", "vz[1]", "weight" * (esel));
-   tinput->Project("h1WEvzmult", Form("%s:vz[1]", mult), "weight" * (esel));
+   tinput->Project("h1WEvz", "vz[1]", "weight" * (esel), "", nentries);
+   tinput->Project("h1WEvzmult", Form("%s:vz[1]", mult), "weight" * (esel), "", nentries);
 
    const int* amap = 0;
    if (applym) { amap = ext_accep_map(type); }
@@ -233,13 +233,13 @@ int reap_results(int type,
    h1WEvz->Fit("gaus");
 
    /* generator-level hadrons                                                 */
-   tinput->Project("h3WEhadron", Form("vz[1]:%s:eta", mult), "weight" * (esel && "abs(eta)<4"));
-   tinput->Project("h3WGhadron", Form("vz[1]:%s:eta", mult), "weight" * (gsel && "abs(eta)<4"));
+   tinput->Project("h3WEhadron", Form("vz[1]:%s:eta", mult), "weight" * (esel && "abs(eta)<4"), "", nentries);
+   tinput->Project("h3WGhadron", Form("vz[1]:%s:eta", mult), "weight" * (gsel && "abs(eta)<4"), "", nentries);
 
    h3WEtruth = (TH3F*)h3WEhadron->Clone("h3WEtruth");
 
    /* reconstructed tracklets                                                 */
-   tinput->Project("h3WEraw", Form("vz[1]:%s:eta1", mult), "weight" * (ssel && esel));
+   tinput->Project("h3WEraw", Form("vz[1]:%s:eta1", mult), "weight" * (ssel && esel), "", nentries);
 
    /* calculate corrections                                                   */
    if (!applyc) {
@@ -299,8 +299,8 @@ int reap_results(int type,
             falpha[i][j]->SetParLimits(2, 0, 512);
             falpha[i][j]->SetParLimits(3, -64, 128);
 
-            h1alpha[i][j]->Fit(falpha[i][j], "M Q", "", 8, 7000);
-            h1alpha[i][j]->Fit(falpha[i][j], "M E Q", "", 8, 7000);
+            h1alpha[i][j]->Fit(falpha[i][j], "M Q", "", 8, 15000);
+            h1alpha[i][j]->Fit(falpha[i][j], "M E Q", "", 8, 15000);
 
             falpha[i][j] = h1alpha[i][j]->GetFunction(Form("falpha_%i_%i", i, j));
          }
@@ -313,15 +313,15 @@ int reap_results(int type,
       stderr = fdopen(stderr_save, "w");
 
       /* offline selection                                                    */
-      tinput->Project("h1WGOXteff", Form("%s", mult), "weight" * (gsel && osel));
-      tinput->Project("h1WGXteff", Form("%s", mult), "weight" * (gsel));
+      tinput->Project("h1WGOXteff", Form("%s", mult), "weight" * (gsel && osel), "", nentries);
+      tinput->Project("h1WGXteff", Form("%s", mult), "weight" * (gsel), "", nentries);
 
       h1teff = (TH1F*)h1WGOXteff->Clone("h1teff");
       h1teff->Divide(h1WGXteff);
 
       /* sd fraction (complement of gen selection)                            */
-      tinput->Project("h1WENGsdf", Form("%s", mult), "weight" * (esel && !gsel));
-      tinput->Project("h1WEsdf", Form("%s", mult), "weight" * (esel));
+      tinput->Project("h1WENGsdf", Form("%s", mult), "weight" * (esel && !gsel), "", nentries);
+      tinput->Project("h1WEsdf", Form("%s", mult), "weight" * (esel), "", nentries);
 
       h1sdf = (TH1F*)h1WENGsdf->Clone("h1sdf");
       h1sdf->Divide(h1WEsdf);
@@ -345,7 +345,7 @@ int reap_results(int type,
       csdf->SaveAs(Form("figs/corrections/sdfrac-%s-%i.pdf", label, type));
 
       /* draw alpha fits                                                      */
-      TH1D* halphaframe = new TH1D("halphaframe", "", 1, 1, 12000);
+      TH1D* halphaframe = new TH1D("halphaframe", "", 1, 1, 20000);
       htitle(halphaframe, ";number of tracklets;#alpha");
       hrange(halphaframe, 0.0, 3.0);
 
@@ -402,10 +402,9 @@ int reap_results(int type,
 
    /* external single-diffractive fraction                                    */
    if (fes) {
-      delete h1sdf; delete h1teff; delete h1empty;
-      h1sdf = (TH1F*)fes->Get("h1sdf")->Clone();
-      h1teff = (TH1F*)fes->Get("h1teff")->Clone();
-      h1empty = (TH1F*)fes->Get("h1empty")->Clone();
+      delete h1sdf; h1sdf = (TH1F*)fes->Get("h1sdf")->Clone();
+      // delete h1teff; h1teff = (TH1F*)fes->Get("h1teff")->Clone();
+      // delete h1empty; h1empty = (TH1F*)fes->Get("h1empty")->Clone();
    }
 
    printf("-------------------------------------------------------------\n");
@@ -769,6 +768,12 @@ int main(int argc, char* argv[]) {
             atoi(argv[8]), atoi(argv[9]), argv[10],
             atoi(argv[11]), atof(argv[12]), argv[13], argv[14],
             atoi(argv[15]), argv[16]);
+   } else if (argc == 18) {
+      return reap_results(atoi(argv[1]), argv[2], argv[3],
+            atoi(argv[4]), atoi(argv[5]), argv[6], atoi(argv[7]),
+            atoi(argv[8]), atoi(argv[9]), argv[10],
+            atoi(argv[11]), atof(argv[12]), argv[13], argv[14],
+                          atoi(argv[15]), argv[16], atoi(argv[17]));
    } else {
       printf("usage: ./reap_results [type] [input] [label]\n"
              "(cmin cmax) (corrections (apply))"
