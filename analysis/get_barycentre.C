@@ -24,25 +24,29 @@
 const Color_t cc[] = {kBlack, kRed, kBlue};
 float dxshift[] = {0, -0.0723367}, dyshift[] = {0, 0.167845}, dzshift[] = {0, 0.36}; // BS_MC = BS_data + dshift
 
+std::vector<std::string> legtags;
+std::string comment;
+
 enum opt { file, tagname };
 
 int maphits(std::vector<TTree*>& t, std::string var, std::vector<std::array<float, 4>> bins, xjjroot::mypdf* pdf);
 int mapvertex(std::vector<TTree*>& t, std::vector<std::array<float, 2>> bins, xjjroot::mypdf* pdf);
 void drawbs(std::vector<std::array<float, 3>> bsxyz, std::string type);
-void drawtags(std::vector<std::string> tags={"Data", "MC"});
+void drawtags();
 
 int macro(std::string input="/eos/cms/store/group/phys_heavyions/wangj/tracklet2022/pixelpre_221201_HITestRaw0_HIRun2022A_MBPVfilTh4_362294.root#Data,/eos/cms/store/group/phys_heavyions/wangj/tracklet2022/pixelpre_221207_MB_Hydjet_Run3_subehera_Th4.root#MC",
-          std::string tag="362294vHydjet")
+          std::string tag="362294t-Hydjet")
 {
   xjjc::sconfig conf(input);
   std::vector<TTree*> t(conf.n());
-  std::vector<std::string> tags(conf.n());
+  legtags.clear();
+  comment = tag;
  
   for(int i=0; i<conf.n(); i++)
     {
       auto inf = new TFile(conf.value[i][file].c_str(), "read");
       t[i] = (TTree*)inf->Get("pixel/PixelTree");
-      tags.push_back(conf.value[i][tagname]);
+      legtags.push_back(conf.value[i][tagname]);
     }
 
   xjjroot::setgstyle(1);
@@ -115,13 +119,15 @@ int maphits(std::vector<TTree*>& t, std::string var, std::vector<std::array<floa
     return 0;
 }
 
-void drawtags(std::vector<std::string> tags/*={"Data", "MC"}*/)
+void drawtags()
 {
   float y = 0.84, dy = 0.042;
-  for(int i=0; i<tags.size(); i++)
-    xjjroot::drawtex(0.90, y-dy*i, tags[i].c_str(), 0.038, 33, 62, cc[i]);
+  for(int i=0; i<legtags.size(); i++)
+    xjjroot::drawtex(0.90, y-dy*i, legtags[i].c_str(), 0.038, 33, 62, cc[i]);
   xjjroot::drawCMSleft();
   xjjroot::drawCMSright("PbPb (5.36 TeV)");
+  xjjroot::drawtex(0.25, y, "BPIX", 0.038, 13);
+  xjjroot::drawcomment(comment);
 }
 
 void drawbs(std::vector<std::array<float, 3>> bsxyz, std::string type)
@@ -172,7 +178,7 @@ int mapvertex(std::vector<TTree*>& t, std::vector<std::array<float, 2>> bins, xj
       xjjroot::sethempty(hv[i]);
 
       t[i]->Draw(Form("vz[1]-%f:vy[1]-%f:vx[1]-%f>>hvxyz%d", dzshift[i], dyshift[i], dxshift[i], i), 
-                 "weight*(nhfp > 1 && nhfn > 1 && fabs(vz[1])<15)", "goff");
+                 "(nhfp > 1 && nhfn > 1 && fabs(vz[1])<15)", "goff");
     }
 
   VTX1D(GET_BS)
