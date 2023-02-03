@@ -5,11 +5,14 @@ make reap_results || exit 1
 nentries=
 maxdr2=0.25
 tag="drlt0p5"
-TYPES=(12 13 14 23 24 34 56 57 67)
-
+# TYPES=(12 13 14 23 24 34 56 57 67)
+TYPES=(13 14 23 24)
+CENTS=(20 18 16 14 12 10 8 6)
 ##
 INPUTS_MC=(
-    /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230130_pixel_230129_Hydjet_Drum5F_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4.root,Hydjet
+    /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230130_pixel_230129_EposLHC_ReggeGribovParton_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4.root,Epos
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230130_pixel_230129_Hydjet_Drum5F_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4.root,Hydjet
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230130_pixel_230129_AMPT_StringMelting_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4.root,AMPTstring
     # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/v7/tt_230127_pixel_230126_Hydjet_Drum5F_PbPb_5360GeV_221224_GTv7priZ0_GTv8Th4.root,Hydjet-v7
     # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230130_bkg5_pixel_230129_Hydjet_Drum5F_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4.root,Hydjet-bkg5
     # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_221229_vzshift_pixelpre_221229_Hydjet_Drum5F_PbPb_5360GeV_221224_GTv7priZ0_Th4.root,Hydjet
@@ -20,6 +23,9 @@ INPUTS_MC=(
 
 INPUTS_DATA=(
     /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230127_pixel_230126_HITestRaw0-5_HIRun2022A_MBPVfilTh4_362294.root,362294t
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230130_pixel_230129_EposLHC_ReggeGribovParton_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4.root,EposClose
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230130_pixel_230129_Hydjet_Drum5F_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4.root,HydjetClose
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230130_pixel_230129_AMPT_StringMelting_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4.root,AMPTstringClose
     # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_221218_pixelpre_221201_HITestRaw0-6_HIRun2022A_MBPVfilTh4_362294.root,362294t
     # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_221229_vzshift_pixelpre_221229_EposLHC_ReggeGribovParton_PbPb_5360GeV_221224_GTv7priZ0_Th4.root,EposClose
     # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_221229_vzshift_pixelpre_221229_AMPT_StringMelting_PbPb_5360GeV_221224_GTv7priZ0_Th4.root,AMPTstringClose
@@ -67,6 +73,20 @@ do
                 # ./reap_results $t $INPUT_DATA ${TAG_DATA}-${TAG_MC}_${tag} 0 20 ${TAG_MC}_${tag} 1 1 1 ${TAG_MC}_${tag} 0 $maxdr2 ${TAG_DATA}-${TAG_MC}_${tag} "null" 0 "(1)" $nentries &
             done
             wait
+        }
+
+        [[ ${4:-0} -eq 1 ]] && {
+            for t in ${TYPES[@]}
+            do
+                for c in ${CENTS[@]}
+                do
+                    cmin=$((c-1))
+                    cmax=$c
+                    echo ${TAG_DATA}-${TAG_MC}_${tag}".a."$cmin"."$cmax
+                    ./reap_results $t $INPUT_DATA ${TAG_DATA}-${TAG_MC}_${tag}".a."$cmin"."$cmax $cmin $cmax ${TAG_MC}_${tag} 1 1 1 ${ESTAG}_${tag} 0 $maxdr2 ${TAG_DATA}-Hydjet_${tag} "null" 0 &
+                done
+                wait
+            done
         }
     done
 done
