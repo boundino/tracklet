@@ -25,22 +25,6 @@ process.source = cms.Source("PoolSource",
 								# 'file:/eos/cms/tier0/store/hidata/HIRun2022A/HITestRawPrime21/RAW/v1/000/362/229/00000/12bd02d0-825c-4d36-b3d1-278f83708cef.root',
 								# '/store/hidata/HIRun2022A/HITestRawPrime14/RAW/v1/000/362/271/00000/54ba6c9b-2f21-401c-8908-06f5ff0cf06f.root',
 								'/store/hidata/HIRun2022A/HITestRaw0/RAW/v1/000/362/294/00000/03ff59ee-4b5f-4726-8f12-b1bacec1667d.root',
-								# '/store/hidata/HIRun2022A/HITestRaw0/RAW/v1/000/362/294/00000/0ea79907-85a4-415b-915a-58ab2771a224.root',
-								# '/store/hidata/HIRun2022A/HITestRaw0/RAW/v1/000/362/294/00000/31fee8ef-acfd-438d-a40b-9e99ef1ff906.root',
-								# '/store/hidata/HIRun2022A/HITestRaw0/RAW/v1/000/362/294/00000/41a0deed-b66e-482b-84e2-0b8443b31140.root',
-								# '/store/hidata/HIRun2022A/HITestRaw0/RAW/v1/000/362/294/00000/76b61dd4-f4be-4bc6-afbb-956bb31b0f72.root',
-								# '/store/hidata/HIRun2022A/HITestRaw0/RAW/v1/000/362/294/00000/8012f4ef-02a6-44fa-9264-72039a97bc5c.root',
-								# '/store/hidata/HIRun2022A/HITestRaw0/RAW/v1/000/362/294/00000/91d3a6e0-703b-408b-81b1-6792d727e16e.root',
-								# '/store/hidata/HIRun2022A/HITestRaw0/RAW/v1/000/362/294/00000/98377dfe-3064-46cd-9152-20d1966d4010.root',
-								# '/store/hidata/HIRun2022A/HITestRaw0/RAW/v1/000/362/294/00000/a2bcc43f-f722-440a-bf82-804afbbc31f1.root',
-								# '/store/hidata/HIRun2022A/HITestRaw0/RAW/v1/000/362/294/00000/aef86815-4230-497c-bdc3-3f5313e61248.root',
-								# '/store/hidata/HIRun2022A/HITestRaw0/RAW/v1/000/362/294/00000/bfe72ab5-2eb8-496f-b2ca-f89ec8d1153c.root',
-								# '/store/hidata/HIRun2022A/HITestRaw0/RAW/v1/000/362/294/00000/e3c86ea3-61f8-4c41-9f58-13315a12efa1.root',
-								# '/store/hidata/HIRun2022A/HITestRaw0/RAW/v1/000/362/294/00000/e6d89c69-5016-4e0c-93f7-dcf7f30ea912.root',
-								# '/store/hidata/HIRun2022A/HITestRaw0/RAW/v1/000/362/294/00000/f9096b63-d8cf-42d6-b047-716090d3ec3f.root',
-								# '/store/hidata/HIRun2022A/HITestRaw0/RAW/v1/000/362/294/00000/fbaef8bc-f55d-4445-a0f4-f6e66ae8323e.root',
-								# '/store/hidata/HIRun2022A/HITestRaw0/RAW/v1/000/362/294/00000/fc283f2b-100e-45e3-a853-761711004eed.root',
-								# '/store/hidata/HIRun2022A/HITestRaw0/RAW/v1/000/362/294/00000/fc2f7f9c-d67a-4fd8-aba3-49e47cffa191.root',
 							)
 )
 
@@ -53,8 +37,6 @@ process.TFileService = cms.Service('TFileService',
 from Configuration.AlCa.GlobalTag import GlobalTag
 process.GlobalTag = GlobalTag(
 	process.GlobalTag,
-	# '94X_dataRun2_Rereco17_ONLYXeXeBS_v1',
-	# '94X_dataRun2_ReReco_EOY17_v2',
 	'auto:run3_data_prompt',
 	''
 )
@@ -70,8 +52,9 @@ process.filterSequence = cms.Sequence(process.hltfilter*process.primaryVertexFil
 # process.prefilter = cms.Path(process.filterSequence)
 
 process.pixel = cms.EDAnalyzer('PixelPlant',
+							   pixel_tag = cms.InputTag("siPixelRecHits"),
+							   vertex_tags = cms.VInputTag(cms.InputTag("offlinePrimaryVertices")),
 							   fillhf = cms.bool(True),
-							   pixel_tag = cms.InputTag("siPixelRecHitsPreSplitting"),
 							   fillhlt = cms.bool(True),
 							   hlt_tag = cms.InputTag("TriggerResults::HLT"),
 							   hlt_paths = cms.vstring('HLT_HIMinimumBias_v2'),
@@ -80,19 +63,7 @@ process.pixel = cms.EDAnalyzer('PixelPlant',
 # process.raw2digi_step = cms.Path(process.siPixelDigis + process.hcalDigis + process.ecalDigis)
 process.raw2digi_step = cms.Path(process.RawToDigi)
 process.reconstruction_step = cms.Path(process.reconstruction)
-process.L1Reco_step = cms.Path(process.L1Reco)
-
-process.recotowers = cms.Path(
-	process.bunchSpacingProducer *
-	process.calolocalreco *
-	process.hcalGlobalRecoSequence *
-	process.caloTowersRec
-)
-
-process.p1 = cms.Path(
-	process.pixeltrackerlocalreco *
-	process.offlineBeamSpot
-)
+# process.L1Reco_step = cms.Path(process.L1Reco)
 
 process.output = cms.Path(process.pixel)
 
@@ -100,12 +71,8 @@ process.load('Configuration.StandardSequences.EndOfProcess_cff')
 process.endjob_step = cms.EndPath(process.endOfProcess)
 
 process.schedule = cms.Schedule(
-	# process.prefilter,
 	process.raw2digi_step,
-	# process.L1Reco_step,
 	process.reconstruction_step,
-	# process.recotowers,
-	# process.p1,
 	process.output,
 	process.endjob_step
 )
@@ -115,7 +82,6 @@ for path in process.paths:
 	# process.pixel.superFilters = cms.vstring("prefilter")
 
 from Configuration.Applications.ConfigBuilder import MassReplaceInputTag
-# MassReplaceInputTag(process)
 # MassReplaceInputTag(process, new="rawPrimeDataRepacker", old="rawDataCollector")
 MassReplaceInputTag(process, new="rawDataRepacker", old="rawDataCollector")
 # MassReplaceInputTag(process, new="rawDataMapperByLabel", old="rawDataCollector")
@@ -129,7 +95,7 @@ import FWCore.ParameterSet.VarParsing as VarParsing
 ivars = VarParsing.VarParsing('analysis')
 
 ivars.maxEvents = -1
-ivars.outputFile='pixeldata_presplitting.root'
+ivars.outputFile='pixeldata_fullreco.root'
 ivars.inputFiles='/store/hidata/HIRun2022A/HITestRaw0/RAW/v1/000/362/294/00000/03ff59ee-4b5f-4726-8f12-b1bacec1667d.root'
 ivars.parseArguments()
 

@@ -11,18 +11,18 @@ TYPES=(12 13 14 23 24 34 56 57 67)
 
 # apply
 INPUTS_MC=(
-    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_221229_vzshift_pixelpre_221229_Hydjet_Drum5F_PbPb_5360GeV_221224_GTv7priZ0_Th4.root,Hydjet
-    /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_221229_vzshift_pixelpre_221229_EposLHC_ReggeGribovParton_PbPb_5360GeV_221224_GTv7priZ0_Th4.root,Epos
-    /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_221229_vzshift_pixelpre_221229_AMPT_StringMelting_PbPb_5360GeV_221224_GTv7priZ0_Th4.root,AMPTstring
-    /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_221229_vzshift_pixelpre_221229_AMPT_NoStringMelting_PbPb_5360GeV_221224_GTv7priZ0_Th4.root,AMPTnostring
+    /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230130_vzrandom_pixel_230129_Hydjet_Drum5F_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4.root,Hydjet
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230114_vzrandom_pixelpre_221229_EposLHC_ReggeGribovParton_PbPb_5360GeV_221224_GTv7priZ0_Th4.root,Epos
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230114_vzrandom_pixelpre_221229_AMPT_StringMelting_PbPb_5360GeV_221224_GTv7priZ0_Th4.root,AMPTstring
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230114_vzrandom_pixelpre_221229_AMPT_NoStringMelting_PbPb_5360GeV_221224_GTv7priZ0_Th4.root,AMPTnostring
 )
 
 INPUTS_DATA=(
-    /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_221218_pixelpre_221201_HITestRaw0-6_HIRun2022A_MBPVfilTh4_362294.root,362294t
-    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_221229_vzshift_pixelpre_221229_EposLHC_ReggeGribovParton_PbPb_5360GeV_221224_GTv7priZ0_Th4.root,EposClose
-    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_221229_vzshift_pixelpre_221229_AMPT_StringMelting_PbPb_5360GeV_221224_GTv7priZ0_Th4.root,AMPTstringClose
-    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_221229_vzshift_pixelpre_221229_AMPT_NoStringMelting_PbPb_5360GeV_221224_GTv7priZ0_Th4.root,AMPTnostringClose
-    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_221229_vzshift_pixelpre_221229_Hydjet_Drum5F_PbPb_5360GeV_221224_GTv7priZ0_Th4.root,HydjetClose
+    /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230130_vzrandom_pixel_230126_HITestRaw0-6_HIRun2022A_MBPVfilTh4_362294.root,362294t
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230130_vzrandom_pixel_230129_Hydjet_Drum5F_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4.root,HydjetClose
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230114_vzrandom_pixelpre_221229_EposLHC_ReggeGribovParton_PbPb_5360GeV_221224_GTv7priZ0_Th4.root,EposClose
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230114_vzrandom_pixelpre_221229_AMPT_StringMelting_PbPb_5360GeV_221224_GTv7priZ0_Th4.root,AMPTstringClose
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230114_vzrandom_pixelpre_221229_AMPT_NoStringMelting_PbPb_5360GeV_221224_GTv7priZ0_Th4.root,AMPTnostringClose
 )
 
 for ii in ${INPUTS_DATA[@]}

@@ -58,7 +58,7 @@ static const std::vector<varinfo_t> options_pixel_1d = {
       {600, 600}, 0x01, "(nhfp > 1 && nhfn > 1)", "", 2000
    }, {
       "nhits", {"number of pixel hits"}, {"nhits"},
-      {{100, 0, 15000}},
+      {{100, 0, 20000}},
       {600, 600}, 0x01, "(nhfp > 1 && nhfn > 1)", "", TTree::kMaxEntries
    }
 };
@@ -197,7 +197,7 @@ static const std::vector<varinfo_t> options_tracklet_1d = {
       {600, 600}, 0x110, "(1)", "", TTree::kMaxEntries
    }, {
       "ntracklet", {"number of tracklets"}, {"ntracklet"},
-      {{100, 0, 10000}},
+      {{100, 0, 20000}},
       {600, 600}, 0x01, "(1)", "", TTree::kMaxEntries
    }
 };

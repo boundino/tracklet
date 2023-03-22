@@ -1475,6 +1475,24 @@ std::vector<float> alice_xexe_5p44_nparterr = {
 auto alice_xexe_5p44_2a = 258.;
 auto alice_xexe_5p44_size = alice_xexe_5p44_raw.size();
 
+std::vector<float> cms_xexe_5p44_raw = {
+  18.8, 29.2, 43.7, 63.2, 89, 121, 162, 212,
+  273, 344, 430, 532, 653, 798, 977, 1187};
+std::vector<float> cms_xexe_5p44_rawerr = {
+  4.9, 6.4, 8.2, 9.9, 12, 13, 15, 17,
+  18, 20, 22, 24, 25, 28, 32, 36};
+std::vector<float> cms_xexe_5p44_cent = {
+   22.5, 27.5, 32.5, 37.5, 42.5, 47.5, 52.5,
+   57.5, 62.5, 67.5, 72.5, 77.5, 82.5, 87.5, 92.5, 97.5};
+std::vector<float> cms_xexe_5p44_npart = {
+   12.8, 18.5, 25.8, 35.3, 46.7, 60.4, 76.8,
+   95.8, 117, 142, 171, 203, 240, 283, 329, 381};
+std::vector<float> cms_xexe_5p44_nparterr = {
+   0.9, 1.2, 1.6, 2.0, 2.3, 2.7, 2.7,
+   3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 2.0};
+auto cms_xexe_5p44_2a = 258.;
+auto cms_xexe_5p44_size = cms_xexe_5p44_raw.size();
+
 /* std::vector<float> alice_xexe_5p44_raw = { */
 /*    13.3, 32.0, 64.7, 118, 198, 315, 478, 706, 939, 1167}; */
 /* std::vector<float> alice_xexe_5p44_rawerr = { */
@@ -1500,6 +1518,7 @@ GENERATE(phobos_cucu_0p0624)
 GENERATE(phobos_cucu_0p0224)
 GENERATE(brahms_auau_0p2)
 GENERATE(alice_xexe_5p44)
+GENERATE(cms_xexe_5p44)
 
 TGraphErrors* atlas_ppb_5p02() {
    TGraphErrors* gatlas_ppb_5p02 = new TGraphErrors(8);

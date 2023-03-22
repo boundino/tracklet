@@ -21,12 +21,7 @@ process.maxEvents = cms.untracked.PSet(
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
 		'file:step3_apprximateCluster_22.root',
-        # 'file:PbPb_MINIAODSIM_mb_PAT_22.root',
-        # 'file:mb_AOD_22.root',
     ),
-    # secondaryFileNames = cms.untracked.vstring(
-    #     'file:step3_apprximateCluster_22.root',
-    # )
 )
 
 process.TFileService = cms.Service('TFileService',
@@ -84,8 +79,8 @@ process.schedule = cms.Schedule(
 import FWCore.ParameterSet.VarParsing as VarParsing
 ivars = VarParsing.VarParsing('analysis')
 
-ivars.maxEvents = -1
-ivars.outputFile='pixelsim_presplitting.root'
+ivars.maxEvents = 10
+ivars.outputFile='pixelsim_pre_minimal.root'
 ivars.inputFiles='/store/user/subehera/MB_Hydjet_Run3_GENSIM/MB_Hydjet_Run3_DIGIRAW_approxSiStripClusters/220910_091752/0000/step3_apprximateCluster_22.root'
 ivars.parseArguments()
 

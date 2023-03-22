@@ -46,13 +46,13 @@ void watermark() {
    lprelim->SetTextFont(52);
    lprelim->SetTextSize(0.032);
    lprelim->SetTextAlign(13);
-   lprelim->DrawLatexNDC(0.135, 0.83, "Preliminary");
+   lprelim->DrawLatexNDC(0.135, 0.83, "Internal");
 
    TLatex* linfo = new TLatex();
    linfo->SetTextFont(42);
    linfo->SetTextSize(0.032);
    linfo->SetTextAlign(31);
-   linfo->DrawLatexNDC(0.89, 0.92, "XeXe #sqrt{s_{NN}} = 5.44 TeV");
+   linfo->DrawLatexNDC(0.89, 0.92, "PbPb #sqrt{s_{NN}} = 5.36 TeV");
 }
 
 template<typename T>
@@ -175,6 +175,8 @@ void gstyle(TGraph* g, int style, int colour) {
    g->SetMarkerStyle(style);
    g->SetMarkerColor(colour);
    g->SetLineColor(colour);
+   g->SetFillStyle(1001); 
+   g->SetFillColorAlpha(colour, 0.4);
 }
 
 void gstyle(TGraph* g, int style, int colour, float size) {

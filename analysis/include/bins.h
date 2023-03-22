@@ -25,7 +25,7 @@
 #endif  /* defined INCLUDE_ETA_BINS || defined INCLUDE_ETA_RANGE || defined INCLUDE_ETA_N */
 
 #if defined INCLUDE_MULT_BINS || defined INCLUDE_MULT_N
-   constexpr int nmult = 15;
+   constexpr int nmult = 16;
 #if defined INCLUDE_MULT_BINS
    // constexpr float multb[nmult + 1] = {
    //   0,   20, 50,  100,  200,
@@ -37,7 +37,7 @@ constexpr float multb[nmult + 1] = {
   0, 30, 70, 150, 280, 
   500, 800, 1200, 1900, 2600, 
   3600, 4900, 6500, 8300, 10800, 
-  15400
+  15400, 20000
 };
 
 #endif  /* defined (INCLUDE_MULT_BINS) */

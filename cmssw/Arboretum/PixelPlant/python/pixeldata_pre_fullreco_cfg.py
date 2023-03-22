@@ -83,17 +83,17 @@ process.raw2digi_step = cms.Path(process.RawToDigi)
 process.reconstruction_step = cms.Path(process.reconstruction)
 process.L1Reco_step = cms.Path(process.L1Reco)
 
-process.recotowers = cms.Path(
-	process.bunchSpacingProducer *
-	process.calolocalreco *
-	process.hcalGlobalRecoSequence *
-	process.caloTowersRec
-)
+# process.recotowers = cms.Path(
+# 	process.bunchSpacingProducer *
+# 	process.calolocalreco *
+# 	process.hcalGlobalRecoSequence *
+# 	process.caloTowersRec
+# )
 
-process.p1 = cms.Path(
-	process.pixeltrackerlocalreco *
-	process.offlineBeamSpot
-)
+# process.p1 = cms.Path(
+# 	process.pixeltrackerlocalreco *
+# 	process.offlineBeamSpot
+# )
 
 process.output = cms.Path(process.pixel)
 
