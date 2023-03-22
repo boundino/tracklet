@@ -89,7 +89,7 @@ struct Tracklet {
 };
 
 float reco_vertex(std::vector<rechit>& l1, std::vector<rechit>& l2, float dphi, float dz) {
-   float vertex = -99.;
+  float vertex = -99.;
 
    std::vector<float> vertices;
    for (const auto& a : l1) {
@@ -145,6 +145,8 @@ float reco_vertex(std::vector<rechit>& l1, std::vector<rechit>& l2, float dphi, 
             [](const Vertex& a, const Vertex& b) -> bool {
                return a.sigma2 < b.sigma2;
             })->vz;
+      // getvx = finalvtx->vx;
+      // getvy = finalvtx->vy;
    }
 
    return vertex;
