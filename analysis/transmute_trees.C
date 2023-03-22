@@ -162,17 +162,13 @@ int transmute_trees(const char* input,
 
       for (const auto& event : events) {
          t->GetEntry(event);
-         if (event % 100 == 0)
+         if (event % 10 == 0)
             printf("   run: %i, entry: %lu\n", par.run, event);
 
 #ifdef  CENTRALITY
          if (hfbin(par.hft) != CENTRALITY)
             continue;
 #endif  /* CENTRALITY */
-
-         if (par.nhits1 > 200 + 1.9 * par.nhits5 ||
-             par.nhits1 < -144 + 1.9/1.5 * par.nhits5)
-            continue;
 
 #define ADD_BACKGROUND(q)                                                     \
          int bkghits##q = 0;                                                  \
