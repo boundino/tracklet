@@ -14,8 +14,44 @@ std::string tcomb(std::string comb)
 {
   std::string r(comb);
   r.insert(1, " #otimes ");
+  r = Form("%sPIX %s", (atoi(comb.c_str())>50?"F":"B"), r.c_str());
   return r;
 }
+void setzero(TH1D* h, std::string comb);
+
+#include "include/defines.h"
+
+#define TRKLTS2P(EXPAND)                        \
+  BTRKLT2P(EXPAND)                              \
+  FTRKLT2P(EXPAND)                              \
+
+#define TRKLTS3P(p, EXPAND)                     \
+  BTRKLT3P(p, EXPAND)                           \
+  FTRKLT3P(p, EXPAND)                           \
+
+#define COUNT(q, w)  + 1
+#define NTRKLT2P  (0 TRKLTS2P(COUNT))
+
+#define INCLUDE_ETA_RANGE
+#include "include/bins.h"
+
+static const int good[NTRKLT2P][neta] = {
+  { 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
+  { 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+  { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+  { 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+  { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+  { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+  { 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0 },
+  { 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0 },
+  { 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0 }
+};
+std::map<std::string, int> idx = {{"12", 0}, {"13", 1}, {"14", 2},
+                                  {"23", 3}, {"24", 4}, {"34", 5},
+                                  {"56", 6}, {"57", 7}, {"67", 8},
+                                  {"11", 0}, {"22", 3}, {"33", 5}, {"44", 5},
+                                  {"55", 6}, {"66", 8}, {"77", 8}
+};
 
 // std::vector<Color_t> cc = {kBlue+2, kAzure, kAzure-2, kGreen+3, kGreen-2, kCyan+2, kRed+3, kRed-3, kRed-6};
 int macro(std::string input_corr="362294t-Hydjet_drlt0p5#HYDJET corr,362294t-Epos_drlt0p5#EPOS corr", 
@@ -27,7 +63,7 @@ int macro(std::string input_corr="362294t-Hydjet_drlt0p5#HYDJET corr,362294t-Epo
           std::string div="#")
 {
   xjjc::sconfig icorr(input_corr, ",", div), icomb(input_comb), itruth(input_truth, ",", div), icolors(colors);
-  if(icomb.n() == 1) text = text + ",PIX " + tcomb(icomb.value[0][0]);
+  if(icomb.n() == 1) text = text + ", " + tcomb(icomb.value[0][0]);
   xjjc::sconfig itext(text, ",", div);
 
   std::vector<Color_t> cc;
@@ -41,6 +77,7 @@ int macro(std::string input_corr="362294t-Hydjet_drlt0p5#HYDJET corr,362294t-Epo
           int idx = j + i*icomb.n();
           h1WEfinal[idx] = xjjroot::gethist<TH1D>("output/correction-"+icorr.value[i][0]+"-"+icomb.value[j][0]+".root::h1WEfinal");
           h1WEfinal[idx]->SetName(Form("%s-%s", h1WEfinal[idx]->GetName(), icomb.value[j][0].c_str()));
+          setzero(h1WEfinal[idx], icomb.value[j][0]);
           xjjroot::setthgrstyle(h1WEfinal[idx], cc[idx], 20, 0.8, cc[idx]);
         }
     }
@@ -55,21 +92,21 @@ int macro(std::string input_corr="362294t-Hydjet_drlt0p5#HYDJET corr,362294t-Epo
   xjjroot::sethempty(hempty);
   hempty->SetTitle(";#eta;dN/d#eta");
   hempty->SetMinimum(0);
-  hempty->SetMaximum(800);
+  hempty->SetMaximum(900);
   
-  auto legPIX = new TLegend(0.3, 0.5-0.033*h1WEfinal.size(), 0.3+0.2, 0.5);
-  float xleg = 0.55, yleg = 0.5;
-  xjjroot::setleg(legPIX, 0.030);
+  auto legPIX = new TLegend(0.3, 0.47-0.032*h1WEfinal.size(), 0.3+0.2, 0.47);
+  float xleg = 0.55, yleg = 0.47;
+  xjjroot::setleg(legPIX, 0.028);
   for(int i=0; i<icorr.n(); i++)
     for(int j=0; j<icomb.n(); j++)
       {
-        auto tleg = Form("%s%s%s", icomb.n()==1?"":Form("PIX %s",tcomb(icomb.value[j][0]).c_str()), (icorr.value[i][1]==""||icomb.n()==1?"":", "), icorr.value[i][1].c_str());
+        auto tleg = Form("%s%s%s", icomb.n()==1?"":tcomb(icomb.value[j][0]).c_str(), (icorr.value[i][1]==""||icomb.n()==1?"":", "), icorr.value[i][1].c_str());
         legPIX->AddEntry(h1WEfinal[j+i*icomb.n()], tleg, "p");
-        if(std::string(tleg).size() > 15)
-          { xleg = 0.31; yleg = 0.48-0.033*h1WEfinal.size(); }
+        if(std::string(tleg).size() > 20)
+          { xleg = 0.31; yleg = 0.47-0.033*h1WEfinal.size(); }
       }
-  auto legTRUTH = new TLegend(xleg, yleg-0.033*gh1WGhadron.size(), xleg+0.2, yleg);
-  xjjroot::setleg(legTRUTH, 0.030);
+  auto legTRUTH = new TLegend(xleg, yleg-0.031*gh1WGhadron.size(), xleg+0.2, yleg);
+  xjjroot::setleg(legTRUTH, 0.028);
   for(int i=0; i<itruth.n(); i++)
     legTRUTH->AddEntry(gh1WGhadron[i],
                        Form("%s", itruth.value[i][1].c_str()),
@@ -99,4 +136,18 @@ int main(int argc, char* argv[])
   if(argc==8) return macro(argv[1], argv[2], argv[3], argv[4], argv[5], argv[6], argv[7]);
   if(argc==7) return macro(argv[1], argv[2], argv[3], argv[4], argv[5], argv[6]);
   return 1;
+}
+
+void setzero(TH1D* h, std::string comb)
+{
+  for(int i=0; i<h->GetXaxis()->GetNbins(); i++)
+    {
+      if(comb=="77") std::cout<<good[idx[comb]][i]<<" ";
+      if(good[idx[comb]][i] == 0)
+        {
+          h->SetBinContent(i+1, 0);
+          h->SetBinError(i+1, 0);
+        }
+    }
+  std::cout<<std::endl;
 }

@@ -415,6 +415,13 @@ const int* ext_accep_map(int type) {
         case 56: return a56; break;
         case 57: return a57; break;
         case 67: return a67; break;
+        case 11: return a12; break;
+        case 22: return a23; break;
+        case 33: return a34; break;
+        case 44: return a34; break;
+        case 55: return a56; break;
+        case 66: return a67; break;
+        case 77: return a67; break;
     }
 
     __builtin_unreachable();
