@@ -108,7 +108,7 @@ int compare_pixels(std::vector<varinfo_t> const& options,
 
    int cheight = OPT(flags) & 0x10 ? OPT(csize[1]) * 1.2 : OPT(csize[1]);
 
-   xjjroot::mypdf* pdf_DRAW_1D_PIXELS = new xjjroot::mypdf(Form("figs/pixel/pixel-%s-%s.pdf", OS(id), label), "c_DRAW_1D_PIXELS", OPT(csize[0]), cheight);
+   xjjroot::mypdf* pdf_DRAW_1D_PIXELS = new xjjroot::mypdf(Form("figspdf/pixel/pixel-%s-%s.pdf", OS(id), label), "c_DRAW_1D_PIXELS", OPT(csize[0]), cheight);
 
 #define DRAW_1D_PIXELS(q)                                                     \
     pdf_DRAW_1D_PIXELS->prepare();                                            \
@@ -154,11 +154,9 @@ int compare_pixels(std::vector<varinfo_t> const& options,
       }                                                                       \
    }                                                                          \
                                                                               \
-   xjjroot::drawcomment(Form("pixel-%s-%s.pdf", OS(id), label));              \
-   pdf_DRAW_1D_PIXELS->write();                                               \
-   // c##q->SaveAs(Form("figs/pixel/pixel-%s-l" #q "-%s.png",                    \
-   //       OS(id), label));                                                     \
-   // delete c##q;                                                               \
+   pdf_DRAW_1D_PIXELS->write(Form("figs/pixel/pixel-%s-l" #q "-%s.png",    \
+                                  OS(id), label));                            \
+   // delete c##q;                                                              \
 
    PIXELS1P(DRAW_1D_PIXELS)
    
@@ -249,7 +247,7 @@ int compare_tracklets(std::vector<varinfo_t> const& options,
 
    int cheight = OPT(flags) & 0x10 ? OPT(csize[1]) * 1.2 : OPT(csize[1]);
 
-   xjjroot::mypdf* pdf_DRAW_1D_TRACKLETS = new xjjroot::mypdf(Form("figs/tracklet/tracklet-%s-%s.pdf", OS(id), label), "c_DRAW_1D_TRACKLETS", OPT(csize[0]), cheight);
+   xjjroot::mypdf* pdf_DRAW_1D_TRACKLETS = new xjjroot::mypdf(Form("figspdf/tracklet/tracklet-%s-%s.pdf", OS(id), label), "c_DRAW_1D_TRACKLETS", OPT(csize[0]), cheight);
 
 #define DRAW_1D_TRACKLETS(q, w)                                               \
    pdf_DRAW_1D_TRACKLETS->prepare();                                          \
@@ -307,11 +305,9 @@ int compare_tracklets(std::vector<varinfo_t> const& options,
       line1->Draw();                                                          \
    }                                                                          \
                                                                               \
-   xjjroot::drawcomment(Form("tracklet-%s-%s.pdf", OS(id), label));           \
-   pdf_DRAW_1D_TRACKLETS->write();                                            \
-   // c##q##w->SaveAs(Form("figs/tracklet/tracklet-%s-t" #q #w "-%s.png",        \
-   //       OS(id), label));                                                     \
-   // delete c##q##w;                                                            \
+   pdf_DRAW_1D_TRACKLETS->write(Form("figs/tracklet/tracklet-%s-t" #q #w "-%s.png", \
+                                     OS(id), label));                   \
+   // delete c##q##w; \
 
    TRKLTS2P(DRAW_1D_TRACKLETS)
    pdf_DRAW_1D_TRACKLETS->close();
@@ -406,7 +402,7 @@ int map_pixels(std::vector<varinfo_t> const& options,
 
    PIXELS1P(SETUP_2D_PIXELS)
 
-     xjjroot::mypdf* pdf_DRAW_2D_PIXELS = new xjjroot::mypdf(Form("figs/pixel/pixel-%s-%s.pdf", OS(id), label), "c_DRAW_2D_PIXELS",  OPT(csize[0]), OPT(csize[1]));
+     xjjroot::mypdf* pdf_DRAW_2D_PIXELS = new xjjroot::mypdf(Form("figspdf/pixel/pixel-%s-%s.pdf", OS(id), label), "c_DRAW_2D_PIXELS",  OPT(csize[0]), OPT(csize[1]));
 
 #define DRAW_2D_PIXELS(q)                                                     \
    t->Draw(Form("%s:%s>>h" #q "%s", CS(y##q), CS(x##q), idstr),               \
@@ -415,8 +411,8 @@ int map_pixels(std::vector<varinfo_t> const& options,
    pdf_DRAW_2D_PIXELS->prepare();                                             \
    h##q->Draw(OS(gopt));                                                      \
                                                                               \
-   xjjroot::drawcomment(Form("pixel-%s-%s.pdf", OS(id), label));              \
-   pdf_DRAW_2D_PIXELS->write();                                               \
+   pdf_DRAW_2D_PIXELS->write(Form("figs/pixel/pixel-%s-l" #q "-%s.png", \
+                                  OS(id), label));                      \
 
    if (OPT(flags) & 0x1) { BPIX1P(DRAW_2D_PIXELS) }
    if (OPT(flags) & 0x2) { FPIX1P(DRAW_2D_PIXELS) }
@@ -434,10 +430,8 @@ int map_pixels(std::vector<varinfo_t> const& options,
       pdf_DRAW_2D_PIXELS->prepare();
       hall->Draw(OS(gopt));
 
-      xjjroot::drawcomment(Form("pixel-%s-%s.pdf", OS(id), label));
-      pdf_DRAW_2D_PIXELS->write();
-      // call->SaveAs(Form("figs/pixel/pixel-%s-all-%s.png",
-      //       OS(id), label));
+      pdf_DRAW_2D_PIXELS->write(Form("figs/pixel/pixel-%s-all-%s.png",
+                                     OS(id), label));
       // delete call;
    }
    pdf_DRAW_2D_PIXELS->close();
@@ -489,7 +483,7 @@ int map_tracklets(std::vector<varinfo_t> const& options,
 
    TRKLTS2P(SETUP_2D_TRACKLETS)
 
-   xjjroot::mypdf* pdf_DRAW_2D_TRACKLETS = new xjjroot::mypdf(Form("figs/tracklet/tracklet-%s-%s.pdf", OS(id), label), "c_DRAW_2D_TRACKLETS", 600, 600);
+   xjjroot::mypdf* pdf_DRAW_2D_TRACKLETS = new xjjroot::mypdf(Form("figspdf/tracklet/tracklet-%s-%s.pdf", OS(id), label), "c_DRAW_2D_TRACKLETS", 600, 600);
 
 #define DRAW_2D_TRACKLETS(q, w)                                               \
    t##q##w->Draw(Form("%s:%s>>h" #q #w "%s", OS(var[1]), OS(var[0]), idstr),  \
@@ -498,10 +492,8 @@ int map_tracklets(std::vector<varinfo_t> const& options,
    pdf_DRAW_2D_TRACKLETS->prepare();                                          \
    h##q##w->Draw(OS(gopt));                                                   \
                                                                               \
-     xjjroot::drawcomment(Form("tracklet-%s-%s.pdf", OS(id), label));         \
-   pdf_DRAW_2D_TRACKLETS->write();                                            \
-   // c##q##w->SaveAs(Form("figs/tracklet/tracklet-%s-t" #q #w "-%s.png",        \
-   //       OS(id), label));                                                     \
+   pdf_DRAW_2D_TRACKLETS->write(Form("figs/tracklet/tracklet-%s-t" #q #w "-%s.png", \
+                                     OS(id), label));                   \
    // delete c##q##w;                                                            \
 
    TRKLTS2P(DRAW_2D_TRACKLETS)
