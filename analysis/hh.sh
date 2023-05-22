@@ -10,15 +10,15 @@ RUN_TRK_1D=1 ; TAG_TRACKLET=362294a
 INPUTS_PIX=(
     "/eos/cms/store/group/phys_heavyions/wangj/tracklet2022/pixel_230126_HITestRaw0_HIRun2022A_MBPVfilTh4_362294.root,362294,362294a"
     "/eos/cms/store/group/phys_heavyions/wangj/tracklet2022/pixel_230129_EposLHC_ReggeGribovParton_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4.root,EPOS LHC,epos"
-    # "/eos/cms/store/group/phys_heavyions/wangj/tracklet2022/pixel_230129_Hydjet_Drum5F_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4.root,HYDJET,hydjet"
-    # "/eos/cms/store/group/phys_heavyions/wangj/tracklet2022/pixel_230129_AMPT_StringMelting_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4.root,AMPT (w. String Melt),amptsm"
+    "/eos/cms/store/group/phys_heavyions/wangj/tracklet2022/pixel_230129_Hydjet_Drum5F_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4.root,HYDJET,hydjet"
+    "/eos/cms/store/group/phys_heavyions/wangj/tracklet2022/pixel_230129_AMPT_StringMelting_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4.root,AMPT (w. String Melt),amptsm"
 )
 
 INPUTS_TRACKLET=(
     "/eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230127_pixel_230126_HITestRaw0-5_HIRun2022A_MBPVfilTh4_362294.root,362294,362294a"
     "/eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230130_pixel_230129_EposLHC_ReggeGribovParton_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4.root,EPOS LHC,epos"
-    # "/eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230130_pixel_230129_Hydjet_Drum5F_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4.root,HYDJET,hydjet"
-    # "/eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230130_pixel_230129_AMPT_StringMelting_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4.root,AMPT (w. String Melt),amptsm"
+    "/eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230130_pixel_230129_Hydjet_Drum5F_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4.root,HYDJET,hydjet"
+    "/eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230130_pixel_230129_AMPT_StringMelting_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4.root,AMPT (w. String Melt),amptsm"
 )
 
 ARG_PIX_INPUT=

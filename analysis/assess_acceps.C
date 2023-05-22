@@ -37,8 +37,7 @@ int assess_acceps(bool recreate, int type, float maxdr2,
 
   TTree *tdata = 0, *tmc = 0;
   TFile* fout = 0;
-  if(recreate)
-    {
+  if (recreate) {
       tdata = (TTree*)TFile::Open(data_list)->Get(Form("TrackletTree%i", type));
       tmc = (TTree*)TFile::Open(mc_list)->Get(Form("TrackletTree%i", type));
       xjjroot::mkdir(Form("%s/acceptance-%i.root", path, type));
@@ -53,15 +52,13 @@ int assess_acceps(bool recreate, int type, float maxdr2,
 
   //
   TH2D *hdata, *hdatacoarse, *hmc, *hmccoarse;
-  if(!recreate)
-    {
+  if (!recreate) {
       hdata = (TH2D*)fout->Get("hdata");
       hdatacoarse = (TH2D*)fout->Get("hdatacoarse");
       hmc = (TH2D*)fout->Get("hmc");
       hmccoarse = (TH2D*)fout->Get("hmccoarse");
     }
-  else
-    {
+  else {
       int nfeta = neta * 100;
       int nfvz = nvz * 100;
 
@@ -100,14 +97,15 @@ int assess_acceps(bool recreate, int type, float maxdr2,
   hmc->SetStats(0);
   hmccoarse->SetStats(0);
 
-  if(recreate)
-    {
+  if (recreate) {
       fout->cd();
       hdata->Write();
       hdatacoarse->Write();
       hmc->Write();
       hmccoarse->Write();
     }
+
+  xjjroot::mkdir("figs/corrections/x");
   //
   TCanvas* c1 = new TCanvas("c1", "", 1200, 600);
   c1->Divide(2, 1);
@@ -115,7 +113,7 @@ int assess_acceps(bool recreate, int type, float maxdr2,
   hdata->Draw("colz");
   c1->cd(2);
   hmc->Draw("colz");
-  c1->SaveAs(Form("figs/geometric/geometric-%s-%i-fine.png", label, type));
+  c1->SaveAs(Form("figs/corrections/geometric-%s-%i-fine.png", label, type));
 
   TCanvas* c2 = new TCanvas("c2", "", 1200, 600);
   c2->Divide(2, 1);
@@ -123,13 +121,13 @@ int assess_acceps(bool recreate, int type, float maxdr2,
   hdatacoarse->Draw("colz");
   c2->cd(2);
   hmccoarse->Draw("colz");
-  c2->SaveAs(Form("figs/geometric/geometric-%s-%i-binned.png", label, type));
+  c2->SaveAs(Form("figs/corrections/geometric-%s-%i-binned.png", label, type));
 
   TCanvas* c3 = new TCanvas("c3", "", 600, 600);
   // hratio->SetMaximum(5);
   hratio->Draw("colz");
   xjjana::drawhoutline(h2amapxev, kRed);
-  c3->SaveAs(Form("figs/geometric/geometric-%s-%i.png", label, type));
+  c3->SaveAs(Form("figs/corrections/geometric-%s-%i.png", label, type));
 
   return 0;
 }
