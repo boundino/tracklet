@@ -142,7 +142,7 @@ int reap_results(int type,
    for (int i=0; i<neta; i++) {
       for (int j=0; j<nvz; j++) {
          h1alpha[i][j] = new TH1F(Form("alpha_%i_%i", i, j), "", nmult, multb);
-         falpha[i][j] = new TF1(Form("falpha_%i_%i", i, j), "[0]+[1]/(x+[2])+[3]/(x*x)", 1, 12000);
+         falpha[i][j] = new TF1(Form("falpha_%i_%i", i, j), "[0]+[1]/(x+[2])+[3]/(x*x)", 1, 30000);
       }
    }
 
@@ -299,8 +299,8 @@ int reap_results(int type,
             falpha[i][j]->SetParLimits(2, 0, 512);
             falpha[i][j]->SetParLimits(3, -64, 128);
 
-            h1alpha[i][j]->Fit(falpha[i][j], "M Q", "", 8, 15000);
-            h1alpha[i][j]->Fit(falpha[i][j], "M E Q", "", 8, 15000);
+            h1alpha[i][j]->Fit(falpha[i][j], "M Q", "", 8, 30000);
+            h1alpha[i][j]->Fit(falpha[i][j], "M E Q", "", 8, 30000);
 
             falpha[i][j] = h1alpha[i][j]->GetFunction(Form("falpha_%i_%i", i, j));
          }
@@ -345,13 +345,14 @@ int reap_results(int type,
       csdf->SaveAs(Form("figs/corrections/sdfrac-%s-%i.pdf", label, type));
 
       /* draw alpha fits                                                      */
-      TH1D* halphaframe = new TH1D("halphaframe", "", 1, 1, 20000);
+      TH1D* halphaframe = new TH1D("halphaframe", "", 1, 1, multb[nmult]);
       htitle(halphaframe, ";number of tracklets;#alpha");
       hrange(halphaframe, 0.0, 3.0);
 
       TLatex* t1 = new TLatex();
       t1->SetTextAlign(23);
 
+      gStyle->SetLineScalePS(1);
       xjjroot::mypdf pdf_alphavz(Form("figs/fits/alphafit-%s-%i-vz.pdf", label, type), "cfalphavz", 2400, 2000);
       // TCanvas* cfalphavz = new TCanvas("cfalphavz", "", 2400, 2000);
       for (int x=1; x<=neta; x++) {
@@ -397,7 +398,7 @@ int reap_results(int type,
          // cfalphaeta->SaveAs(Form("figs/fits/alphafit-%s-%i-vz-%i.png", label, type, z));
       }
       pdf_alphaeta.close();
-
+      gStyle->SetLineScalePS();
    }
 
    /* external single-diffractive fraction                                    */
