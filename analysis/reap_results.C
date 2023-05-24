@@ -226,7 +226,8 @@ int reap_results(int type,
    TCanvas* caccepin = new TCanvas("caccepin", "", CANVASW, CANVASH);
    htitle(h2amapxev, ";#eta;v_{z}");
    h2amapxev->Draw("colz");
-   caccepin->SaveAs(Form("figs/acceptance/accep-input-%s-%i.pdf", label, type));
+   xjjroot::mkdir("figs/acceptance/");
+   caccepin->SaveAs(Form("figs/acceptance/accep-input-%s-%i.png", label, type));
 
    /* vertex distribution                                                     */
    h1WEvz->Scale(1. / h1WEvz->GetEntries());
@@ -334,7 +335,7 @@ int reap_results(int type,
       hstyle(h1teff, 38, COLOUR4); hrange(h1teff, 0, 1.2);
       htitle(h1teff, ";number of tracklets;trigger efficiency");
       h1teff->Draw();
-      ctrigger->SaveAs(Form("figs/corrections/trigger-%s-%i.pdf", label, type));
+      ctrigger->SaveAs(Form("figs/corrections/trigger-%s-%i.png", label, type));
 
       /* draw single-diffractive fraction                                     */
       TCanvas* csdf = new TCanvas("csdf", "", CANVASW, CANVASH);
@@ -342,7 +343,7 @@ int reap_results(int type,
       hstyle(h1sdf, 40, COLOUR5); hrange(h1sdf, -0.05, 0.2);
       htitle(h1sdf, ";number of tracklets;single-diffractive event fraction");
       h1sdf->Draw("e0");
-      csdf->SaveAs(Form("figs/corrections/sdfrac-%s-%i.pdf", label, type));
+      csdf->SaveAs(Form("figs/corrections/sdfrac-%s-%i.png", label, type));
 
       /* draw alpha fits                                                      */
       TH1D* halphaframe = new TH1D("halphaframe", "", 1, 1, multb[nmult]);
@@ -353,7 +354,8 @@ int reap_results(int type,
       t1->SetTextAlign(23);
 
       gStyle->SetLineScalePS(1);
-      xjjroot::mypdf pdf_alphavz(Form("figs/fits/alphafit-%s-%i-vz.pdf", label, type), "cfalphavz", 2400, 2000);
+      xjjroot::mkdir("figs/fits/");
+      xjjroot::mypdf pdf_alphavz(Form("figspdf/fits/alphafit-%s-%i-vz.pdf", label, type), "cfalphavz", 2400, 2000);
       // TCanvas* cfalphavz = new TCanvas("cfalphavz", "", 2400, 2000);
       for (int x=1; x<=neta; x++) {
         pdf_alphavz.prepare();
@@ -369,13 +371,12 @@ int reap_results(int type,
             t1->DrawLatexNDC(0.5, 1.0, Form("%.1f < v_{z} < %.1f", vzb[z-1], vzb[z]));
          }
 
-         xjjroot::drawcomment(Form("eta-%i", x));
-         pdf_alphavz.write();
+         pdf_alphavz.write(Form("figs/fits/alphafit-%s-%i-eta-%i.png", label, type, x));
          // cfalphavz->SaveAs(Form("figs/fits/alphafit-%s-%i-eta-%i.png", label, type, x));
       }
       pdf_alphavz.close();
 
-      xjjroot::mypdf pdf_alphaeta(Form("figs/fits/alphafit-%s-%i-eta.pdf", label, type), "cfalphaeta", 2400, 2400);
+      xjjroot::mypdf pdf_alphaeta(Form("figspdf/fits/alphafit-%s-%i-eta.pdf", label, type), "cfalphaeta", 2400, 2400);
       // TCanvas* cfalphaeta = new TCanvas("cfalphaeta", "", 2400, 2400);
       // cfalphaeta->Divide(6, 6);
 
@@ -393,8 +394,7 @@ int reap_results(int type,
             t1->DrawLatexNDC(0.5, 1.0, Form("%.1f < #eta < %.1f", etab[x-1], etab[x]));
          }
 
-         xjjroot::drawcomment(Form("vz-%i", z));
-         pdf_alphaeta.write();
+         pdf_alphaeta.write(Form("figs/fits/alphafit-%s-%i-vz-%i.png", label, type, z));
          // cfalphaeta->SaveAs(Form("figs/fits/alphafit-%s-%i-vz-%i.png", label, type, z));
       }
       pdf_alphaeta.close();
@@ -508,13 +508,13 @@ int reap_results(int type,
    /* draw acceptance                                                         */
    TCanvas* caccep = new TCanvas("caccep", "", CANVASW, CANVASH);
    h2amapxev->Draw("colz");
-   caccep->SaveAs(Form("figs/acceptance/accep-%s-%i.pdf", label, type));
+   caccep->SaveAs(Form("figs/acceptance/accep-%s-%i.png", label, type));
 
    /* draw geometric acceptance                                               */
    if (faccep) {
       TCanvas* cga = new TCanvas("cga", "", CANVASW, CANVASH);
       hgaccep->Draw("colz");
-      cga->SaveAs(Form("figs/acceptance/ga-%s-%i.pdf", label, type));
+      cga->SaveAs(Form("figs/acceptance/ga-%s-%i.png", label, type));
    }
 
    /* draw alpha                                                              */
@@ -525,7 +525,7 @@ int reap_results(int type,
    h2alphafinal->SetMaximum(1.3);
    h2alphafinal->SetMinimum(0);
    h2alphafinal->Draw("colz");
-   calpha->SaveAs(Form("figs/corrections/alpha-%s-%i.pdf", label, type));
+   calpha->SaveAs(Form("figs/corrections/alpha-%s-%i.png", label, type));
 
    /* project 1d acceptance                                                   */
    TH1F* h1accep2xe = (TH1F*)h2amapxev->ProjectionX();
@@ -645,7 +645,7 @@ int reap_results(int type,
       hstyle(h1empty, 36, COLOUR6); hrange(h1empty, 0.8, 1.2);
       htitle(h1empty, ";#eta;empty event correction");
       h1empty->Draw();
-      cempty->SaveAs(Form("figs/corrections/empty-%s-%i.pdf", label, type));
+      cempty->SaveAs(Form("figs/corrections/empty-%s-%i.png", label, type));
    }
 
    TH1F* h1WEprefinal = (TH1F*)h1WEtcorr->Clone("h1WEprefinal");
@@ -704,7 +704,8 @@ int reap_results(int type,
    lstyle(l1, 43, 15); l1->Draw();
 
    cstage->Draw();
-   cstage->SaveAs(Form("figs/stages/stage-%s-%i.pdf", label, type));
+   xjjroot::mkdir("figs/stages/");
+   cstage->SaveAs(Form("figs/stages/stage-%s-%i.png", label, type));
 
    for (int i=0; i<neta; i++)
       for (int j=0; j<nvz; j++)
