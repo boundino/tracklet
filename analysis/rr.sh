@@ -5,7 +5,7 @@ make reap_results || exit 1
 maxdr2=0.25 ; tagdr="drlt0p5" ; tagver="v1"
 TYPES=(12 13 14 23 24 34 56 57 67)
 # TYPES=(11 22 33 44 55 66 77)
-CENTS=(10 11)
+CENTS=(10 11 19 20)
 # CENTS=(4 20)
 ##
 INPUTS_MC=(
@@ -64,16 +64,15 @@ do
         [[ ${1:-0} -eq 1 ]] && {
             set -x
             ./reap_results $t $INPUT_MC $tagcorr 0 20 \
-                           0 ${cgm:0:1} ${cgm:1:1} ${cgm:2:1} "null" | tee logs/$tagcorr-$t.txt & # \
+                           0 ${cgm:0:1} ${cgm:1:1} ${cgm:2:1} "null" \
+                           2>&1 | tee logs/$tagcorr-$t.txt & # \
                 # $multhandle $maxdr2 0 "null" \
                 # $ctable "(1)" 
             set +x
         }
     done # for t in ${TYPES[@]}
     wait
-    set -x
     trash figs/corrections/empty-$tagcorr-*.png 
-    set +x
     
     c=0
     while [ $c -lt $((${#CENTS[@]}-1)) ] ; do
@@ -93,20 +92,19 @@ do
                 for t in ${TYPES[@]} ; do
                     set -x
                     ./reap_results $t $INPUT_MC $tages $cmin $cmax \
-                                   0 ${cgm:0:1} ${cgm:1:1} ${cgm:2:1} "null" | tee logs/$tages-$t.txt & # \
+                                   0 ${cgm:0:1} ${cgm:1:1} ${cgm:2:1} "null" \
+                                   2>&1 | tee logs/$tages-$t.txt & # \
                         # $multhandle $maxdr2 0 "null" \
                         # $ctable "(1)"
                     set +x
                 done # for t in ${TYPES[@]}
                 wait
             }
-            set -x
             trash figs/corrections/alpha-$tages-*.png \
                   figs/corrections/sdfrac-$tages-*.png \
                   figs/corrections/trigger-$tages-*.png \
                   figs/acceptance/accep-$tages-*.png \
                   figspdf/fits/alphafit-$tages-*.pdf
-            set +x
         }
 
         # apply #
@@ -120,18 +118,20 @@ do
             # echo " "$TAG_DATA
             
             tcgm=cgm # correction, geometric, acceptance map
-            [[ $TAG_DATA == *CLOSE ]] && { tcgm=cm ; tages=$tagcorr ; }
+            [[ $TAG_DATA == *CLOSE ]] && { tcgm=cm ; tages=${TAG_DATA%%CLOSE}".m."$tagver".s."$cmin"."$cmax ; }
             cgm=$(getcgm $tcgm)
 
             # ==> tag name
             tagappl=$TAG_DATA"."$tcgm"."${tagcorr##incl.}".s."$cmin"."$cmax
             echo $tagappl
+            echo $tages
             # <== tag name
             [[ ${2:-0} -eq 1 ]] && {
                 for t in ${TYPES[@]} ; do
                     set -x
                     ./reap_results $t $INPUT_DATA $tagappl $cmin $cmax \
-                                   $tagcorr ${cgm:0:1} ${cgm:1:1} ${cgm:2:1} $tages | tee logs/$tagcorr-$t.txt & # \
+                                   $tagcorr ${cgm:0:1} ${cgm:1:1} ${cgm:2:1} $tages \
+                                   2>&1 | tee logs/$tagappl-$t.txt & # \
                         # $multhandle $maxdr2 $tagdr "null" \
                         # $ctable "(1)" &
                     set +x
