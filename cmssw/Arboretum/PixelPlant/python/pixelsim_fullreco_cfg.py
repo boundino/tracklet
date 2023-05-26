@@ -34,7 +34,7 @@ from Configuration.AlCa.GlobalTag import GlobalTag
 process.GlobalTag = GlobalTag(
     process.GlobalTag,
     # 'auto:phase1_2022_realistic_hi', # -> v6
-    '125X_mcRun3_2022_realistic_HI_v8',
+    '125X_mcRun3_2022_realistic_HI_v9',
     ''
 )
 
@@ -66,7 +66,7 @@ ivars = VarParsing.VarParsing('analysis')
 ivars.maxEvents = -1
 ivars.outputFile='pixelsim_fullreco.root'
 # ivars.inputFiles='/store/user/wangj/MinBias_Hydjet_Drum5F_PbPb_5360GeV/MC_221213_DIGIRAW_1252p1_privateZ/221215_152406/0000/step2_digiraw_268.root'
-ivars.inputFiles='file:step2_digiraw_268.root'
+ivars.inputFiles='file:/afs/cern.ch/work/w/wangj/privateMC/run2022/CMSSW_12_5_4/src/step2_digiraw.root'
 ivars.parseArguments()
 
 process.source.fileNames = cms.untracked.vstring(ivars.inputFiles)

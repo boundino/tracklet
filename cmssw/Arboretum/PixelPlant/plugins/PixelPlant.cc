@@ -338,6 +338,7 @@ void PixelPlant::fill_hf(const edm::Event& iEvent) {
    for (const auto& cal : *towers) {
       if (cal.ietaAbs() < 30) { continue; }
 
+      // https://github.com/cms-sw/cmssw/blob/master/DataFormats/Candidate/interface/LeafCandidate.h#L124-L125
       if (cal.zside() > 0) {
          if (cal.energy() > 4.) { nhfp++; }
          hftp += cal.pt();
