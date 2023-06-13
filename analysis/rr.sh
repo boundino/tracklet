@@ -5,11 +5,16 @@ make reap_results || exit 1
 maxdr2=0.25 ; tagdr="drlt0p5" ; tagver="v1"
 TYPES=(12 13 14 23 24 34 56 57 67)
 # TYPES=(11 22 33 44 55 66 77)
-CENTS=(10 11 19 20)
-# CENTS=(4 20)
+CENTS=(
+    # 10 11
+    # 19 20
+    4 20
+)
 ##
 INPUTS_MC=(
     /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230322_pixel_230129_EposLHC_ReggeGribovParton_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4.root,epos
+    /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230322_pixel_230129_AMPT_StringMelting_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4.root,amptsm
+    /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230322_pixel_230129_Hydjet_Drum5F_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4.root,hydjet
     # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230130_pixel_230129_EposLHC_ReggeGribovParton_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4.root,epos
     # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230315_samelayer_pixel_230129_EposLHC_ReggeGribovParton_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4.root,epos
     # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230130_pixel_230129_Hydjet_Drum5F_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4.root,hydjet
@@ -72,7 +77,7 @@ do
         }
     done # for t in ${TYPES[@]}
     wait
-    trash figs/corrections/empty-$tagcorr-*.png 
+    # trash figs/corrections/empty-$tagcorr-*.png 
     
     c=0
     while [ $c -lt $((${#CENTS[@]}-1)) ] ; do
@@ -88,7 +93,7 @@ do
             tages=$TAG_MC"."$tcgm"."$tagver".s."$cmin"."$cmax
             echo $tages
             # <== tag name
-            [[ ${3:-0} -eq 1 ]] && {
+            [[ ${2:-0} -eq 1 ]] && {
                 for t in ${TYPES[@]} ; do
                     set -x
                     ./reap_results $t $INPUT_MC $tages $cmin $cmax \
@@ -126,7 +131,7 @@ do
             echo $tagappl
             echo $tages
             # <== tag name
-            [[ ${2:-0} -eq 1 ]] && {
+            [[ ${3:-0} -eq 1 ]] && {
                 for t in ${TYPES[@]} ; do
                     set -x
                     ./reap_results $t $INPUT_DATA $tagappl $cmin $cmax \
