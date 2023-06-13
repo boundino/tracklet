@@ -7,8 +7,8 @@
 #include <algorithm>    // std::sort
 #include <string>
 
-#include "xjjrootuti.h"
-#include "xjjcuti.h"
+#include "include/xjjrootuti.h"
+#include "include/xjjcuti.h"
 
 int macro(std::string inputname, std::string var="pixel/PixelTree::hft", int division=1)
 // int macro(std::string inputname, std::string var="TrackletTree12::hft")
@@ -20,10 +20,11 @@ int macro(std::string inputname, std::string var="pixel/PixelTree::hft", int div
   if(isMC) std::cout<<"MC"<<std::endl;
   else std::cout<<"data"<<std::endl;
 
-  float hft; t->SetBranchAddress(vars[1].c_str(), &hft);
-  int nhfp; t->SetBranchAddress("nhfp", &nhfp);
-  int nhfn; t->SetBranchAddress("nhfn", &nhfn);
-  int process; t->SetBranchAddress("process", &process);
+  t->SetBranchStatus("*", 0);
+  float hft; t->SetBranchStatus(vars[1].c_str(), 1); t->SetBranchAddress(vars[1].c_str(), &hft);
+  int nhfp; t->SetBranchStatus("nhfp", 1); t->SetBranchAddress("nhfp", &nhfp);
+  int nhfn; t->SetBranchStatus("nhfn", 1); t->SetBranchAddress("nhfn", &nhfn);
+  int process; t->SetBranchStatus("process", 1); t->SetBranchAddress("process", &process);
 
   TH1D* hhft = new TH1D("hhft", ";HF Energy;", 1000, 0, 6.e+3);
   
@@ -46,14 +47,14 @@ int macro(std::string inputname, std::string var="pixel/PixelTree::hft", int div
 
   for(int i=1; i<200; i++)
     vhibins.push_back(vhft[std::ceil(i/200.*n)-1]);
-  vhibins.push_back(1.e+4);
+  vhibins.push_back(2.e+4);
 
   std::cout<<"const Double_t binTable[nBins+1] = {0";
   for(int i=1; i<=200; i++)
     std::cout<<", "<<vhibins[i];
   std::cout<<"};"<<std::endl;
 
-  std::cout<<"const Double_t binTable[21] = {"<<std::endl<<"0.00, ";
+  std::cout<<"static const float hf[21] = {"<<std::endl<<"0.00, ";
   for(int i=1; i<=20; i++)
     {
       std::cout<<vhibins[i*10];
