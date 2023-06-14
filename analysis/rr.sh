@@ -1,6 +1,7 @@
 #!/bin/bash
 
 make reap_results || exit 1
+make merge_monde || exit 1
 
 maxdr2=0.25 ; tagdr="drlt0p5" ; tagver="v1"
 TYPES=(12 13 14 23 24 34 56 57 67)
@@ -8,13 +9,13 @@ TYPES=(12 13 14 23 24 34 56 57 67)
 CENTS=(
     # 10 11
     # 19 20
-    4 20
+    0 20
 )
 ##
 INPUTS_MC=(
     /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230322_pixel_230129_EposLHC_ReggeGribovParton_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4.root,epos
-    /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230322_pixel_230129_AMPT_StringMelting_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4.root,amptsm
-    /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230322_pixel_230129_Hydjet_Drum5F_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4.root,hydjet
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230322_pixel_230129_AMPT_StringMelting_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4.root,amptsm
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230322_pixel_230129_Hydjet_Drum5F_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4.root,hydjet
     # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230130_pixel_230129_EposLHC_ReggeGribovParton_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4.root,epos
     # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230315_samelayer_pixel_230129_EposLHC_ReggeGribovParton_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4.root,epos
     # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230130_pixel_230129_Hydjet_Drum5F_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4.root,hydjet
@@ -22,9 +23,12 @@ INPUTS_MC=(
 )
 
 INPUTS_DATA=(
-    /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230322_pixel_230126_HITestRaw0-6_HIRun2022A_MBPVfilTh4_362294.root,362294
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230322_pixel_230126_HITestRaw0-6_HIRun2022A_MBPVfilTh4_362294.root,362294
     # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230127_pixel_230126_HITestRaw0-5_HIRun2022A_MBPVfilTh4_362294.root,362294
     # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230315_samelayer_pixel_230126_HITestRaw0-6_HIRun2022A_MBPVfilTh4_362294.root,362294
+    /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230322_pixel_230129_EposLHC_ReggeGribovParton_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4.root,eposCLOSE
+    /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230322_pixel_230129_AMPT_StringMelting_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4.root,amptsmCLOSE
+    /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230322_pixel_230129_Hydjet_Drum5F_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4.root,hydjetCLOSE
     # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230130_pixel_230129_EposLHC_ReggeGribovParton_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4.root,eposCLOSE
     # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230130_pixel_230129_Hydjet_Drum5F_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4.root,hydjetCLOSE
     # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230130_pixel_230129_AMPT_StringMelting_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4.root,amptsmCLOSE
@@ -57,7 +61,10 @@ do
     echo $INPUT_MC
     echo $TAG_MC
 
-    # correction #
+    ##############################################
+    #  create correction, no centrality -> incl  #
+    ##############################################
+
     tcgm=m # correction, geometric, acceptance map
     cgm=$(getcgm $tcgm)
     # ==> tag name
@@ -84,7 +91,10 @@ do
         cmin=${CENTS[c]}
         cmax=${CENTS[c+1]}
 
-        # correction empty #
+        ##############################################
+        #  create correction empty, w. centrality    #
+        ##############################################
+
         tcgm=m # correction, geometric, acceptance map
         cgm=$(getcgm $tcgm)
         tages="epos.m."$tagver".s."$cmin"."$cmax ;
@@ -112,7 +122,10 @@ do
                   figspdf/fits/alphafit-$tages-*.pdf
         }
 
-        # apply #
+        ##############################################
+        #      apply correction, w. centrality       #
+        ##############################################
+
         for dd in ${INPUTS_DATA[@]} ; do
             
             IFS=',' ; VINPUTS_DATA=($dd) ; unset IFS ;
@@ -123,7 +136,7 @@ do
             # echo " "$TAG_DATA
             
             tcgm=cgm # correction, geometric, acceptance map
-            [[ $TAG_DATA == *CLOSE ]] && { tcgm=cm ; tages=${TAG_DATA%%CLOSE}".m."$tagver".s."$cmin"."$cmax ; }
+            [[ $TAG_DATA == *CLOSE ]] && { tcgm=cm ; tages="incl."${TAG_DATA%%CLOSE}".m."$tagver ; }
             cgm=$(getcgm $tcgm)
 
             # ==> tag name
@@ -144,6 +157,14 @@ do
                 wait
             }
 
+            ##############################################
+            #    average combinations, w. centrality     #
+            ##############################################
+
+            [[ ${4:-0} -eq 1 ]] && {
+                ./merge_monde $tagappl "${TAG_DATA%%CLOSE} corr. w. $TAG_MC"
+            }
+            
         done # for dd in ${INPUTS_DATA[@]}
 
         c=$((c+2))
