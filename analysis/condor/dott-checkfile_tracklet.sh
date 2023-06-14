@@ -7,19 +7,19 @@ then
 fi
 
 #
-MAXFILENO=10000
+MAXFILENO=5
 USERANDOM=0
 #
 movetosubmit=${1:-0}
 runjobs=${2:-0}
 
-PRIMARY="tt_230130"
-# PRIMARY="tt_221218_vzshift_reweight"
+PRIMARY="tt_230612"
 
 INPUTS=(
-    "/mnt/T2_US_MIT/hadoop/cms/store/user/wangj/MinBias_EposLHC_ReggeGribovParton_PbPb_5360GeV/crab_pixel_230129_EposLHC_ReggeGribovParton_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4/230131_141449/000*/"
-    "/mnt/T2_US_MIT/hadoop/cms/store/user/wangj/MinBias_AMPT_StringMelting_PbPb_5360GeV/crab_pixel_230129_AMPT_StringMelting_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4/230131_142216/000*/"
-    # "/mnt/T2_US_MIT/hadoop/cms/store/user/wangj/MinBias_Hydjet_Drum5F_PbPb_5360GeV/crab_pixel_230129_Hydjet_Drum5F_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4/230129_205028/000*/"
+    "/mnt/T2_US_MIT/hadoop/cms/store/user/wangj/MinBias_EposLHC_ReggeGribovParton_PbPb_5360GeV/crab_pixel_230512_EposLHC_ReggeGribovParton_PbPb_5360GeV_230322_GTv9Th4/230515_111547/000*/"
+    # "/mnt/T2_US_MIT/hadoop/cms/store/user/wangj/MinBias_Hydjet_Drum5F_PbPb_5360GeV/crab_pixel_230512_Hydjet_Drum5F_PbPb_5360GeV_230322_GTv9Th4/230525_160137/000*/"
+    # "/mnt/T2_US_MIT/hadoop/cms/store/user/wangj/MinBias_AMPT_StringMelting_PbPb_5360GeV/crab_pixel_230512_AMPT_StringMelting_PbPb_5360GeV_230322_GTv9Th4/230526_165052/000*/"
+
     # "/mnt/T2_US_MIT/hadoop/cms/store/user/wangj/HITestRaw0/crab_pixel_230126_HITestRaw0_HIRun2022A_MBPVfilTh4_362294/230126_184212/100*/"
     # "/mnt/T2_US_MIT/hadoop/cms/store/user/wangj/HITestRaw1/crab_pixel_230126_HITestRaw1_HIRun2022A_MBPVfilTh4_362294/230126_214813/100*/"
     # "/mnt/T2_US_MIT/hadoop/cms/store/user/wangj/HITestRaw2/crab_pixel_230126_HITestRaw2_HIRun2022A_MBPVfilTh4_362294/230126_214952/100*/"
@@ -27,12 +27,16 @@ INPUTS=(
     # "/mnt/T2_US_MIT/hadoop/cms/store/user/wangj/HITestRaw4/crab_pixel_230126_HITestRaw4_HIRun2022A_MBPVfilTh4_362294/230126_215745/100*/"
     # "/mnt/T2_US_MIT/hadoop/cms/store/user/wangj/HITestRaw5/crab_pixel_230126_HITestRaw5_HIRun2022A_MBPVfilTh4_362294/230126_215914/100*/"
     # "/mnt/T2_US_MIT/hadoop/cms/store/user/wangj/HITestRaw6/crab_pixel_230126_HITestRaw6_HIRun2022A_MBPVfilTh4_362294/230126_220022/100*/"
+
+    # # obsolete #
+    # "/mnt/T2_US_MIT/hadoop/cms/store/user/wangj/MinBias_EposLHC_ReggeGribovParton_PbPb_5360GeV/crab_pixel_230129_EposLHC_ReggeGribovParton_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4/230131_141449/000*/"
+    # "/mnt/T2_US_MIT/hadoop/cms/store/user/wangj/MinBias_AMPT_StringMelting_PbPb_5360GeV/crab_pixel_230129_AMPT_StringMelting_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4/230131_142216/000*/"
+    # "/mnt/T2_US_MIT/hadoop/cms/store/user/wangj/MinBias_Hydjet_Drum5F_PbPb_5360GeV/crab_pixel_230129_Hydjet_Drum5F_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4/230129_205028/000*/"
     # "/mnt/T2_US_MIT/hadoop/cms/store/user/wangj/MinBias_Hydjet_Drum5F_PbPb_5360GeV/crab_pixel_230126_Hydjet_Drum5F_PbPb_5360GeV_221224_GTv7priZ0_GTv8Th4/230126_191822/000*/"
     # "/mnt/T2_US_MIT/hadoop/cms/store/user/wangj/MinBias_Hydjet_Drum5F_PbPb_5360GeV/crab_pixelpre_221229_Hydjet_Drum5F_PbPb_5360GeV_221224_GTv7priZ0_Th4/230106_125359/000*/"
     # "/mnt/T2_US_MIT/hadoop/cms/store/user/wangj/MinBias_EposLHC_ReggeGribovParton_PbPb_5360GeV/crab_pixelpre_221229_EposLHC_ReggeGribovParton_PbPb_5360GeV_221224_GTv7priZ0_Th4/230106_140953/000*/"
     # "/mnt/T2_US_MIT/hadoop/cms/store/user/wangj/MinBias_AMPT_NoStringMelting_PbPb_5360GeV/crab_pixelpre_221229_AMPT_NoStringMelting_PbPb_5360GeV_221224_GTv7priZ0_Th4/230106_143142/000*/"
     # "/mnt/T2_US_MIT/hadoop/cms/store/user/wangj/MinBias_AMPT_StringMelting_PbPb_5360GeV/crab_pixelpre_221229_AMPT_StringMelting_PbPb_5360GeV_221224_GTv7priZ0_Th4/230106_142846/000*/"
-    # "/mnt/T2_US_MIT/hadoop/cms/store/user/wangj/MB_Hydjet_Run3_GENSIM/crab_pixelpre_221207_MB_Hydjet_Run3_subehera_Th4/221207_170609/000*/"
     # "/mnt/T2_US_MIT/hadoop/cms/store/user/wangj/HITestRaw0/crab_pixelpre_221201_HITestRaw0_HIRun2022A_MBPVfilTh4_362294/221201_192201/000*/"
     # "/mnt/T2_US_MIT/hadoop/cms/store/user/wangj/HITestRaw1/crab_pixelpre_221201_HITestRaw1_HIRun2022A_MBPVfilTh4_362294/221205_222829/000*/"
     # "/mnt/T2_US_MIT/hadoop/cms/store/user/wangj/HITestRaw2/crab_pixelpre_221201_HITestRaw2_HIRun2022A_MBPVfilTh4_362294/221222_173004/000*/"
@@ -58,7 +62,7 @@ do
     else
         CRABNAME=${INPUTDIR##*crab_} ; CRABNAME=${CRABNAME%%/*} ;
         INPUTFILELIST="$WORKDIR/filelists/filelist_"$CRABNAME".txt"
-        ls --color=no $INPUTDIR/* -d | sed -e "s/\/mnt\/T2_US_MIT\/hadoop\/cms/root:\/\/cms-xrd-global.cern.ch\//g" > $INPUTFILELIST
+        ls --color=no $INPUTDIR/* -d | sed -e "s/\/mnt\/T2_US_MIT\/hadoop\/cms/root:\/\/xrootd.cmsaf.mit.edu\//g" > $INPUTFILELIST
     fi
     echo "$INPUTFILELIST"
     REQUESTNAME=${INPUTFILELIST##*filelist_} ; REQUESTNAME=${REQUESTNAME%%.txt} ;
