@@ -11,7 +11,7 @@ MAXFILES=$3
 LOGDIR=$4
 USERANDOM=$5
 
-PROXYFILE=$(ls /tmp/ -lt | grep $USER | grep -m 1 x509 | awk '{print $NF}')
+PROXYFILE=$HOME/$(ls $HOME -lt | grep $USER | grep -m 1 x509 | awk '{print $NF}')
 
 tag="tracklet"
 
@@ -52,18 +52,20 @@ Universe     = vanilla
 Initialdir   = $PWD/
 Notification = Error
 Executable   = $PWD/tt-${tag}-checkfile.sh
-Arguments    = $inputname $DEST_CONDOR ${outputfile} $PROXYFILE $USERANDOM
+Arguments    = $inputname $DEST_CONDOR ${outputfile} $USERANDOM
 GetEnv       = True
 Output       = $LOGDIR/log-${infn}.out
 Error        = $LOGDIR/log-${infn}.err
 Log          = $LOGDIR/log-${infn}.log
 Rank         = Mips
 +AccountingGroup = "group_cmshi.$(whoami)"
-Requirements = ( BOSCOCluster =!= "t3serv008.mit.edu" && BOSCOCluster =!= "ce03.cmsaf.mit.edu" && BOSCOCluster =!= "eofe8.mit.edu")
-+DESIRED_Sites = "mit_tier2"
+# Requirements = ( BOSCOCluster =!= "t3serv008.mit.edu" && BOSCOCluster =!= "ce03.cmsaf.mit.edu" && BOSCOCluster =!= "eofe8.mit.edu")
++DESIRED_Sites = "mit_tier3"
 job_lease_duration = 240
 should_transfer_files = YES
-transfer_input_files = transmute_trees,/tmp/$PROXYFILE
+use_x509userproxy = True
+x509userproxy = $PROXYFILE
+transfer_input_files = transmute_trees
 Queue 
 EOF
 
