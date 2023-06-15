@@ -4,48 +4,45 @@ make reap_results || exit 1
 make merge_monde || exit 1
 
 maxdr2=0.25 ; tagdr="drlt0p5" ; tagver="v1"
-TYPES=(12 13 14 23 24 34 56 57 67)
-# TYPES=(11 22 33 44 55 66 77)
+# TYPES=(12 13 14 23 24 34 56 57 67)
+TYPES=(11 22 33 44 55 66 77)
 CENTS=(
-    # 10 11
-    # 19 20
-    0 20
+    4 20
+    10 11
+    19 20
+    # 18 19
+    # 17 18
+    # 16 17
+    # 15 16
+    # 14 15
+    # 13 14
+    # 12 13
+    # 11 12
+    # 9 10
+    # 8 9
+    # 7 8
+    # 6 7
+    # 5 6
+    # 4 5
+    # 3 4
 )
 ##
 INPUTS_MC=(
     /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230322_pixel_230129_EposLHC_ReggeGribovParton_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4.root,epos
     # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230322_pixel_230129_AMPT_StringMelting_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4.root,amptsm
     # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230322_pixel_230129_Hydjet_Drum5F_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4.root,hydjet
-    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230130_pixel_230129_EposLHC_ReggeGribovParton_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4.root,epos
     # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230315_samelayer_pixel_230129_EposLHC_ReggeGribovParton_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4.root,epos
-    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230130_pixel_230129_Hydjet_Drum5F_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4.root,hydjet
-    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230130_pixel_230129_AMPT_StringMelting_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4.root,amptsm
 )
 
 INPUTS_DATA=(
-    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230322_pixel_230126_HITestRaw0-6_HIRun2022A_MBPVfilTh4_362294.root,362294
-    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230127_pixel_230126_HITestRaw0-5_HIRun2022A_MBPVfilTh4_362294.root,362294
+    /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230322_pixel_230126_HITestRaw0-6_HIRun2022A_MBPVfilTh4_362294.root,362294
     # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230315_samelayer_pixel_230126_HITestRaw0-6_HIRun2022A_MBPVfilTh4_362294.root,362294
-    /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230322_pixel_230129_EposLHC_ReggeGribovParton_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4.root,eposCLOSE
-    /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230322_pixel_230129_AMPT_StringMelting_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4.root,amptsmCLOSE
-    /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230322_pixel_230129_Hydjet_Drum5F_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4.root,hydjetCLOSE
-    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230130_pixel_230129_EposLHC_ReggeGribovParton_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4.root,eposCLOSE
-    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230130_pixel_230129_Hydjet_Drum5F_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4.root,hydjetCLOSE
-    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230130_pixel_230129_AMPT_StringMelting_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4.root,amptsmCLOSE
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230322_pixel_230129_EposLHC_ReggeGribovParton_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4.root,eposCLOSE
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230322_pixel_230129_AMPT_StringMelting_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4.root,amptsmCLOSE
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230322_pixel_230129_Hydjet_Drum5F_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4.root,hydjetCLOSE
 )
 
-function getcgm() {
-    options=("c" "g" "m")
-    for char in ${options[@]} ; do
-        [[ $1 == *"$char"* ]] && echo -n 1 || echo -n 0
-    done
-}
-
-function trash() {
-    for i in $@ ; do
-        mv $i figs/trash/ 2> /dev/null 
-    done
-}
+source tool.shinc 
 
 multhandle=0
 ctable=0
@@ -108,10 +105,10 @@ do
                     set -x
                     ./reap_results $t $INPUT_MC $tages $cmin $cmax \
                                    0 ${cgm:0:1} ${cgm:1:1} ${cgm:2:1} "null" \
+                                   $multhandle $maxdr2 0 "null" \
+                                   3 "(1)" \
                                    2>&1 | tee logs/$tages-$t.txt & # \
-                        # $multhandle $maxdr2 0 "null" \
-                        # $ctable "(1)"
-                    set +x
+                        set +x
                 done # for t in ${TYPES[@]}
                 wait
             }
@@ -137,6 +134,7 @@ do
             
             tcgm=cgm # correction, geometric, acceptance map
             [[ $TAG_DATA == *CLOSE ]] && { tcgm=cm ; tages="incl."${TAG_DATA%%CLOSE}".m."$tagver ; }
+            [[ "12 13 14 23 24 34 56 57 67" =~ "${TYPES[0]}" ]] || tcgm=cm
             cgm=$(getcgm $tcgm)
 
             # ==> tag name
@@ -161,8 +159,14 @@ do
             #    average combinations, w. centrality     #
             ##############################################
 
+            mergecomb=
+            for t in ${TYPES[@]} ; do
+                mergecomb=$mergecomb","$t
+            done
+            mergecomb=${mergecomb##,}
             [[ ${4:-0} -eq 1 ]] && {
-                ./merge_monde $tagappl "${TAG_DATA%%CLOSE} corr. w. $TAG_MC"
+                # echo "${taglabel[${TAG_DATA%%CLOSE}]} corr. w. ${taglabel[$TAG_MC]}"
+                ./merge_monde $tagappl "${taglabel[${TAG_DATA%%CLOSE}]} corr. w. ${taglabel[$TAG_MC]}" $mergecomb
             }
             
         done # for dd in ${INPUTS_DATA[@]}

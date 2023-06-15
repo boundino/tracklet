@@ -1,0 +1,22 @@
+#!/bin/bash
+
+function getcgm() {
+    options=("c" "g" "m")
+    for char in ${options[@]} ; do
+        [[ $1 == *"$char"* ]] && echo -n 1 || echo -n 0
+    done
+}
+
+function trash() {
+    for i in $@ ; do
+        mv $i figs/trash/ 2> /dev/null
+    done
+}
+
+declare -A taglabel
+taglabel["epos"]="EPOS LHC"
+taglabel[hydjet]="HYDJET"
+taglabel[amptsm]="AMPT (string melting)"
+taglabel[amptnm]="AMPT (no melting)"
+taglabel[362294]=362294
+taglabel[362318]=362318

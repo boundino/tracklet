@@ -92,6 +92,7 @@ int reap_results(int type,
    /* selections                                                              */
    float hftmin = hftval(cmin, ctable);
    float hftmax = hftval(cmax, ctable);
+   printf("$ hftmin hftmax: %.1f %.1f\n", hftmin, hftmax);
 
    TCut vsel = "(vz[1]<15 && vz[1]>-15)";
    TCut fsel = vsel && asel;
