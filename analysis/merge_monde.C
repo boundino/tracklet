@@ -11,13 +11,8 @@
 #include "include/xjjanauti.h"
 #include "include/sconfig.h"
 
-std::string tcomb(std::string comb)
-{
-  std::string r(comb);
-  r.insert(1, " #otimes ");
-  r = Form("%sPIX %s", (atoi(comb.c_str())>50?"F":"B"), r.c_str());
-  return r;
-}
+#include "include/tool.h"
+
 void setzero(TH1D* h, std::string comb);
 
 #include "include/defines.h"
@@ -94,6 +89,13 @@ int macro(std::string input_corr,
     }
   xjjroot::setthgrstyle(havg, kGray+3, 21, 0.8, kGray+3);
 
+  TH1F* hsym = gethsym(havg);
+  xjjroot::setthgrstyle(hsym, kBlack, 21, 0.8, kBlack);
+  TH1F *hhigh = gethhigh(h1WEfinal),
+    *hlow = gethlow(h1WEfinal);
+  TH1F *hsymhigh = gethsymhigh(hhigh),
+    *hsymlow = gethsymlow(hlow);
+  
   auto hempty = (TH1D*)h1WEfinal[0]->Clone("hempty");
   xjjroot::sethempty(hempty);
   hempty->SetTitle(";#eta;dN/d#eta");
@@ -110,10 +112,20 @@ int macro(std::string input_corr,
       if(std::string(tleg).size() > 20)
         { xleg = 0.31; yleg = 0.47-0.033*h1WEfinal.size(); }
     }
-
+  auto legOUT = new TLegend(0.5, 0.47-0.031, 0.5+0.2, 0.47);
+  xjjroot::setleg(legOUT, 0.028);
+  legOUT->AddEntry(hsymhigh, "Combination deviation", "l");
   xjjroot::setgstyle(1);
 
+#define DRAWTEX                                                         \
+  for(int i=0; i<itext.n(); i++)                                        \
+    { xjjroot::drawtex(0.24, 0.79-i*0.033, itext.value[i][0].c_str(), 0.030, 13); } \
+  xjjroot::drawtex(0.88, 0.82, tcent(tag).c_str(), 0.030, 31);          \
+  xjjroot::drawCMSleft("Internal", 0.05, -0.1);                         \
+  xjjroot::drawCMSright("PbPb (5.36 TeV)");                             \
+  
   xjjroot::mypdf pdf("figspdf/avg/"+tag+".pdf", "c", 600, 600);
+  // havg
   pdf.prepare();
   hempty->Draw("axis");
   for(auto& h : h1WEfinal)
@@ -121,14 +133,32 @@ int macro(std::string input_corr,
   havg->Draw("p same");
   legPIX->Draw();
 
-  for(int i=0; i<itext.n(); i++)
-    xjjroot::drawtex(0.25, 0.85-i*0.033, itext.value[i][0].c_str(), 0.030, 13);
-  xjjroot::drawCMS("Internal", "PbPb (5.36 TeV)");
+  DRAWTEX;
+
   pdf.write("figs/avg/"+tag+".png");
+
+  // hsym
+  pdf.prepare();
+  hempty->Draw("axis");
+  hsymlow->Draw("hist same");
+  hsymhigh->Draw("hist same");
+  hsym->Draw("p same");
+  legOUT->Draw();
+
+  DRAWTEX;
+  
+  pdf.write("figs/avg/"+tag+"-hsym.png");
+
+
   pdf.close();
 
   auto outf = new TFile(Form("output/avg-%s.root", tag.c_str()), "recreate");
   xjjroot::writehist(havg);
+  xjjroot::writehist(hhigh);
+  xjjroot::writehist(hlow);
+  xjjroot::writehist(hsym);
+  xjjroot::writehist(hsymhigh);
+  xjjroot::writehist(hsymlow);
   for(auto& h : h1WEfinal)
     xjjroot::writehist(h);
   outf->Close();
@@ -139,6 +169,7 @@ int macro(std::string input_corr,
 int main(int argc, char* argv[])
 {
   if(argc==6) return macro(argv[1], argv[2], argv[3], argv[4], argv[5]);
+  if(argc==4) return macro(argv[1], argv[2], argv[3]);
   if(argc==3) return macro(argv[1], argv[2]);
   if(argc==2) return macro(argv[1]);
   return 1;
@@ -146,12 +177,12 @@ int main(int argc, char* argv[])
 
 void setzero(TH1D* h, std::string comb)
 {
-  for(int i=0; i<h->GetXaxis()->GetNbins(); i++)
-    {
-      if(good[idx[comb]][i] == 0)
-        {
-          h->SetBinContent(i+1, 0);
-          h->SetBinError(i+1, 0);
-        }
+  if(idx.find(comb) != idx.end()) {
+    for(int i=0; i<h->GetXaxis()->GetNbins(); i++) {
+      if(good[idx[comb]][i] == 0) {
+        h->SetBinContent(i+1, 0);
+        h->SetBinError(i+1, 0);
+      }
     }
+  }
 }
