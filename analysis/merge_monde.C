@@ -50,9 +50,11 @@ std::map<std::string, int> idx = {{"12", 0}, {"13", 1}, {"14", 2},
 int macro(std::string input_corr,
           std::string text = "Run 362294 corr w/ EPOS",
           std::string input_comb = "12,13,14,23,24,34,56,57,67",
+          std::string input_truth = "null",
           std::string colors = "602,860,858,419,414,434,635,629,626",
           std::string div = "&")
 {
+  if(colors == "default") colors = "602,860,858,419,414,434,635,629,626";
   std::string tag = input_corr;
   xjjc::sconfig icomb(input_comb), icolors(colors);
   if(icomb.n() == 1) text = text + ", " + tcomb(icomb.value[0][0]);
@@ -69,6 +71,24 @@ int macro(std::string input_corr,
       xjjroot::setthgrstyle(h1WEfinal[j], cc[j], 24, 0.8, cc[j]);
     }
 
+  std::vector<TGraphAsymmErrors*> gh1WGhadron;
+  TLegend* legTRUTH = 0;
+  if(input_truth != "null") {
+    xjjc::sconfig itruth(input_truth, ",", div);
+    gh1WGhadron.resize(itruth.n());
+    for(int i=0; i<itruth.n(); i++) {
+      auto h = xjjroot::gethist<TH1D>("output/correction-"+itruth.value[i][0]+"-12.root::h1WGhadron");
+      gh1WGhadron[i] = xjjana::shifthistcenter(h, "gh1WGhadron-"+itruth.value[i][0], 0, "X0");
+      xjjroot::setthgrstyle(gh1WGhadron[i], kBlack, 20, 0.8, kBlack, atoi(itruth.value[i][2].c_str()), 1);
+    }
+    legTRUTH = new TLegend(0.55, 0.47-0.031*gh1WGhadron.size(), 0.55+0.2, 0.47);
+    xjjroot::setleg(legTRUTH, 0.028);
+    for(int i=0; i<itruth.n(); i++)
+      legTRUTH->AddEntry(gh1WGhadron[i],
+                         Form("%s", itruth.value[i][1].c_str()),
+                         "l");
+  }
+  
   TH1F* havg = (TH1F*)h1WEfinal[0]->Clone("havg");
   for(int i=1; i<=havg->GetNbinsX(); i++)
     {
@@ -128,6 +148,11 @@ int macro(std::string input_corr,
   // havg
   pdf.prepare();
   hempty->Draw("axis");
+  if(input_truth != "null") {
+    for(auto& g : gh1WGhadron)
+      g->Draw("c same");
+    legTRUTH->Draw();
+  }
   for(auto& h : h1WEfinal)
     h->Draw("p same");
   havg->Draw("p same");
@@ -168,7 +193,8 @@ int macro(std::string input_corr,
 
 int main(int argc, char* argv[])
 {
-  if(argc==6) return macro(argv[1], argv[2], argv[3], argv[4], argv[5]);
+  if(argc==7) return macro(argv[1], argv[2], argv[3], argv[4], argv[5], argv[6]);
+  if(argc==5) return macro(argv[1], argv[2], argv[3], argv[4]);
   if(argc==4) return macro(argv[1], argv[2], argv[3]);
   if(argc==3) return macro(argv[1], argv[2]);
   if(argc==2) return macro(argv[1]);

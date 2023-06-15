@@ -4,12 +4,12 @@ make reap_results || exit 1
 make merge_monde || exit 1
 
 maxdr2=0.25 ; tagdr="drlt0p5" ; tagver="v1"
-# TYPES=(12 13 14 23 24 34 56 57 67)
-TYPES=(11 22 33 44 55 66 77)
+TYPES=(12 13 14 23 24 34 56 57 67)
+# TYPES=(11 22 33 44 55 66 77)
 CENTS=(
-    4 20
-    10 11
-    19 20
+    # 4 20
+    # 10 11
+    # 19 20
     # 18 19
     # 17 18
     # 16 17
@@ -25,6 +25,7 @@ CENTS=(
     # 5 6
     # 4 5
     # 3 4
+    0 20
 )
 ##
 INPUTS_MC=(
@@ -35,11 +36,11 @@ INPUTS_MC=(
 )
 
 INPUTS_DATA=(
-    /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230322_pixel_230126_HITestRaw0-6_HIRun2022A_MBPVfilTh4_362294.root,362294
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230322_pixel_230126_HITestRaw0-6_HIRun2022A_MBPVfilTh4_362294.root,362294
     # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230315_samelayer_pixel_230126_HITestRaw0-6_HIRun2022A_MBPVfilTh4_362294.root,362294
-    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230322_pixel_230129_EposLHC_ReggeGribovParton_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4.root,eposCLOSE
-    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230322_pixel_230129_AMPT_StringMelting_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4.root,amptsmCLOSE
-    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230322_pixel_230129_Hydjet_Drum5F_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4.root,hydjetCLOSE
+    /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230322_pixel_230129_EposLHC_ReggeGribovParton_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4.root,eposCLOSE
+    /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230322_pixel_230129_AMPT_StringMelting_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4.root,amptsmCLOSE
+    /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230322_pixel_230129_Hydjet_Drum5F_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4.root,hydjetCLOSE
 )
 
 source tool.shinc 
@@ -165,8 +166,13 @@ do
             done
             mergecomb=${mergecomb##,}
             [[ ${4:-0} -eq 1 ]] && {
-                # echo "${taglabel[${TAG_DATA%%CLOSE}]} corr. w. ${taglabel[$TAG_MC]}"
-                ./merge_monde $tagappl "${taglabel[${TAG_DATA%%CLOSE}]} corr. w. ${taglabel[$TAG_MC]}" $mergecomb
+                truth="epos.m.v1.s."$cmin"."$cmax"&"${taglabel[epos]}"&2,hydjet.m.v1.s."$cmin"."$cmax"&"${taglabel[hydjet]}"&1,amptsm.m.v1.s."$cmin"."$cmax"&"${taglabel[amptsm]}"&4"
+                [[ $TAG_DATA == *CLOSE* ]] && {
+                    [[ $cmin -eq 0 && $cmax -eq 20 ]] &&
+                        { truth="incl."${TAG_DATA%%CLOSE}".m.v1&"${taglabel[${TAG_DATA%%CLOSE}]}"&1" ; } ||
+                            { ${TAG_DATA%%CLOSE}".m.v1.s."$cmin"."$cmax"&"${taglabel[${TAG_DATA%%CLOSE}]}"&1" ; }
+                }
+                ./merge_monde $tagappl "${taglabel[${TAG_DATA%%CLOSE}]} corr. w. ${taglabel[$TAG_MC]}" $mergecomb "$truth"
             }
             
         done # for dd in ${INPUTS_DATA[@]}
