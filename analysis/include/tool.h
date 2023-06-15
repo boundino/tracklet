@@ -28,10 +28,11 @@ TH1F* gethsym(TH1* havg, const char* name="hsym") {
     if (havg->GetBinContent(i) != 0 && havg->GetBinContent(nbins - i + 1) != 0) {
       hsym->SetBinContent(i, (havg->GetBinContent(i) + havg->GetBinContent(nbins - i + 1)) / 2);
       hsym->SetBinError(i, (havg->GetBinError(i) + havg->GetBinError(nbins - i + 1)) / 2);
-    } else {
-      hsym->SetBinContent(i, havg->GetBinContent(i) + havg->GetBinContent(nbins - i + 1));
-      hsym->SetBinError(i, havg->GetBinError(i) + havg->GetBinError(nbins - i + 1));
     }
+    // else {
+    //   hsym->SetBinContent(i, havg->GetBinContent(i) + havg->GetBinContent(nbins - i + 1));
+    //   hsym->SetBinError(i, havg->GetBinError(i) + havg->GetBinError(nbins - i + 1));
+    // }
   }
   return hsym;
 }
