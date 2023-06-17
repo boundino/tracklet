@@ -45,13 +45,12 @@ static const int good[NTRKLT2P][neta] = {
 std::map<std::string, int> idx = {{"12", 0}, {"13", 1}, {"14", 2},
                                   {"23", 3}, {"24", 4}, {"34", 5},
                                   {"56", 6}, {"57", 7}, {"67", 8}};
-
-// std::vector<Color_t> cc = {kBlue+2, kAzure, kAzure-2, kGreen+3, kGreen-2, kCyan+2, kRed+3, kRed-3, kRed-6};
+auto ms = xjjroot::markerlist_open;
 int macro(std::string input_corr,
           std::string text = "Run 362294 corr w/ EPOS",
           std::string input_comb = "12,13,14,23,24,34,56,57,67",
           std::string input_truth = "null",
-          std::string colors = "602,860,858,419,414,434,635,629,626",
+          std::string colors = "default",
           std::string div = "&")
 {
   if(colors == "default") colors = "602,860,858,419,414,434,635,629,626";
@@ -68,7 +67,8 @@ int macro(std::string input_corr,
       h1WEfinal[j] = xjjroot::gethist<TH1D>("output/correction-"+input_corr+"-"+icomb.value[j][0]+".root::h1WEfinal");
       h1WEfinal[j]->SetName(Form("%s-%s", h1WEfinal[j]->GetName(), icomb.value[j][0].c_str()));
       setzero(h1WEfinal[j], icomb.value[j][0]);
-      xjjroot::setthgrstyle(h1WEfinal[j], cc[j], 24, 0.8, cc[j]);
+      goodresult(h1WEfinal[j]);
+      xjjroot::setthgrstyle(h1WEfinal[j], cc[j], ms[j], 0.8, cc[j]);
     }
 
   std::vector<TGraphAsymmErrors*> gh1WGhadron;
@@ -107,7 +107,8 @@ int macro(std::string input_corr,
       havg->SetBinContent(i, avg);
       havg->SetBinError(i, avg_err);
     }
-  xjjroot::setthgrstyle(havg, kGray+3, 21, 0.8, kGray+3);
+  xjjroot::setthgrstyle(havg, kBlack, 21, 0.8, kBlack, 1, 1,
+                        -1, -1, -1, 0.7, 0.7);
 
   TH1F* hsym = gethsym(havg);
   xjjroot::setthgrstyle(hsym, kBlack, 21, 0.8, kBlack);
@@ -117,8 +118,9 @@ int macro(std::string input_corr,
     *hsymlow = gethsymlow(hlow);
   
   auto hempty = (TH1D*)h1WEfinal[0]->Clone("hempty");
+  hempty->SetAxisRange(-3.2, 3.2, "X");
   xjjroot::sethempty(hempty);
-  hempty->SetTitle(";#eta;dN/d#eta");
+  hempty->SetTitle(";#it{#eta};d#it{N}_{ch}/d#kern[-0.08]{#it{#eta}}");
   hempty->SetMinimum(0);
   hempty->SetMaximum(havg->GetMaximum()*1.7);
   
@@ -160,7 +162,7 @@ int macro(std::string input_corr,
 
   DRAWTEX;
 
-  pdf.write("figs/avg/"+tag+".png");
+  pdf.write("figs/avg/"+tag+".pdf");
 
   // hsym
   pdf.prepare();
@@ -172,8 +174,7 @@ int macro(std::string input_corr,
 
   DRAWTEX;
   
-  pdf.write("figs/avg/"+tag+"-hsym.png");
-
+  pdf.write("figs/avg/"+tag+"-hsym.pdf");
 
   pdf.close();
 
