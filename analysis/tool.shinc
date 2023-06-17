@@ -14,9 +14,9 @@ function trash() {
 }
 
 declare -A taglabel
-taglabel["epos"]="EPOS LHC"
-taglabel[hydjet]="HYDJET"
-taglabel[amptsm]="AMPT (string melting)"
-taglabel[amptnm]="AMPT (no melting)"
+taglabel[epos]="E#scale[0.8]{POS} #scale[0.9]{LHC}"
+taglabel[hydjet]="H#scale[0.8]{YDJET}"
+taglabel[amptsm]="A#scale[0.9]{MPT} #scale[0.9]{(string melting)}"
+taglabel[amptnm]="A#scale[0.9]{MPT} #scale[0.9]{(no melting)}"
 taglabel[362294]=362294
 taglabel[362318]=362318
