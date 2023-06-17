@@ -13,6 +13,7 @@
 
 #include "include/tool.h"
 
+auto ms = xjjroot::markerlist_solid;
 int macro(std::string input_avg, std::string tag,
           std::string text = "Run 362294 corr w/ EPOS",
           std::string input_truth = "null",
@@ -26,16 +27,17 @@ int macro(std::string input_avg, std::string tag,
     {
       havg[j] = xjjroot::gethist<TH1D>("output/avg-"+iavg.value[j][0]+".root::havg");
       havg[j]->SetName(Form("%s-%i", havg[j]->GetName(), j));
-      xjjroot::setthgrstyle(havg[j], cc[j], 20, 0.8, cc[j]);
+      xjjroot::setthgrstyle(havg[j], cc[j], ms[j], 0.8, cc[j]);
 
       hsym[j] = xjjroot::gethist<TH1D>("output/avg-"+iavg.value[j][0]+".root::hsym");
       hsym[j]->SetName(Form("%s-%i", hsym[j]->GetName(), j));
-      xjjroot::setthgrstyle(hsym[j], cc[j], 20, 0.8, cc[j]);
+      xjjroot::setthgrstyle(hsym[j], cc[j], ms[j], 0.8, cc[j]);
     }
 
   auto hempty = (TH1D*)havg[0]->Clone("hempty");
+  hempty->SetAxisRange(-3.4, 3.4, "X");
   xjjroot::sethempty(hempty);
-  hempty->SetTitle(";#eta;dN/d#eta");
+  hempty->SetTitle(";#it{#eta};d#it{N}_{ch}/d#kern[-0.08]{#it{#eta}}");
   hempty->SetMinimum(0);
   hempty->SetMaximum(havg[0]->GetMaximum()*1.7);
   
@@ -66,7 +68,7 @@ int macro(std::string input_avg, std::string tag,
 
   DRAWTEX;
 
-  pdf.write("figs/comp/"+tag+"-havg.png");
+  pdf.write("figs/comp/"+tag+"-havg.pdf");
 
   // hsym
   pdf.prepare();
@@ -77,7 +79,7 @@ int macro(std::string input_avg, std::string tag,
 
   DRAWTEX;
   
-  pdf.write("figs/comp/"+tag+"-hsym.png");
+  pdf.write("figs/comp/"+tag+"-hsym.pdf");
 
   pdf.close();
 
