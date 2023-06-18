@@ -574,24 +574,79 @@ int map_tracklets(std::vector<varinfo_t> const& options,
    return 0;
 }
 
+static const std::vector<varinfo_t> options_compare_tracklet_2d = {
+   {
+      "eta-phi", {"#eta", "#phi"},
+      {"eta1", "phi1"},
+      {{1000, -4, 4}, {1000, -4, 4}},
+      {600, 600}, 0, "(1)", "colz", 1000
+   }
+};
+
+int compare_map_tracklets(std::vector<varinfo_t> const& options,
+                       const char* config, const char* label, int opt) {
+
+  const char* idstr = OS(id);
+
+  configurer* conf = new configurer(config);
+  auto tags = conf->get<std::vector<std::string>>("tags");
+  std::size_t nfiles = tags.size();
+
+  TFile* f[nfiles];
+  for (std::size_t j = 0; j < nfiles; ++j)
+    f[j] = new TFile(Form("data/%s.root", tags[j].data()), "read");
+
+#define SETUP_2D_TRACKLETS_COMPARE(q, w)                                \
+  TH2D* h##q##w[nfiles]; TH2D* hr##q##w[nfiles];                        \
+  for (std::size_t j = 0; j < nfiles; ++j) {                            \
+    h##q##w[j] = (TH2D*)f[j]->Get(Form("h" #q #w "%s", idstr));         \
+    h##q##w[j]->SetName(Form("%s-f%d", h##q##w[j]->GetName(), j));      \
+    h##q##w[j]->Scale(1. / h##q##w[j]->Integral());                     \
+    hr##q##w[j] = (TH2D*)h##q##w[0]->Clone(Form("hr" #q #w "%s-f%d", idstr, j)); \
+    hr##q##w[j]->Divide(h##q##w[j]);                                    \
+    hr##q##w[j]->SetMinimum(0);                                         \
+    hr##q##w[j]->SetMaximum(2);                                         \
+  }                                                                     \
+
+  TRKLTS2P(SETUP_2D_TRACKLETS_COMPARE)
+
+    xjjroot::mypdf* pdf_DRAW_2D_TRACKLETS_COMPARE = new xjjroot::mypdf(Form("figspdf/ratio/tracklet-%s-%s.pdf", OS(id), label), "c_DRAW_2D_RATIO",  600, 600);
+
+#define DRAW_2D_TRACKLETS_COMPARE(q, w)                                 \
+  for (std::size_t j = 0; j < nfiles; ++j) {                            \
+    if (!j) continue;                                                   \
+    pdf_DRAW_2D_TRACKLETS_COMPARE->prepare();                           \
+    hr##q##w[j]->Draw("colz");                                          \
+                                                                        \
+    pdf_DRAW_2D_TRACKLETS_COMPARE->write(Form("figs/ratio/tracklet-%s-t" #q #w "-%s-%s.png", \
+                                              OS(id), label, tags[j].data())); \
+  }                                                                     \
+  
+  TRKLTS2P(DRAW_2D_TRACKLETS_COMPARE)
+
+  pdf_DRAW_2D_TRACKLETS_COMPARE->close();
+
+  return 0;
+}
+
 int main(int argc, char* argv[]) {
    std::vector<std::vector<varinfo_t> const*> options = {
       &options_pixel_1d, &options_tracklet_1d,
       &options_pixel_2d, &options_tracklet_2d,
-      &options_compare_pixel_2d
+      &options_compare_pixel_2d, &options_compare_tracklet_2d
    };
 
    std::vector<int (*)(std::vector<varinfo_t> const&,
          const char*, const char*, int)> delegates = {
       compare_pixels, compare_tracklets,
       map_pixels, map_tracklets,
-      compare_map_pixels
+      compare_map_pixels, compare_map_tracklets
    };
 
    std::vector<std::string> usagestrs = {
       "config", "config",
       "pixel", "tracklet",
-      "config"
+      "config", "config"
    };
 
    if (argc > 1) {
