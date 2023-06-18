@@ -77,7 +77,7 @@ int compare_pixels(std::vector<varinfo_t> const& options,
 
    const char* idstr = OS(id);
    const char* varstr = OS(var[0]);
-
+   
    TH1::SetDefaultSumw2();
    gStyle->SetOptStat(0);
 
@@ -445,6 +445,72 @@ int map_pixels(std::vector<varinfo_t> const& options,
    return 0;
 }
 
+static const std::vector<varinfo_t> options_compare_pixel_2d = {
+  {
+    "z-phi", {"z", "#phi"},
+    {"r@/tan(2*atan(exp(-eta@)))", "phi@"},
+    {{1000, -30, 30}, {1000, -4, 4}},
+    {600, 2400}, 0x01, "(nhfp > 1 && nhfn > 1)", "colz", 1000
+  }, {
+    "fpix-x-y-plus", {"x", "y"},
+    {"r@*cos(phi@)", "r@*sin(phi@)"},
+    {{1000, -20, 20}, {1000, -20, 20}},
+    {600, 600}, 0x02, "(eta@>0)", "colz", 1000
+  }, {
+    "fpix-x-y-minus", {"x", "y"},
+    {"r@*cos(phi@)", "r@*sin(phi@)"},
+    {{1000, -20, 20}, {1000, -20, 20}},
+    {600, 600}, 0x02, "(eta@<0)", "colz", 1000
+  }
+};
+
+int compare_map_pixels(std::vector<varinfo_t> const& options,
+                       const char* config, const char* label, int opt) {
+
+  const char* idstr = OS(id);
+
+  configurer* conf = new configurer(config);
+  auto tags = conf->get<std::vector<std::string>>("tags");
+  std::size_t nfiles = tags.size();
+
+  TFile* f[nfiles];
+  for (std::size_t j = 0; j < nfiles; ++j)
+    f[j] = new TFile(Form("data/%s.root", tags[j].data()), "read");
+
+#define SETUP_2D_PIXELS_COMPARE(q)                                      \
+  TH2D* h##q[nfiles]; TH2D* hr##q[nfiles];                              \
+  for (std::size_t j = 0; j < nfiles; ++j) {                            \
+    h##q[j] = (TH2D*)f[j]->Get(Form("h" #q "%s", idstr));               \
+    h##q[j]->SetName(Form("h" #q "%s-f%d", idstr, j));                  \
+    h##q[j]->Scale(1. / h##q[j]->Integral());                           \
+    hr##q[j] = (TH2D*)h##q[0]->Clone(Form("hr" #q "%s-f%d", idstr, j)); \
+    hr##q[j]->Divide(h##q[j]);                                          \
+    hr##q[j]->SetMinimum(0);                                            \
+    hr##q[j]->SetMaximum(2);                                            \
+  }                                                                     \
+
+  PIXELS1P(SETUP_2D_PIXELS_COMPARE)
+
+    xjjroot::mypdf* pdf_DRAW_2D_PIXELS_COMPARE = new xjjroot::mypdf(Form("figspdf/ratio/pixel-%s-%s.pdf", OS(id), label), "c_DRAW_2D_RATIO",  600, 600);
+
+#define DRAW_2D_PIXELS_COMPARE(q)                                       \
+  for (std::size_t j = 0; j < nfiles; ++j) {                            \
+    if (!j) continue;                                                   \
+    pdf_DRAW_2D_PIXELS_COMPARE->prepare();                              \
+    hr##q[j]->Draw("colz");                                             \
+                                                                        \
+    pdf_DRAW_2D_PIXELS_COMPARE->write(Form("figs/ratio/pixel-%s-l" #q "-%s-%s.png", \
+                                           OS(id), label, tags[j].data())); \
+  }                                                                     \
+
+  if (OPT(flags) & 0x1) { BPIX1P(DRAW_2D_PIXELS_COMPARE) }
+  if (OPT(flags) & 0x2) { FPIX1P(DRAW_2D_PIXELS_COMPARE) }
+
+  pdf_DRAW_2D_PIXELS_COMPARE->close();
+
+  return 0;
+}
+
 static const std::vector<varinfo_t> options_tracklet_2d = {
    {
       "eta-phi", {"#eta", "#phi"},
@@ -511,18 +577,21 @@ int map_tracklets(std::vector<varinfo_t> const& options,
 int main(int argc, char* argv[]) {
    std::vector<std::vector<varinfo_t> const*> options = {
       &options_pixel_1d, &options_tracklet_1d,
-      &options_pixel_2d, &options_tracklet_2d
+      &options_pixel_2d, &options_tracklet_2d,
+      &options_compare_pixel_2d
    };
 
    std::vector<int (*)(std::vector<varinfo_t> const&,
          const char*, const char*, int)> delegates = {
       compare_pixels, compare_tracklets,
-      map_pixels, map_tracklets
+      map_pixels, map_tracklets,
+      compare_map_pixels
    };
 
    std::vector<std::string> usagestrs = {
       "config", "config",
-      "pixel", "tracklet"
+      "pixel", "tracklet",
+      "config"
    };
 
    if (argc > 1) {

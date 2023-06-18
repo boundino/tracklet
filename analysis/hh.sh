@@ -3,7 +3,7 @@
 make harvest_hists || exit 1
 make evaluate_effs || exit 1
 
-RUN_PIX_2D=1
+RUN_PIX_2D=1 ; TAG_PIX_COMPARE=362294a ;
 RUN_TRK_2D=1
 RUN_PIX_1D=1 ; TAG_PIX=362294a
 RUN_TRK_1D=1 ; TAG_TRACKLET=362294a
@@ -27,18 +27,20 @@ INPUTS_TRACKLET=(
     "/eos/cms/store/group/phys_heavyions/wangj/tracklet2022/vpresplit/tt_221229_vzshift_pixelpre_221229_AMPT_NoStringMelting_PbPb_5360GeV_221224_GTv7priZ0_Th4.root,${taglabel[amptnm]},amptnm"
 )
 
-ARG_PIX_INPUT=
-ARG_PIX_LEG=
+INPUTS_PIX_2D=()
 for i in "${INPUTS_PIX[@]}"
 do
     IFS="," ; inputs=($i) ; unset IFS ;
     ARG_PIX_INPUT=${ARG_PIX_INPUT}" "${inputs[0]}
     ARG_PIX_LEG=${ARG_PIX_LEG}"${inputs[1]},"
+
+    [[ ${inputs[2]} == *hydjet* || ${inputs[2]} == *ampt* ]] && continue
+    
+    INPUTS_PIX_2D+=("$i")
+    ARG_PIX_TAG_2D=${ARG_PIX_TAG_2D}" "${inputs[2]}
 done
 ARG_PIX_LEG=${ARG_PIX_LEG%%,}
 
-ARG_TRACKLET_INPUT=
-ARG_TRACKLET_LEG=
 for i in "${INPUTS_TRACKLET[@]}"
 do
     IFS="," ; inputs=($i) ; unset IFS ;
@@ -47,8 +49,6 @@ do
 done
 ARG_TRACKLET_LEG=${ARG_TRACKLET_LEG%%,}
 
-ARG_VERTEX_INPUT=
-ARG_VERTEX_LEG=
 for i in "${INPUTS_TRACKLET[@]}"
 do
     IFS="," ; inputs=($i) ; unset IFS ;
@@ -65,6 +65,10 @@ std::vector<std::string> legends ='$ARG_PIX_LEG'
 ' > lists/pixel.list
 
 echo 'token
+std::vector<std::string> tags ='$ARG_PIX_TAG_2D'
+' > lists/pixel-2d.list
+
+echo 'token
 std::vector<std::string> files ='$ARG_TRACKLET_INPUT'
 token ,
 std::vector<std::string> legends ='$ARG_TRACKLET_LEG'
@@ -78,11 +82,13 @@ std::vector<std::string> legends ='$ARG_VERTEX_LEG'
 
 [[ $RUN_PIX_2D -eq 1 ]] && {
     ## Pixel 2D
-    for i in "${INPUTS_PIX[@]}"
+    for i in "${INPUTS_PIX_2D[@]}"
     do
         IFS="," ; inputs=($i) ; unset IFS ;
         ./harvest_hists 2 ${inputs[0]} "${inputs[2]}"
     done
+
+    ./harvest_hists 4 lists/pixel-2d.list $TAG_PIX_COMPARE
 }
 
 [[ $RUN_TRK_2D -eq 1 ]] && {
