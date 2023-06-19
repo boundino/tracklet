@@ -491,7 +491,7 @@ int compare_map_pixels(std::vector<varinfo_t> const& options,
 
   PIXELS1P(SETUP_2D_PIXELS_COMPARE)
 
-    xjjroot::mypdf* pdf_DRAW_2D_PIXELS_COMPARE = new xjjroot::mypdf(Form("figspdf/ratio/pixel-%s-%s.pdf", OS(id), label), "c_DRAW_2D_RATIO",  600, 600);
+    xjjroot::mypdf* pdf_DRAW_2D_PIXELS_COMPARE = new xjjroot::mypdf(Form("figspdf/ratio/ratio-%s-%s.pdf", OS(id), label), "c_DRAW_2D_RATIO",  600, 600);
 
 #define DRAW_2D_PIXELS_COMPARE(q)                                       \
   for (std::size_t j = 0; j < nfiles; ++j) {                            \
@@ -499,7 +499,7 @@ int compare_map_pixels(std::vector<varinfo_t> const& options,
     pdf_DRAW_2D_PIXELS_COMPARE->prepare();                              \
     hr##q[j]->Draw("colz");                                             \
                                                                         \
-    pdf_DRAW_2D_PIXELS_COMPARE->write(Form("figs/ratio/pixel-%s-l" #q "-%s-%s.png", \
+    pdf_DRAW_2D_PIXELS_COMPARE->write(Form("figs/ratio/ratio-%s-l" #q "-%s-%s.png", \
                                            OS(id), label, tags[j].data())); \
   }                                                                     \
 
@@ -610,7 +610,7 @@ int compare_map_tracklets(std::vector<varinfo_t> const& options,
 
   TRKLTS2P(SETUP_2D_TRACKLETS_COMPARE)
 
-    xjjroot::mypdf* pdf_DRAW_2D_TRACKLETS_COMPARE = new xjjroot::mypdf(Form("figspdf/ratio/tracklet-%s-%s.pdf", OS(id), label), "c_DRAW_2D_RATIO",  600, 600);
+    xjjroot::mypdf* pdf_DRAW_2D_TRACKLETS_COMPARE = new xjjroot::mypdf(Form("figspdf/ratio/ratio-%s-%s.pdf", OS(id), label), "c_DRAW_2D_RATIO",  600, 600);
 
 #define DRAW_2D_TRACKLETS_COMPARE(q, w)                                 \
   for (std::size_t j = 0; j < nfiles; ++j) {                            \
@@ -618,7 +618,7 @@ int compare_map_tracklets(std::vector<varinfo_t> const& options,
     pdf_DRAW_2D_TRACKLETS_COMPARE->prepare();                           \
     hr##q##w[j]->Draw("colz");                                          \
                                                                         \
-    pdf_DRAW_2D_TRACKLETS_COMPARE->write(Form("figs/ratio/tracklet-%s-t" #q #w "-%s-%s.png", \
+    pdf_DRAW_2D_TRACKLETS_COMPARE->write(Form("figs/ratio/ratio-%s-t" #q #w "-%s-%s.png", \
                                               OS(id), label, tags[j].data())); \
   }                                                                     \
   
