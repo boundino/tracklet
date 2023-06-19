@@ -116,7 +116,9 @@ int macro(std::string input_corr,
     *hlow = gethlow(h1WEfinal);
   TH1F *hsymhigh = gethsymhigh(hhigh),
     *hsymlow = gethsymlow(hlow);
-  
+ TH1F *herr = getherr(havg, hsymhigh, hsymlow),
+    *hrelerr = gethrelerr(havg, hsymhigh, hsymlow);
+
   auto hempty = (TH1D*)h1WEfinal[0]->Clone("hempty");
   hempty->SetAxisRange(-3.2, 3.2, "X");
   xjjroot::sethempty(hempty);
@@ -176,6 +178,16 @@ int macro(std::string input_corr,
   
   pdf.write("figs/avg/"+tag+"-hsym.pdf");
 
+  // hrelerr
+  pdf.prepare();
+  hempty->Draw("axis");
+  hrelerr->Draw("pe same");
+  legOUT->Draw();
+
+  DRAWTEX;
+  
+  pdf.write("figs/avg/"+tag+"-hrelerr.pdf");
+
   pdf.close();
 
   auto outf = new TFile(Form("output/avg-%s.root", tag.c_str()), "recreate");
@@ -185,6 +197,8 @@ int macro(std::string input_corr,
   xjjroot::writehist(hsym);
   xjjroot::writehist(hsymhigh);
   xjjroot::writehist(hsymlow);
+  xjjroot::writehist(herr);
+  xjjroot::writehist(hrelerr);
   for(auto& h : h1WEfinal)
     xjjroot::writehist(h);
   outf->Close();

@@ -27,13 +27,20 @@ int macro(std::string input_avg, std::string tag,
     {
       havg[j] = xjjroot::gethist<TH1D>("output/avg-"+iavg.value[j][0]+".root::havg");
       havg[j]->SetName(Form("%s-%i", havg[j]->GetName(), j));
-      xjjroot::setthgrstyle(havg[j], cc[j], ms[j], 0.8, cc[j]);
+      xjjroot::setthgrstyle(havg[j], cc[j], ms[j], 1.0, cc[j]);
 
       hsym[j] = xjjroot::gethist<TH1D>("output/avg-"+iavg.value[j][0]+".root::hsym");
       hsym[j]->SetName(Form("%s-%i", hsym[j]->GetName(), j));
-      xjjroot::setthgrstyle(hsym[j], cc[j], ms[j], 0.8, cc[j]);
+      xjjroot::setthgrstyle(hsym[j], cc[j], ms[j], 1.0, cc[j]);
     }
 
+  TH1F *hhigh = gethhigh(hsym), *hlow = gethlow(hsym);
+  // TH1F *hsymhigh = gethsymhigh(hhigh), *hsymlow = gethsymlow(hlow);
+  TH1F *herr = getherr(hsym[0], hhigh, hlow),
+    *hrelerr = gethrelerr(hsym[0], hhigh, hlow);
+  xjjroot::sethempty(hrelerr);
+  xjjroot::setthgrstyle(hrelerr, kGray+2, -1, -1, kGray+2);
+  
   auto hempty = (TH1D*)havg[0]->Clone("hempty");
   hempty->SetAxisRange(-3.4, 3.4, "X");
   xjjroot::sethempty(hempty);
@@ -41,13 +48,16 @@ int macro(std::string input_avg, std::string tag,
   hempty->SetMinimum(0);
   hempty->SetMaximum(havg[0]->GetMaximum()*1.7);
   
+  auto hemptyrelerr = (TH1D*)hrelerr->Clone("hemptyrelerr");
+  hemptyrelerr->SetAxisRange(-3.4, 3.4, "X");
+  xjjroot::sethempty(hemptyrelerr);
+  hemptyrelerr->SetMaximum(hrelerr->GetMaximum()*1.7);
+  
   float xleg = 0.55, yleg = 0.47;
   auto legPIX = new TLegend(0.3, yleg-0.031*iavg.n(), 0.3+0.2, yleg);
   xjjroot::setleg(legPIX, 0.028);
   for(int j=0; j<iavg.n(); j++)
-    {
-      legPIX->AddEntry(havg[j], iavg.value[j][1].c_str(), "p");
-    }
+    legPIX->AddEntry(havg[j], iavg.value[j][1].c_str(), "p");
 
   xjjroot::setgstyle(1);
 
@@ -81,8 +91,25 @@ int macro(std::string input_avg, std::string tag,
   
   pdf.write("figs/comp/"+tag+"-hsym.pdf");
 
+  // hsym
+  pdf.prepare();
+  hemptyrelerr->Draw("axis");
+  hrelerr->Draw("pe same");
+
+  DRAWTEX;
+  
+  pdf.write("figs/comp/"+tag+"-hrelerr.pdf");
+  
   pdf.close();
 
+  auto outf = xjjroot::newfile("results/comp-"+tag+".root");
+  xjjroot::writehist(herr);
+  xjjroot::writehist(hrelerr);
+  xjjroot::writehist(hhigh);
+  xjjroot::writehist(hlow);
+  for(auto h : hsym) xjjroot::writehist(h);
+  outf->Close();
+  
   return 0;
 }
 

@@ -119,4 +119,27 @@ TH1F* gethlow(std::vector<TH1D*> h1WEfinal)
   return hlow;
 }
 
+TH1F* getherr(TH1D* havg, TH1F* hhigh, TH1F* hlow) {
+  TH1F* herr = (TH1F*)havg->Clone("herr");
+  herr->SetTitle(";#it{#eta};d#it{N}_{ch}/d#kern[-0.08]{#it{#eta}}");
+  for(int i=1; i<=havg->GetNbinsX(); i++) {
+    float err = std::max(fabs(hhigh->GetBinContent(i)-havg->GetBinContent(i)),
+                         fabs(havg->GetBinContent(i)-hlow->GetBinContent(i)));
+    herr->SetBinError(i, err);
+  }
+  return herr;
+}
+
+TH1F* gethrelerr(TH1D* havg, TH1F* hhigh, TH1F* hlow) {
+  TH1F* hrelerr = (TH1F*)havg->Clone("hrelerr");
+  hrelerr->SetTitle(";#it{#eta};relative uncertainty");
+  for(int i=1; i<=havg->GetNbinsX(); i++) {
+    float err = std::max(fabs(hhigh->GetBinContent(i)-havg->GetBinContent(i)),
+                         fabs(havg->GetBinContent(i)-hlow->GetBinContent(i)));
+    hrelerr->SetBinContent(i, err);    
+  }
+  hrelerr->Divide(havg);
+  return hrelerr;
+}
+
 #endif
