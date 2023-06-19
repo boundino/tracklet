@@ -19,10 +19,15 @@ int macro(std::string input_avg, std::string tag,
           std::string input_truth = "null",
           std::string div = "&")
 {
-  xjjc::sconfig iavg(input_avg, ",", div), itext(text, ",", div);
+  xjjroot::silence();
+  xjjc::sconfig iavg(input_avg, ",", div), itext(text);
 
   std::vector<Color_t> cc = xjjroot::colorlist_light;
   TH1F* hsym = xjjroot::gethist<TH1F>(iavg.value[0][0]+".root::hsym");
+  auto legPIX = new TLegend(0.3, 0.47-0.031*9, 0.3+0.2, 0.47);
+  xjjroot::setleg(legPIX, 0.028);
+  auto h1WEfinal = combh1WEfinal(iavg.value[0][0]+".root", legPIX);
+
   std::vector<float> relerr2(hsym->GetNbinsX(), 0);
   std::vector<TH1F*> hrelerr(iavg.n(), 0);
   for(int j=0; j<iavg.n(); j++) {
@@ -34,6 +39,7 @@ int macro(std::string input_avg, std::string tag,
       relerr2[i] += hrelerr[j]->GetBinContent(i+1) * hrelerr[j]->GetBinContent(i+1);
     }
   }
+ 
   auto hsyst = (TH1F*)hsym->Clone("hsyst"), hrelerrtotal = (TH1F*)hrelerr[0]->Clone("hrelerrtotal");
   for(int i=0; i<hsym->GetNbinsX(); i++) {
     relerr2[i] = std::sqrt(relerr2[i]);
@@ -41,6 +47,8 @@ int macro(std::string input_avg, std::string tag,
     hrelerrtotal->SetBinContent(i+1, relerr2[i]);
   }
   xjjroot::setthgrstyle(hrelerrtotal, kBlack, 21, 1.0, kBlack);
+  TGraphErrors* gsyst = xjjana::shifthistcenter(hsyst, "gsyst", 0);
+  xjjroot::setthgrstyle(gsyst, kGray+3, 21, 0.8, 1, 1, 1, kGray+3, 0.2, 1001);
 
   auto hempty = makehempty(hsym, ";#it{#eta};d#it{N}_{ch}/d#kern[-0.08]{#it{#eta}}", 1.7);
   hempty->SetAxisRange(-3.2, 3.4, "X");  
@@ -48,11 +56,11 @@ int macro(std::string input_avg, std::string tag,
   hemptyrelerr->SetAxisRange(-3.2, 3.4, "X");
   
   float xleg = 0.42, yleg = 0.72;
-  auto legPIX = new TLegend(xleg, yleg-0.031*iavg.n(), xleg+0.2, yleg);
-  xjjroot::setleg(legPIX, 0.028);
+  auto legERR = new TLegend(xleg, yleg-0.031*iavg.n(), xleg+0.2, yleg);
+  xjjroot::setleg(legERR, 0.028);
   for(int j=0; j<iavg.n(); j++)
-    legPIX->AddEntry(hrelerr[j], iavg.value[j][1].c_str(), "p");
-
+    legERR->AddEntry(hrelerr[j], iavg.value[j][1].c_str(), "p");
+  
   xjjroot::setgstyle(1);
 
 #define DRAWTEX                                                         \
@@ -70,30 +78,19 @@ int macro(std::string input_avg, std::string tag,
   for(auto& hh : hrelerr) hh->Draw("phist same");
   hrelerrtotal->Draw("hist same");
   DRAWTEX;
-  legPIX->Draw();
+  legERR->Draw();
   pdf.write("figs/comp/syst-"+tag+"-hrelerrtotal.pdf");
   
   // // havg
-  // pdf.prepare();
-  // hempty->Draw("axis");
-  // for(auto& h : havg)
-  //   h->Draw("p same");
-  // legPIX->Draw();
-
-  // DRAWTEX;
-
-  // pdf.write("figs/comp/syst-"+tag+".pdf");
-
-  // // hsym
-  // pdf.prepare();
-  // hempty->Draw("axis");
-  // for(auto& h : hsym)
-  //   h->Draw("p same");
-  // legPIX->Draw();
-
-  // DRAWTEX;
-  
-  // pdf.write("figs/comp/"+tag+"-hsym.pdf");
+  pdf.prepare();
+  hempty->Draw("axis");
+  gsyst->Draw("2 same");
+  for(auto& hh : h1WEfinal)
+    hh->Draw("p same");
+  gsyst->Draw("Y0pX same");
+  legPIX->Draw();
+  DRAWTEX;
+  pdf.write("figs/comp/syst-"+tag+"-hsyst.pdf");
 
   pdf.close();
 

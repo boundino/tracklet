@@ -45,22 +45,20 @@ static const int good[NTRKLT2P][neta] = {
 std::map<std::string, int> idx = {{"12", 0}, {"13", 1}, {"14", 2},
                                   {"23", 3}, {"24", 4}, {"34", 5},
                                   {"56", 6}, {"57", 7}, {"67", 8}};
-auto ms = xjjroot::markerlist_open;
 int macro(std::string input_corr,
           std::string text = "Run 362294 corr w/ EPOS",
           std::string input_comb = "12,13,14,23,24,34,56,57,67",
           std::string input_truth = "null",
-          std::string colors = "default",
           std::string div = "&")
 {
-  if(colors == "default") colors = "602,860,858,419,414,434,635,629,626";
+  xjjroot::silence();
+  
   std::string tag = input_corr;
-  xjjc::sconfig icomb(input_comb), icolors(colors);
-  if(icomb.n() == 1) text = text + ", " + tcomb(icomb.value[0][0]);
-  xjjc::sconfig itext(text, ",", div);
+  xjjc::sconfig icomb(input_comb), itext(text, ",", div);
 
-  std::vector<Color_t> cc;
-  for(auto& icc : icolors.value) cc.push_back(atoi(icc[0].c_str()));
+  auto cc = colours;
+  auto ms = xjjroot::markerlist_open;
+
   std::vector<TH1D*> h1WEfinal(icomb.n(), 0);
   for(int j=0; j<icomb.n(); j++)
     {
@@ -74,7 +72,7 @@ int macro(std::string input_corr,
   std::vector<TGraphAsymmErrors*> gh1WGhadron;
   TLegend* legTRUTH = 0;
   if(input_truth != "null") {
-    xjjc::sconfig itruth(input_truth, ",", div);
+    xjjc::sconfig itruth(input_truth, ",", div, "v");
     gh1WGhadron.resize(itruth.n());
     for(int i=0; i<itruth.n(); i++) {
       auto h = xjjroot::gethist<TH1D>("output/correction-"+itruth.value[i][0]+"-12.root::h1WGhadron");
@@ -200,7 +198,7 @@ int macro(std::string input_corr,
 
 int main(int argc, char* argv[])
 {
-  if(argc==7) return macro(argv[1], argv[2], argv[3], argv[4], argv[5], argv[6]);
+  if(argc==6) return macro(argv[1], argv[2], argv[3], argv[4], argv[5]);
   if(argc==5) return macro(argv[1], argv[2], argv[3], argv[4]);
   if(argc==4) return macro(argv[1], argv[2], argv[3]);
   if(argc==3) return macro(argv[1], argv[2]);
