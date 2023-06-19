@@ -33,25 +33,17 @@ int macro(std::string input_avg, std::string tag,
       hsym[j]->SetName(Form("%s-%i", hsym[j]->GetName(), j));
       xjjroot::setthgrstyle(hsym[j], cc[j], ms[j], 1.0, cc[j]);
     }
-
+  
   TH1F *hhigh = gethhigh(hsym), *hlow = gethlow(hsym);
   // TH1F *hsymhigh = gethsymhigh(hhigh), *hsymlow = gethsymlow(hlow);
   TH1F *herr = getherr(hsym[0], hhigh, hlow),
     *hrelerr = gethrelerr(hsym[0], hhigh, hlow);
-  xjjroot::sethempty(hrelerr);
-  xjjroot::setthgrstyle(hrelerr, kGray+2, -1, -1, kGray+2);
-  
-  auto hempty = (TH1D*)havg[0]->Clone("hempty");
+  xjjroot::setthgrstyle(hrelerr, kGray+3, -1, -1, kGray+3);
+
+  auto hempty = makehempty(hsym[0], ";#it{#eta};d#it{N}_{ch}/d#kern[-0.08]{#it{#eta}}", 1.7);
   hempty->SetAxisRange(-3.4, 3.4, "X");
-  xjjroot::sethempty(hempty);
-  hempty->SetTitle(";#it{#eta};d#it{N}_{ch}/d#kern[-0.08]{#it{#eta}}");
-  hempty->SetMinimum(0);
-  hempty->SetMaximum(havg[0]->GetMaximum()*1.7);
-  
-  auto hemptyrelerr = (TH1D*)hrelerr->Clone("hemptyrelerr");
+  auto hemptyrelerr = makehempty(hrelerr, ";#it{#eta};relative error");
   hemptyrelerr->SetAxisRange(-3.4, 3.4, "X");
-  xjjroot::sethempty(hemptyrelerr);
-  hemptyrelerr->SetMaximum(hrelerr->GetMaximum()*1.7);
   
   float xleg = 0.55, yleg = 0.47;
   auto legPIX = new TLegend(0.3, yleg-0.031*iavg.n(), 0.3+0.2, yleg);

@@ -116,15 +116,13 @@ int macro(std::string input_corr,
     *hlow = gethlow(h1WEfinal);
   TH1F *hsymhigh = gethsymhigh(hhigh),
     *hsymlow = gethsymlow(hlow);
- TH1F *herr = getherr(havg, hsymhigh, hsymlow),
-    *hrelerr = gethrelerr(havg, hsymhigh, hsymlow);
+  TH1F *herr = getherr(hsym, hsymhigh, hsymlow),
+    *hrelerr = gethrelerr(hsym, hsymhigh, hsymlow);
 
-  auto hempty = (TH1D*)h1WEfinal[0]->Clone("hempty");
+  auto hempty = makehempty(havg, ";#it{#eta};d#it{N}_{ch}/d#kern[-0.08]{#it{#eta}}", 1.7);
   hempty->SetAxisRange(-3.2, 3.2, "X");
-  xjjroot::sethempty(hempty);
-  hempty->SetTitle(";#it{#eta};d#it{N}_{ch}/d#kern[-0.08]{#it{#eta}}");
-  hempty->SetMinimum(0);
-  hempty->SetMaximum(havg->GetMaximum()*1.7);
+  auto hemptyerr = makehempty(hrelerr, ";#it{#eta};relative error");
+  hemptyerr->SetAxisRange(-3.2, 3.2, "X");
   
   float xleg = 0.55, yleg = 0.47;
   auto legPIX = new TLegend(0.3, yleg-0.031*h1WEfinal.size(), 0.3+0.2, yleg);
@@ -161,9 +159,7 @@ int macro(std::string input_corr,
     h->Draw("p same");
   havg->Draw("p same");
   legPIX->Draw();
-
   DRAWTEX;
-
   pdf.write("figs/avg/"+tag+".pdf");
 
   // hsym
@@ -173,20 +169,16 @@ int macro(std::string input_corr,
   hsymhigh->Draw("hist same");
   hsym->Draw("p same");
   legOUT->Draw();
-
   DRAWTEX;
-  
   pdf.write("figs/avg/"+tag+"-hsym.pdf");
 
   // hrelerr
   pdf.prepare();
-  hempty->Draw("axis");
+  hemptyerr->Draw("axis");
   hrelerr->Draw("pe same");
-  legOUT->Draw();
-
-  DRAWTEX;
-  
-  pdf.write("figs/avg/"+tag+"-hrelerr.pdf");
+  xjjroot::drawtex(0.88, 0.82-0.033, "deviation from average", 0.030, 31);
+  DRAWTEX;  
+  pdf.write("figs/avg/"+tag+"-hrelerr.png");
 
   pdf.close();
 

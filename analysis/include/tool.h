@@ -119,7 +119,7 @@ TH1F* gethlow(std::vector<TH1D*> h1WEfinal)
   return hlow;
 }
 
-TH1F* getherr(TH1D* havg, TH1F* hhigh, TH1F* hlow) {
+TH1F* getherr(TH1* havg, TH1F* hhigh, TH1F* hlow) {
   TH1F* herr = (TH1F*)havg->Clone("herr");
   herr->SetTitle(";#it{#eta};d#it{N}_{ch}/d#kern[-0.08]{#it{#eta}}");
   for(int i=1; i<=havg->GetNbinsX(); i++) {
@@ -130,7 +130,7 @@ TH1F* getherr(TH1D* havg, TH1F* hhigh, TH1F* hlow) {
   return herr;
 }
 
-TH1F* gethrelerr(TH1D* havg, TH1F* hhigh, TH1F* hlow) {
+TH1F* gethrelerr(TH1* havg, TH1F* hhigh, TH1F* hlow) {
   TH1F* hrelerr = (TH1F*)havg->Clone("hrelerr");
   hrelerr->SetTitle(";#it{#eta};relative uncertainty");
   for(int i=1; i<=havg->GetNbinsX(); i++) {
@@ -140,6 +140,18 @@ TH1F* gethrelerr(TH1D* havg, TH1F* hhigh, TH1F* hlow) {
   }
   hrelerr->Divide(havg);
   return hrelerr;
+}
+
+template<class T>
+T* makehempty(T* horg, std::string title=";#it{#eta};d#it{N}_{ch}/d#kern[-0.08]{#it{#eta}}", float ymax=1.5, float ymin=0) {
+  auto hempty = (T*)horg->Clone(Form("hempty-%s", xjjc::currenttime().c_str()));
+  xjjroot::sethempty(hempty);
+  if(title != "")
+    hempty->SetTitle(title.c_str());
+  hempty->SetMinimum(horg->GetMinimum()*ymin);
+  hempty->SetMaximum(horg->GetMaximum()*ymax);
+  // hempty->SetAxisRange(-3.2, 3.2, "X");
+  return hempty;
 }
 
 #endif
