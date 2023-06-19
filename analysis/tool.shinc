@@ -20,3 +20,13 @@ taglabel[amptsm]="A#scale[0.9]{MPT} #scale[0.9]{(string melting)}"
 taglabel[amptnm]="A#scale[0.9]{MPT} #scale[0.9]{(no melting)}"
 taglabel[362294]=362294
 taglabel[362318]=362318
+
+function fixfiles() {
+    echo $1
+    IFS=',' ; fileinputs=($1) ; unset IFS ;
+    for ff in "${fileinputs[@]}" ; do
+        IFS='&' ; filetags=($ff) ; unset IFS ;
+        file="$2"${filetags[0]}".root"
+        [[ -f $file ]] && echo -e "   \e[32;2m(o) "$file"\e[0m" || echo -e "   \e[31;2m(x) "$file"\e[0m"
+    done
+}
