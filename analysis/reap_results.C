@@ -180,12 +180,13 @@ int reap_results(int type,
       hgaccep->Divide(haccepdata);
    }
 
+   gStyle->SetOptStat(0);
+   gStyle->SetOptFit(101);
+   gStyle->SetPadLeftMargin(0.15);
+
    /* scratch canvas                                                          */
    TCanvas* c1 = new TCanvas("c1", "scratch", 400, 400);
    c1->Clear();
-
-   gStyle->SetOptStat(0);
-   gStyle->SetOptFit(101);
 
    /* nevents                                                                 */
    TH1F* h1WEGevent = new TH1F("h1WEGevent", "", nvz, vzb);
@@ -354,7 +355,6 @@ int reap_results(int type,
       t1->SetTextAlign(23);
 
       gStyle->SetLineScalePS(1);
-      xjjroot::mkdir("figs/fits/");
       xjjroot::mypdf pdf_alphavz(Form("figspdf/fits/alphafit-%s-%i-vz.pdf", label, type), "cfalphavz", 2400, 2000);
       // TCanvas* cfalphavz = new TCanvas("cfalphavz", "", 2400, 2000);
       for (int x=1; x<=neta; x++) {
@@ -405,7 +405,7 @@ int reap_results(int type,
    if (fes) {
       delete h1sdf; h1sdf = (TH1F*)fes->Get("h1sdf")->Clone();
       // delete h1teff; h1teff = (TH1F*)fes->Get("h1teff")->Clone();
-      // delete h1empty; h1empty = (TH1F*)fes->Get("h1empty")->Clone();
+      delete h1empty; h1empty = (TH1F*)fes->Get("h1empty")->Clone();
    }
 
    printf("-------------------------------------------------------------\n");
@@ -658,11 +658,6 @@ int reap_results(int type,
    }
 
    /* analysis stages                                                         */
-   gStyle->SetPadRightMargin(0.043);
-   gStyle->SetPadLeftMargin(0.18);
-   gStyle->SetPadTopMargin(0.1);
-   gStyle->SetPadBottomMargin(0.145);
-
    TCanvas* cstage = new TCanvas("cstage", "", CANVASW, CANVASH);
    // const int yrange[5][2] = {
    //    {80, 8}, {240, 80}, {600, 1200}, {1600, 600}, {3200, 800}};
