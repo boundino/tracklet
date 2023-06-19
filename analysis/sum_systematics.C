@@ -121,6 +121,7 @@ int macro(std::string input_avg, std::string tag,
 
   auto outf = xjjroot::newfile("results/results-"+tag+".root");
   xjjroot::writehist(hsym);
+  xjjroot::writehist(hsyst);
   gsyst->Write();
   xjjroot::writehist(hrelerrtotal);
   for(auto h : h1WEfinal) xjjroot::writehist(h);
