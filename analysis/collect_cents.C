@@ -10,9 +10,10 @@
 #include "include/cosmetics.h"
 #include "include/measurements.h"
 #include "include/xjjcuti.h"
+#include "include/xjjmypdf.h"
 
 #define NCENT   20
-#define OFFSET  5
+#define OFFSET  4
 
 const float npart[NCENT] = {
   2.65, 2.851, 4.464, 6.209, 8.746,
@@ -28,12 +29,10 @@ const float nparterr[NCENT] = {
   1.78,   1.5,  1.61,  1.67,  1.33
 };
 
-// int collect_cents(std::string tag="362294t-Epos_drlt0p5::h1WEfinal") {
-int collect_cents(std::string tag="362294t-Epos_drlt0p5::havg") {
-  auto label = xjjc::str_divide(tag, "::")[0],
-    hname = xjjc::str_divide(tag, "::")[1];
-
-  std::cout<<label<<" "<<hname<<std::endl;
+int collect_cents(std::string tag="362294.cgm.epos.m.v1") {
+  // auto label = xjjc::str_divide(tag, "::")[0],
+  //   hname = xjjc::str_divide(tag, "::")[1];
+  auto label = tag;
 
   // return 0;
 
@@ -43,20 +42,20 @@ int collect_cents(std::string tag="362294t-Epos_drlt0p5::havg") {
   //                         "recreate");
 
   TGraphErrors* g = new TGraphErrors(ntotal); g->SetName("g");
-  gstyle(g, 47, kGray+3);
-  // g->SetMarkerStyle(21); g->SetMarkerColor(COLOUR1);
-  // g->SetFillStyle(1001); g->SetFillColorAlpha(COLOUR1, 0.4);
+  // gstyle(g, 47, kGray+3);
+  g->SetMarkerStyle(47); g->SetMarkerColor(COLOUR0); // COLOUR1
+  g->SetFillStyle(1001); g->SetFillColorAlpha(COLOUR0, 0.4);
   TGraphErrors* gnorm = (TGraphErrors*)g->Clone("gnorm");
   TGraph* gsnp = new TGraph(2 * ntotal + 2);
   gsnp->SetFillStyle(1001); gsnp->SetFillColorAlpha(COLOUR1, 0.4);
 
-  for (int c = OFFSET; c < NCENT; c+=2) {
-    TFile* f = new TFile(Form("output/avg-%s.a.%i.%i.root",
+  for (int c = OFFSET; c < NCENT; c+=1) {
+    TFile* f = new TFile(Form("results/results-%s.s.%i.%i.root",
                               label.c_str(), c, c + 1));
-    TH1F* h = (TH1F*)f->Get(hname.c_str());
-
+    TH1F* h = (TH1F*)f->Get("hsyst");
     int nbins = h->GetNbinsX();
     float midy = h->GetBinContent((nbins + 1) / 2);
+    // float midyerr = (hsymhigh->GetBinContent((nbins + 1) / 2) - hsymlow->GetBinContent((nbins + 1) / 2)) / 2.;
     float midyerr = h->GetBinError((nbins + 1) / 2);
 
     int cindex = c - OFFSET;
@@ -98,13 +97,21 @@ int collect_cents(std::string tag="362294t-Epos_drlt0p5::havg") {
   gstyle(gphobos_cucu_0p2, 42, COLOUR2);
   gstyle(gcms_xexe_5p44, 21, COLOUR1);
 
-  TCanvas* c2 = new TCanvas("c2", "", 600, 600); c2->SetLogy();
+
+  xjjroot::setgstyle(1);
+  
+  xjjroot::mypdf pdf(Form("figspdf/merged/merged-%s.pdf", label.c_str()), "c", 600, 600);
+  pdf.getc()->SetLogy();
   TH1F* gframe = new TH1F("gframe", "", 1, 0, 100);
+  // xjjroot::sethempty(gframe);
   gframe->SetLabelOffset(999, "X"); gframe->SetTickLength(0, "X");
   // gframe->GetXaxis()->SetTitleOffset();
   // htitle(gframe, ";Centrality [%];#frac{dN}{d#eta}#lbar_{#eta=0}");
   htitle(gframe, ";Centrality [%];#scale[1.2]{#LT} d#it{N}_{ch}/d#kern[-0.08]{#it{#eta}} #scale[1.2]{#GT} #lower[0.05]{#scale[1.5]{#kern[-0.6]{#cbar}}} #lower[0.6]{#scale[0.6]{#it{#eta}#kern[0.2]{=}#kern[0.2]{0}}}");
-  hrange(gframe, 1.5, 4000); gframe->Draw();
+  hrange(gframe, 1.5, 4000);
+
+  pdf.prepare();
+  gframe->Draw();
 
   TGaxis* axis = new TGaxis(100, 1.5, 0, 1.5, 0, 100, 510, "-");
   axis->SetLabelOffset(-0.032); axis->SetLabelFont(43);
@@ -112,14 +119,13 @@ int collect_cents(std::string tag="362294t-Epos_drlt0p5::havg") {
 
   gcms_pbpb_2p76->Draw("3 same"); galice_pbpb_5p02->Draw("3 same"); gcms_xexe_5p44->Draw("3 same"); 
   gcms_pbpb_2p76->Draw("pX same"); galice_pbpb_5p02->Draw("pX same"); gcms_xexe_5p44->Draw("pX same");
-  g->Draw("pX same");
+  g->Draw("3 same"); g->Draw("pX same");
 
-  watermark();
-
+  xjjroot::drawCMSleft("Internal", 0.05, -0.1);
   TLegend* l2 = new TLegend(0.54, 0.24, 0.9, 0.48);
   TLegendEntry* hcms = l2->AddEntry((TObject*)0, "CMS", "");
   hcms->SetTextFont(63); hcms->SetTextSize(17);
-  l2->AddEntry(g, "This analysis", "p");
+  l2->AddEntry(g, "PbPb 5.36 TeV", "p");
   l2->AddEntry(gcms_xexe_5p44, "XeXe 5.44 TeV", "p");
   l2->AddEntry(gcms_pbpb_2p76, "PbPb 2.76 TeV", "p");
   TLegendEntry* halice = l2->AddEntry((TObject*)0, "ALICE", "");
@@ -127,7 +133,10 @@ int collect_cents(std::string tag="362294t-Epos_drlt0p5::havg") {
   l2->AddEntry(galice_pbpb_5p02, "PbPb 5.02 TeV", "p");
   lstyle(l2, 43, 15); l2->Draw();
 
-  c2->SaveAs(Form("figs/merged/merged-%s-midy-int1.pdf", label.c_str()));
+  pdf.write(Form("figs/merged/merged-%s-midy-int1.png", label.c_str()));
+  
+
+  // c2->SaveAs(Form("figspdf/merged/merged-%s-midy-int1.pdf", label.c_str()));
 
   // TGraphErrors* gcms_pbpb_2p76_nnpart_x_npart = cms_pbpb_2p76_nnpart_x_npart();
   // TGraphErrors* galice_pbpb_5p02_nnpart_x_npart = alice_pbpb_5p02_nnpart_x_npart();
@@ -203,6 +212,8 @@ int collect_cents(std::string tag="362294t-Epos_drlt0p5::havg") {
   // fout->Write("", TObject::kOverwrite);
   // fout->Close();
 
+  pdf.close();
+  
   return 0;
 }
 
