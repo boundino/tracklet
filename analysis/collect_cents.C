@@ -45,11 +45,7 @@ const float nparterr[NCENT] = {
 // };
 
 int collect_cents(std::string tag="362294.cgm.epos.m.v1") {
-  // auto label = xjjc::str_divide(tag, "::")[0],
-  //   hname = xjjc::str_divide(tag, "::")[1];
   auto label = tag;
-
-  // return 0;
 
   constexpr int ntotal = NCENT - OFFSET;
 
@@ -57,12 +53,10 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v1") {
   //                         "recreate");
 
   TGraphErrors* g = new TGraphErrors(ntotal); g->SetName("g");
-  // gstyle(g, 47, kGray+3);
-  g->SetMarkerStyle(47); g->SetMarkerColor(COLOUR0); // COLOUR1
-  g->SetFillStyle(1001); g->SetFillColorAlpha(COLOUR0, 0.4);
+  gstyle(g, 21, COLOUR0, 0.8); g->SetFillColorAlpha(COLOUR0, 0.4);
   TGraphErrors* gnorm = (TGraphErrors*)g->Clone("gnorm");
   TGraph* gsnp = new TGraph(2 * ntotal + 2);
-  gsnp->SetFillStyle(1001); gsnp->SetFillColorAlpha(COLOUR1, 0.4);
+  gstyle(gsnp, 21, COLOUR0, 0.8); gsnp->SetFillColorAlpha(COLOUR0, 0.3);
 
   for (int c = OFFSET; c < NCENT; c+=1) {
     TFile* f = new TFile(Form("results/results-%s.s.%i.%i.root",
@@ -102,16 +96,19 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v1") {
   // fout->cd();
 
   TGraphErrors* gcms_pbpb_2p76 = cms_pbpb_2p76();
+  TGraphErrors* galice_pbpb_2p76 = alice_pbpb_2p76();
   TGraphErrors* galice_pbpb_5p02 = alice_pbpb_5p02();
+  TGraphErrors* gcms_xexe_5p44 = cms_xexe_5p44();
+  TGraphErrors* galice_xexe_5p44 = alice_xexe_5p44();
   TGraphErrors* gphobos_auau_0p2 = phobos_auau_0p2();
   TGraphErrors* gphobos_cucu_0p2 = phobos_cucu_0p2();
-  TGraphErrors* gcms_xexe_5p44 = cms_xexe_5p44();
-  gstyle(gcms_pbpb_2p76, 20, COLOUR5);
-  gstyle(galice_pbpb_5p02, 22, COLOUR4);
-  gstyle(gphobos_auau_0p2, 47, COLOUR3);
-  gstyle(gphobos_cucu_0p2, 42, COLOUR2);
-  gstyle(gcms_xexe_5p44, 21, COLOUR1);
-
+  gstyle(gcms_pbpb_2p76, 22, COLOUR5);
+  gstyle(galice_pbpb_2p76, 23, COLOUR5);
+  gstyle(galice_pbpb_5p02, 20, COLOUR4);
+  gstyle(gcms_xexe_5p44, 47, COLOUR2);
+  gstyle(galice_xexe_5p44, 34, COLOUR1);
+  gstyle(gphobos_auau_0p2, 29, COLOUR6);
+  gstyle(gphobos_cucu_0p2, 43, COLOUR9);
 
   xjjroot::setgstyle(1);
   
@@ -132,8 +129,12 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v1") {
   axis->SetLabelOffset(-0.032); axis->SetLabelFont(43);
   axis->SetLabelSize(18); axis->Draw();
 
-  gcms_pbpb_2p76->Draw("3 same"); galice_pbpb_5p02->Draw("3 same"); gcms_xexe_5p44->Draw("3 same"); 
-  gcms_pbpb_2p76->Draw("pX same"); galice_pbpb_5p02->Draw("pX same"); gcms_xexe_5p44->Draw("pX same");
+  gcms_pbpb_2p76->Draw("3 same"); galice_pbpb_2p76->Draw("3 same");
+  gcms_xexe_5p44->Draw("3 same"); galice_xexe_5p44->Draw("3 same");
+  galice_pbpb_5p02->Draw("3 same");
+  gcms_pbpb_2p76->Draw("pX same"); galice_pbpb_2p76->Draw("pX same");
+  gcms_xexe_5p44->Draw("pX same"); galice_xexe_5p44->Draw("pX same");
+  galice_pbpb_5p02->Draw("pX same");
   g->Draw("3 same"); g->Draw("pX same");
 
   xjjroot::drawCMSleft("Internal", 0.05, -0.1);
@@ -154,17 +155,23 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v1") {
   // c2->SaveAs(Form("figspdf/merged/merged-%s-midy-int1.pdf", label.c_str()));
 
   TGraphErrors* gcms_pbpb_2p76_nnpart_x_npart = cms_pbpb_2p76_nnpart_x_npart();
+  TGraphErrors* galice_pbpb_2p76_nnpart_x_npart = alice_pbpb_2p76_nnpart_x_npart();
   TGraphErrors* galice_pbpb_5p02_nnpart_x_npart = alice_pbpb_5p02_nnpart_x_npart();
+  TGraphErrors* gcms_xexe_5p44_nnpart_x_npart = cms_xexe_5p44_nnpart_x_npart();
+  TGraphErrors* galice_xexe_5p44_nnpart_x_npart = alice_xexe_5p44_nnpart_x_npart();
   TGraphErrors* gphobos_auau_0p2_nnpart_x_npart = phobos_auau_0p2_nnpart_x_npart();
   TGraphErrors* gphobos_cucu_0p2_nnpart_x_npart = phobos_cucu_0p2_nnpart_x_npart();
-  TGraphErrors* gcms_pp_13p0_nnpart_x_npart = cms_pp_13p0_nnpart_x_npart();
-  TGraphErrors* gcms_ppb_8p16_nnpart_x_npart = cms_ppb_8p16_nnpart_x_npart();
-  gstyle(gcms_pbpb_2p76_nnpart_x_npart, 24, COLOUR5);
-  gstyle(galice_pbpb_5p02_nnpart_x_npart, 30, COLOUR4);
-  gstyle(gphobos_auau_0p2_nnpart_x_npart, 47, COLOUR3);
-  gstyle(gphobos_cucu_0p2_nnpart_x_npart, 42, COLOUR2);
-  gstyle(gcms_pp_13p0_nnpart_x_npart, 43, COLOUR0);
-  gstyle(gcms_ppb_8p16_nnpart_x_npart, 45, COLOUR6);
+  gstyle(gcms_pbpb_2p76_nnpart_x_npart, 22, COLOUR5);
+  gstyle(galice_pbpb_2p76_nnpart_x_npart, 23, COLOUR5);
+  gstyle(galice_pbpb_5p02_nnpart_x_npart, 20, COLOUR4);
+  gstyle(gcms_xexe_5p44_nnpart_x_npart, 47, COLOUR2);
+  gstyle(galice_xexe_5p44_nnpart_x_npart, 34, COLOUR1);
+  gstyle(gphobos_auau_0p2_nnpart_x_npart, 29, COLOUR6);
+  gstyle(gphobos_cucu_0p2_nnpart_x_npart, 43, COLOUR9);
+  // gstyle(gcms_pbpb_2p76_nnpart_x_npart, 24, COLOUR5);
+  // gstyle(galice_pbpb_5p02_nnpart_x_npart, 30, COLOUR4);
+  // gstyle(gcms_pp_13p0_nnpart_x_npart, 43, COLOUR0);
+  // gstyle(gcms_ppb_8p16_nnpart_x_npart, 45, COLOUR6);
 
   pdf.getc()->SetLogy(0);
   pdf.prepare();
@@ -175,14 +182,16 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v1") {
   htitle(gnframe, ";N_{part};#frac{dN}{d#eta}#lbar_{#eta=0}/#LTN_{part}#GT");
   hrange(gnframe, 0, 6); gnframe->Draw();
 
-  gcms_pbpb_2p76_nnpart_x_npart->Draw("p same");
-  galice_pbpb_5p02_nnpart_x_npart->Draw("p same");
-  gphobos_auau_0p2_nnpart_x_npart->Draw("p same");
-  gphobos_cucu_0p2_nnpart_x_npart->Draw("p same");
-  gcms_pp_13p0_nnpart_x_npart->Draw("p same");
-  gcms_ppb_8p16_nnpart_x_npart->Draw("p same");
-  gsnp->Draw("f");
-  gnorm->Draw("p same");
+  gcms_pbpb_2p76_nnpart_x_npart->Draw("3 same"); galice_pbpb_2p76_nnpart_x_npart->Draw("3 same");
+  gcms_xexe_5p44_nnpart_x_npart->Draw("3 same"); galice_xexe_5p44_nnpart_x_npart->Draw("3 same");
+  galice_pbpb_5p02_nnpart_x_npart->Draw("3 same");
+  gphobos_auau_0p2_nnpart_x_npart->Draw("3 same"); gphobos_cucu_0p2_nnpart_x_npart->Draw("3 same");
+  gnorm->Draw("3 same");  
+  gcms_pbpb_2p76_nnpart_x_npart->Draw("pX same"); galice_pbpb_2p76_nnpart_x_npart->Draw("pX same");
+  gcms_xexe_5p44_nnpart_x_npart->Draw("pX same"); galice_xexe_5p44_nnpart_x_npart->Draw("pX same");
+  galice_pbpb_5p02_nnpart_x_npart->Draw("pX same");
+  gphobos_auau_0p2_nnpart_x_npart->Draw("pX same"); gphobos_cucu_0p2_nnpart_x_npart->Draw("pX same");
+  gnorm->Draw("pX same");
 
   // watermark();
 
@@ -196,19 +205,19 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v1") {
   l3->AddEntry(galice_pbpb_5p02_nnpart_x_npart, "PbPb 5.02 TeV", "p");
   lstyle(l3, 43, 15); l3->Draw();
 
-  TLegend* l4 = new TLegend(0.6, 0.18, 0.9, 0.30);
-  TLegendEntry* hphobos = l4->AddEntry((TObject*)0, "PHOBOS", "");
-  hphobos->SetTextFont(63); hphobos->SetTextSize(17);
-  l4->AddEntry(gphobos_auau_0p2_nnpart_x_npart, "AuAu 200 GeV", "p");
-  l4->AddEntry(gphobos_cucu_0p2_nnpart_x_npart, "CuCu 200 GeV", "p");
-  lstyle(l4, 43, 15); l4->Draw();
+  // TLegend* l4 = new TLegend(0.6, 0.18, 0.9, 0.30);
+  // TLegendEntry* hphobos = l4->AddEntry((TObject*)0, "PHOBOS", "");
+  // hphobos->SetTextFont(63); hphobos->SetTextSize(17);
+  // l4->AddEntry(gphobos_auau_0p2_nnpart_x_npart, "AuAu 200 GeV", "p");
+  // l4->AddEntry(gphobos_cucu_0p2_nnpart_x_npart, "CuCu 200 GeV", "p");
+  // lstyle(l4, 43, 15); l4->Draw();
 
-  TLegend* l5 = new TLegend(0.35, 0.18, 0.65, 0.30);
-  TLegendEntry* h3cms = l5->AddEntry((TObject*)0, "CMS", "");
-  h3cms->SetTextFont(63); h3cms->SetTextSize(17);
-  l5->AddEntry(gcms_pp_13p0_nnpart_x_npart, "pp 13 TeV", "p");
-  l5->AddEntry(gcms_ppb_8p16_nnpart_x_npart, "pPb 8.16 TeV", "p");
-  lstyle(l5, 43, 15); l5->Draw();
+  // TLegend* l5 = new TLegend(0.35, 0.18, 0.65, 0.30);
+  // TLegendEntry* h3cms = l5->AddEntry((TObject*)0, "CMS", "");
+  // h3cms->SetTextFont(63); h3cms->SetTextSize(17);
+  // l5->AddEntry(gcms_pp_13p0_nnpart_x_npart, "pp 13 TeV", "p");
+  // l5->AddEntry(gcms_ppb_8p16_nnpart_x_npart, "pPb 8.16 TeV", "p");
+  // lstyle(l5, 43, 15); l5->Draw();
 
   pdf.write(Form("figs/merged/merged-%s-midynorm-int1.png", label.c_str()));
   
