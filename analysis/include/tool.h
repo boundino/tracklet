@@ -2,6 +2,7 @@
 #define __INCLUDE_TOOL_H_
 
 #include "xjjcuti.h"
+#include "cosmetics.h"
 
 static const int goodrange[] = { 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0 };
 void goodresult(TH1* h, const int* goodbin = goodrange) {
@@ -152,6 +153,43 @@ T* makehempty(T* horg, std::string title=";#it{#eta};d#it{N}_{ch}/d#kern[-0.08]{
   hempty->SetMaximum(horg->GetMaximum()*ymax);
   // hempty->SetAxisRange(-3.2, 3.2, "X");
   return hempty;
+}
+
+std::vector<TH1D*> combh1WEfinal(std::string filename,
+                                 TLegend* legPIX = 0,
+                                 std::string input_comb="12,13,14,23,24,34,56,57,67") {
+  if(!legPIX) {
+    legPIX = new TLegend(0.3, 0.47-0.031*9, 0.3+0.2, 0.47);
+    xjjroot::setleg(legPIX, 0.028);
+  }
+  xjjc::sconfig icomb(input_comb);
+  std::vector<TH1D*> h1WEfinal(icomb.n(), 0);
+  for(int j=0; j<icomb.n(); j++)
+    {
+      h1WEfinal[j] = xjjroot::gethist<TH1D>(filename + "::h1WEfinal-"+icomb.value[j][0]);
+      xjjroot::setthgrstyle(h1WEfinal[j], colours[j], xjjroot::markerlist_open[j], 0.8, colours[j]);
+
+      legPIX->AddEntry(h1WEfinal[j], Form("%s", tcomb(icomb.value[j][0]).c_str()), "p");
+    }
+  return h1WEfinal;
+}
+
+std::vector<TGraphErrors*> combgh1WGhadron(std::string filename,
+                                           TLegend* legTRUTH = 0,
+                                           std::string input_truth="epos&E#scale[0.8]{POS} #scale[0.9]{LHC},hydjet&H#scale[0.8]{YDJET},amptsm&A#scale[0.9]{MPT} #scale[0.9]{(string melting)},amptnm&A#scale[0.9]{MPT} #scale[0.9]{(no melting)}") {
+  xjjc::sconfig itruth(input_truth, ",", "&", "v");
+  if(!legTRUTH) {
+    legTRUTH = new TLegend(0.55, 0.47-0.031*itruth.n(), 0.55+0.2, 0.47);
+    xjjroot::setleg(legTRUTH, 0.028);
+  }
+  std::vector<TGraphErrors*> gh1WGhadron;
+  for(int i=0; i<itruth.n(); i++) {
+    auto gr = xjjroot::gethist<TGraphErrors>(filename + "::gh1WGhadron-"+itruth.value[i][0]);
+    if(!gr) continue;
+    gh1WGhadron.push_back(gr);
+    legTRUTH->AddEntry(gr, Form("%s", itruth.value[i][1].c_str()), "l");
+  }
+  return gh1WGhadron;
 }
 
 #endif

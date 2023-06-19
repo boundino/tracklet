@@ -21,7 +21,7 @@ taglabel[amptnm]="A#scale[0.9]{MPT} #scale[0.9]{(no melting)}"
 taglabel[362294]=362294
 taglabel[362318]=362318
 
-function fixfiles() {
+function checkfiles() {
     echo $1
     IFS=',' ; fileinputs=($1) ; unset IFS ;
     for ff in "${fileinputs[@]}" ; do

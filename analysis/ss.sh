@@ -8,7 +8,7 @@ source tool.shinc
 group="362294.cgm.epos.m.v1"
 
 CENTS=(4 20)
-# for i in {20..5} ; do CENTS+=($((i-1)) $i) ; done ;
+for i in {20..5} ; do CENTS+=($((i-1)) $i) ; done ;
 # for i in 20 10 ; do CENTS+=($((i-1)) $i) ; done ;
 
 ##

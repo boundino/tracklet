@@ -15,18 +15,20 @@
 
 auto ms = xjjroot::markerlist_solid;
 int macro(std::string input_avg, std::string tag,
-          std::string text = "Run 362294 corr w/ EPOS",
-          std::string input_truth = "null",
-          std::string div = "&")
+          std::string text = "Run 362294 corr w/ EPOS")
 {
+  std::string div = "&";
   xjjroot::silence();
-  xjjc::sconfig iavg(input_avg, ",", div), itext(text);
+  xjjc::sconfig iavg(input_avg, ",", div), itext(text, ",", div);
 
   std::vector<Color_t> cc = xjjroot::colorlist_light;
   TH1F* hsym = xjjroot::gethist<TH1F>(iavg.value[0][0]+".root::hsym");
   auto legPIX = new TLegend(0.3, 0.47-0.031*9, 0.3+0.2, 0.47);
   xjjroot::setleg(legPIX, 0.028);
   auto h1WEfinal = combh1WEfinal(iavg.value[0][0]+".root", legPIX);
+  auto legTRUTH = new TLegend(0.55, 0.47-0.031*4, 0.55+0.2, 0.47);
+  xjjroot::setleg(legTRUTH, 0.028);
+  auto gh1WGhadron = combgh1WGhadron(iavg.value[0][0]+".root", legTRUTH);
 
   std::vector<float> relerr2(hsym->GetNbinsX(), 0);
   std::vector<TH1F*> hrelerr(iavg.n(), 0);
@@ -48,7 +50,8 @@ int macro(std::string input_avg, std::string tag,
   }
   xjjroot::setthgrstyle(hrelerrtotal, kBlack, 21, 1.0, kBlack);
   TGraphErrors* gsyst = xjjana::shifthistcenter(hsyst, "gsyst", 0);
-  xjjroot::setthgrstyle(gsyst, kGray+3, 21, 0.8, 1, 1, 1, kGray+3, 0.2, 1001);
+  xjjroot::setthgrstyle(gsyst, kGray+3, 21, 0.8, 1, 1, 1, kGray+3, 0.3, 1001, 1, 1);
+  xjjroot::setthgrstyle(hsym, kGray+3, 21, 0.8, 1, 1, 1, kGray+3, 0.3, 1001, 1, 1);
 
   auto hempty = makehempty(hsym, ";#it{#eta};d#it{N}_{ch}/d#kern[-0.08]{#it{#eta}}", 1.7);
   hempty->SetAxisRange(-3.2, 3.4, "X");  
@@ -84,30 +87,32 @@ int macro(std::string input_avg, std::string tag,
   // // havg
   pdf.prepare();
   hempty->Draw("axis");
+  for(auto& hh : gh1WGhadron)
+    hh->Draw("c same");
   gsyst->Draw("2 same");
   for(auto& hh : h1WEfinal)
     hh->Draw("p same");
-  gsyst->Draw("Y0pX same");
+  hsym->Draw("p same");
+  // gsyst->Draw("Y0pX same");
   legPIX->Draw();
+  legTRUTH->Draw();
   DRAWTEX;
   pdf.write("figs/comp/syst-"+tag+"-hsyst.pdf");
 
   pdf.close();
 
-  // auto outf = xjjroot::newfile("results/comp-"+tag+".root");
-  // xjjroot::writehist(herr);
-  // xjjroot::writehist(hrelerr);
-  // xjjroot::writehist(hhigh);
-  // xjjroot::writehist(hlow);
-  // for(auto h : hsym) xjjroot::writehist(h);
-  // outf->Close();
+  auto outf = xjjroot::newfile("results/results-"+tag+".root");
+  xjjroot::writehist(hsym);
+  gsyst->Write();
+  xjjroot::writehist(hrelerrtotal);
+  for(auto h : h1WEfinal) xjjroot::writehist(h);
+  outf->Close();
   
   return 0;
 }
 
 int main(int argc, char* argv[])
 {
-  if(argc==6) return macro(argv[1], argv[2], argv[3], argv[4], argv[5]);
   if(argc==4) return macro(argv[1], argv[2], argv[3]);
   if(argc==3) return macro(argv[1], argv[2]);
   return 1;

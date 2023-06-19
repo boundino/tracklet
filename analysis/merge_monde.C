@@ -69,14 +69,14 @@ int macro(std::string input_corr,
       xjjroot::setthgrstyle(h1WEfinal[j], cc[j], ms[j], 0.8, cc[j]);
     }
 
-  std::vector<TGraphAsymmErrors*> gh1WGhadron;
+  std::vector<TGraphErrors*> gh1WGhadron;
   TLegend* legTRUTH = 0;
   if(input_truth != "null") {
     xjjc::sconfig itruth(input_truth, ",", div, "v");
     gh1WGhadron.resize(itruth.n());
     for(int i=0; i<itruth.n(); i++) {
       auto h = xjjroot::gethist<TH1D>("output/correction-"+itruth.value[i][0]+"-12.root::h1WGhadron");
-      gh1WGhadron[i] = xjjana::shifthistcenter(h, "gh1WGhadron-"+itruth.value[i][0], 0, "X0");
+      gh1WGhadron[i] = xjjana::shifthistcenter(h, "gh1WGhadron-"+xjjc::str_erasestar(itruth.value[i][0], ".*"), 0, true);
       xjjroot::setthgrstyle(gh1WGhadron[i], kBlack, 20, 0.8, kBlack, atoi(itruth.value[i][2].c_str()), 1);
     }
     legTRUTH = new TLegend(0.55, 0.47-0.031*gh1WGhadron.size(), 0.55+0.2, 0.47);
@@ -191,6 +191,8 @@ int macro(std::string input_corr,
   xjjroot::writehist(hrelerr);
   for(auto& h : h1WEfinal)
     xjjroot::writehist(h);
+  for(auto& g : gh1WGhadron)
+    g->Write();
   outf->Close();
 
   return 0;
