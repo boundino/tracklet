@@ -43,11 +43,11 @@ int macro(std::string input_avg, std::string tag,
   xjjroot::setthgrstyle(hrelerrtotal, kBlack, 21, 1.0, kBlack);
 
   auto hempty = makehempty(hsym, ";#it{#eta};d#it{N}_{ch}/d#kern[-0.08]{#it{#eta}}", 1.7);
-  hempty->SetAxisRange(-3.4, 3.4, "X");  
+  hempty->SetAxisRange(-3.2, 3.4, "X");  
   auto hemptyrelerr = makehempty(hrelerrtotal, ";#it{#eta};relative error");
-  hemptyrelerr->SetAxisRange(-3.4, 3.4, "X");
+  hemptyrelerr->SetAxisRange(-3.2, 3.4, "X");
   
-  float xleg = 0.45, yleg = 0.72;
+  float xleg = 0.42, yleg = 0.72;
   auto legPIX = new TLegend(xleg, yleg-0.031*iavg.n(), xleg+0.2, yleg);
   xjjroot::setleg(legPIX, 0.028);
   for(int j=0; j<iavg.n(); j++)
