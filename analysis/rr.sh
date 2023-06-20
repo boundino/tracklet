@@ -4,32 +4,19 @@ make reap_results || exit 1
 make merge_monde || exit 1
 
 maxdr2=0.25 ; tagdr="drlt0p5" ; tagver="v1"
+
 TYPES=(12 13 14 23 24 34 56 57 67)
 # TYPES=(11 22 33 44 55 66 77)
-CENTS=(
-    # 4 20
-    # 10 11
-    # 19 20
-    # 18 19
-    # 17 18
-    # 16 17
-    # 15 16
-    # 14 15
-    # 13 14
-    # 12 13
-    # 11 12
-    # 9 10
-    # 8 9
-    # 7 8
-    # 6 7
-    # 5 6
-    # 4 5
-    # 3 4
-    0 20
-)
+CENTS=(4 20)
+for i in {20..5} ; do CENTS+=($((i-1)) $i) ; done ; 
+# for i in 20 10 ; do CENTS+=($((i-1)) $i) ; done ; 
+# CENTS+=(0 20)
+
+
 ##
 INPUTS_MC=(
-    /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230322_pixel_230129_EposLHC_ReggeGribovParton_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4.root,epos
+    /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230612_pixel_230512_EposLHC_ReggeGribovParton_PbPb_5360GeV_230322_GTv9Th4.root,epos
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230322_pixel_230129_EposLHC_ReggeGribovParton_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4.root,epos
     # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230322_pixel_230129_AMPT_StringMelting_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4.root,amptsm
     # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230322_pixel_230129_Hydjet_Drum5F_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4.root,hydjet
     # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230315_samelayer_pixel_230129_EposLHC_ReggeGribovParton_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4.root,epos
@@ -37,7 +24,7 @@ INPUTS_MC=(
 
 INPUTS_DATA=(
     /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230322_pixel_230126_HITestRaw0-6_HIRun2022A_MBPVfilTh4_362294.root,362294
-    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230612_pixel_230126_HITestRaw3_HIRun2022A_MBPVfilTh4_362318.root,362318
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230612_pixel_230126_HITestRaw1n3_HIRun2022A_MBPVfilTh4_362318.root,362318
     # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230315_samelayer_pixel_230126_HITestRaw0-6_HIRun2022A_MBPVfilTh4_362294.root,362294
     # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230322_pixel_230129_EposLHC_ReggeGribovParton_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4.root,eposCLOSE
     # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230322_pixel_230129_AMPT_StringMelting_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4.root,amptsmCLOSE
@@ -115,11 +102,14 @@ do
                 done # for t in ${TYPES[@]}
                 wait
             }
-            trash figs/corrections/alpha-$tages-*.png \
-                  figs/corrections/sdfrac-$tages-*.png \
-                  figs/corrections/trigger-$tages-*.png \
-                  figs/acceptance/accep-$tages-*.png \
-                  figspdf/fits/alphafit-$tages-*.pdf
+
+            trash figs/acceptance/accep-$tages-*.png
+            [[ $cmin -eq 0 && $cmax -eq 20 ]] || {
+                trash figs/corrections/alpha-$tages-*.png \
+                      figs/corrections/sdfrac-$tages-*.png \
+                      figs/corrections/trigger-$tages-*.png \
+                      figspdf/fits/alphafit-$tages-*.pdf
+            }
         }
 
         ##############################################
@@ -168,7 +158,7 @@ do
             done
             mergecomb=${mergecomb##,}
             [[ ${4:-0} -eq 1 ]] && {
-                truth="epos.m.v1.s."$cmin"."$cmax"&"${taglabel[epos]}"&2,hydjet.m.v1.s."$cmin"."$cmax"&"${taglabel[hydjet]}"&1,amptsm.m.v1.s."$cmin"."$cmax"&"${taglabel[amptsm]}"&4"
+                truth="epos.m.v1.s."$cmin"."$cmax"&"${taglabel[epos]}"&2,hydjet.m.v1.s."$cmin"."$cmax"&"${taglabel[hydjet]}"&1,amptsm.m.v1.s."$cmin"."$cmax"&"${taglabel[amptsm]}"&4,amptnm.m.v1.s."$cmin"."$cmax"&"${taglabel[amptnm]}"&6"
                 [[ $TAG_DATA == *CLOSE* ]] && {
                     [[ $cmin -eq 0 && $cmax -eq 20 ]] &&
                         { truth="incl."${TAG_DATA%%CLOSE}".m.v1&"${taglabel[${TAG_DATA%%CLOSE}]}"&1" ; } ||
@@ -184,5 +174,4 @@ do
     done # while [ $c -lt $((${#CENTS[@]}-1)) ]
 
 done # for mm in ${INPUTS_MC[@]}
-
 
