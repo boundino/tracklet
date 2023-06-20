@@ -1,0 +1,9 @@
+*
+!*/
+!*.*
+build/
+figs/
+figspdf/
+output/
+data/
+git/
