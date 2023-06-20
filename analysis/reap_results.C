@@ -371,7 +371,7 @@ int reap_results(int type,
             t1->DrawLatexNDC(0.5, 1.0, Form("%.1f < v_{z} < %.1f", vzb[z-1], vzb[z]));
          }
 
-         pdf_alphavz.write(Form("figs/fits/alphafit-%s-%i-eta-%i.png", label, type, x));
+         pdf_alphavz.write();
          // cfalphavz->SaveAs(Form("figs/fits/alphafit-%s-%i-eta-%i.png", label, type, x));
       }
       pdf_alphavz.close();
@@ -394,7 +394,7 @@ int reap_results(int type,
             t1->DrawLatexNDC(0.5, 1.0, Form("%.1f < #eta < %.1f", etab[x-1], etab[x]));
          }
 
-         pdf_alphaeta.write(Form("figs/fits/alphafit-%s-%i-vz-%i.png", label, type, z));
+         pdf_alphaeta.write();
          // cfalphaeta->SaveAs(Form("figs/fits/alphafit-%s-%i-vz-%i.png", label, type, z));
       }
       pdf_alphaeta.close();
