@@ -3,16 +3,18 @@
 
 #include "TColor.h"
 
-#define COLOUR0   TColor::GetColor("#515151")
-#define COLOUR1   TColor::GetColor("#f2777a")
-#define COLOUR2   TColor::GetColor("#f99157")
-#define COLOUR3   TColor::GetColor("#ffcc66")
-#define COLOUR4   TColor::GetColor("#99cc99")
-#define COLOUR5   TColor::GetColor("#6699cc")
-#define COLOUR6   TColor::GetColor("#9999cc")
-#define COLOUR7   TColor::GetColor("#db2d20")
-#define COLOUR8   TColor::GetColor("#01a252")
-#define COLOUR9   TColor::GetColor("#01a0e4")
+#define COLOUR0   TColor::GetColor("#515151") // gray
+#define COLOUR1   TColor::GetColor("#f2777a") // red
+// #define COLOUR2   TColor::GetColor("#f99157") // orange
+#define COLOUR2   TColor::GetColor("#e99960") // orange
+#define COLOUR3   TColor::GetColor("#ffcc66") // yellow
+#define COLOUR4   TColor::GetColor("#99cc99") // green
+#define COLOUR5   TColor::GetColor("#6699cc") // blue
+#define COLOUR6   TColor::GetColor("#9999cc") // purple
+#define COLOUR7   TColor::GetColor("#db2d20") // sat red
+#define COLOUR8   TColor::GetColor("#01a252") // sat green
+// #define COLOUR9   TColor::GetColor("#01a0e4") // sat blue
+#define COLOUR9   TColor::GetColor("#5C76DA") // sat blue
 
 static const std::vector<int> colours = {
    COLOUR1, COLOUR2, COLOUR3,
@@ -184,6 +186,7 @@ void gstyle(TGraph* g, int style, int colour, float size) {
    g->SetMarkerStyle(style);
    g->SetMarkerColor(colour);
    g->SetLineColor(colour);
+   g->SetFillColorAlpha(colour, 0.4);
 }
 
 void atstyle(TGaxis* a, int font, float size, float offset) {
