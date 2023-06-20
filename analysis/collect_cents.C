@@ -11,6 +11,7 @@
 #include "include/measurements.h"
 #include "include/xjjcuti.h"
 #include "include/xjjmypdf.h"
+#include "include/tool.h"
 
 #define NCENT   20
 #define OFFSET  4
@@ -30,6 +31,7 @@ const float nparterr[NCENT] = {
   0. ,   0. ,  0. ,  0. ,  0.
 };
 
+void drawdNdeta(xjjroot::mypdf& pdf, std::string tag);
 int collect_cents(std::string tag="362294.cgm.epos.m.v1") {
   auto label = tag;
 
@@ -441,6 +443,8 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v1") {
   // fout->Write("", TObject::kOverwrite);
   // fout->Close();
 
+  drawdNdeta(pdf, label);
+  
   pdf.close();
   
   return 0;
@@ -454,4 +458,88 @@ int main(int argc, char* argv[]) {
 
   printf("usage: ./collect_cents [label]\n");
   return 1;
+}
+
+class spectrum {
+public:
+  spectrum(std::string filename, std::string title, float xleg, float yleg);
+  void style(int color, Style_t ms);
+  TH1D* hsym;
+  TGraphErrors* gsyst;
+  std::vector<TGraphErrors*> gh1WGhadron;
+  TLegend* leg;
+  std::string title;
+};
+
+spectrum::spectrum(std::string filename, std::string title, float xleg, float yleg) {
+  TFile* f = new TFile(filename.c_str());
+  hsym = xjjroot::gethist<TH1D>(filename + "::hsym");
+  gsyst = xjjroot::gethist<TGraphErrors>(filename + "::gsyst");
+  leg = new TLegend(xleg, yleg-0.030*6, xleg+0.2, yleg);
+  xjjroot::setleg(leg, 0.028);
+  leg->AddEntry((TObject*)0, Form("#bf{%s}", title.c_str()), NULL);
+  leg->AddEntry(gsyst, "data", "pf");
+  gh1WGhadron = combgh1WGhadron(filename, leg);
+  for(auto gr : gh1WGhadron) gr->SetLineWidth(2);
+}
+
+void spectrum::style(int color, Style_t ms) {
+  hsym->SetMarkerStyle(ms);
+  hsym->SetMarkerColor(color);
+  gsyst->SetMarkerStyle(ms);
+  gsyst->SetMarkerColor(color);
+  gsyst->SetFillColor(color);
+  gsyst->SetFillColorAlpha(color, 0.4);
+  gsyst->SetLineStyle(0);
+  for(auto gr : gh1WGhadron) gr->SetLineColor(color);
+}
+
+void drawdNdeta(xjjroot::mypdf& pdf, std::string tag) {
+  spectrum sp_4_20(Form("results/results-%s.s.%i.%i.root", tag.c_str(), 4, 20), "0 - 80\%", 0.55, 0.45),
+    sp_19_20(Form("results/results-%s.s.%i.%i.root", tag.c_str(), 19, 20), "0 - 5\%", 0.26, 0.60),
+    sp_9_10(Form("results/results-%s.s.%i.%i.root", tag.c_str(), 9, 10), "50 - 55\%", 0.60, 0.60);
+  sp_4_20.style(COLOUR0, 21);
+  sp_19_20.style(COLOUR1, 21);
+  sp_9_10.style(COLOUR5, 21);
+
+  auto hempty = makehempty(sp_4_20.hsym, ";#it{#eta};d#it{N}_{ch}/d#kern[-0.08]{#it{#eta}}", 1.7);
+  hempty->SetAxisRange(-3.2, 3.4, "X");
+  auto hempty2 = makehempty(sp_19_20.hsym, ";#it{#eta};d#it{N}_{ch}/d#kern[-0.08]{#it{#eta}}", 3, 0.04);
+  hempty2->SetAxisRange(-3.2, 3.4, "X");
+  
+  xjjroot::setgstyle(1);
+  xjjc::sconfig itext("362294 corr. w. E#scale[0.8]{POS} #scale[0.9]{LHC}", ",", "&");
+#define DRAWTEX                                                         \
+  for(int i=0; i<itext.n(); i++)                                        \
+    { xjjroot::drawtex(0.24, 0.79-i*0.033, itext.value[i][0].c_str(), 0.030, 13); } \
+  xjjroot::drawtex(0.88, 0.82, tcent(tag).c_str(), 0.030, 31);          \
+  xjjroot::drawCMSleft("Internal", 0.05, -0.1);                         \
+  xjjroot::drawCMSright("PbPb (5.36 TeV)");                             \
+  
+  pdf.prepare();
+  hempty->Draw("axis");
+  for(auto& hh : sp_4_20.gh1WGhadron)
+    hh->Draw("c same");
+  sp_4_20.gsyst->Draw("2 same");
+  sp_4_20.hsym->Draw("p same");
+  sp_4_20.leg->Draw();
+  DRAWTEX;
+  pdf.write(Form("figs/results/merged-%s-fulleta-1.pdf", tag.c_str()));
+
+  pdf.getc()->SetLogy();
+  pdf.prepare();
+  hempty2->Draw("axis");
+  for(auto& hh : sp_19_20.gh1WGhadron)
+    hh->Draw("c same");
+  sp_19_20.gsyst->Draw("2 same");
+  sp_19_20.hsym->Draw("p same");
+  sp_19_20.leg->Draw();
+  for(auto& hh : sp_9_10.gh1WGhadron)
+    hh->Draw("c same");
+  sp_9_10.gsyst->Draw("2 same");
+  sp_9_10.hsym->Draw("p same");
+  sp_9_10.leg->Draw();
+  DRAWTEX;
+  pdf.write(Form("figs/results/merged-%s-fulleta-2.pdf", tag.c_str()));
+
 }

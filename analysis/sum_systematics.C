@@ -48,6 +48,7 @@ int macro(std::string input_avg, std::string tag,
     hsyst->SetBinError(i+1, relerr2[i]*hsyst->GetBinContent(i+1));
     hrelerrtotal->SetBinContent(i+1, relerr2[i]);
   }
+  // xjjroot::printhistvalue(hsyst);
   xjjroot::setthgrstyle(hrelerrtotal, kBlack, 21, 1.0, kBlack);
   TGraphErrors* gsyst = xjjana::shifthistcenter(hsyst, "gsyst", 0);
   xjjroot::setthgrstyle(gsyst, kGray+3, 21, 0.8, 0, 0, 0, kGray+3, 0.3, 1001, 1, 1);
@@ -125,6 +126,7 @@ int macro(std::string input_avg, std::string tag,
   gsyst->Write();
   xjjroot::writehist(hrelerrtotal);
   for(auto h : h1WEfinal) xjjroot::writehist(h);
+  for(auto g : gh1WGhadron) g->Write();
   outf->Close();
   
   return 0;
