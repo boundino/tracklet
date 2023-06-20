@@ -79,7 +79,7 @@ int reap_results(int type,
    }
 
    const char* mult = multhandle ? "nhit2" : "ntracklet";
-   printf("$ event multiplicity handle: number of tracklets\n");
+   printf("$ event multiplicity handle: %s\n", mult);
 
    printf("$ additinal selection: %s\n", asel);
 
