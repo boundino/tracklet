@@ -2,6 +2,8 @@
 #define __INCLUDE_TOOL_H_
 
 #include "xjjcuti.h"
+#include "xjjanauti.h"
+#include "sconfig.h"
 #include "cosmetics.h"
 
 static const int goodrange[] = { 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0 };
@@ -149,8 +151,8 @@ T* makehempty(T* horg, std::string title=";#it{#eta};d#it{N}_{ch}/d#kern[-0.08]{
   xjjroot::sethempty(hempty);
   if(title != "")
     hempty->SetTitle(title.c_str());
-  hempty->SetMinimum(horg->GetMinimum()*ymin);
-  hempty->SetMaximum(horg->GetMaximum()*ymax);
+  hempty->SetMinimum(xjjana::gethnonzerominimum(horg)*ymin);
+  hempty->SetMaximum(xjjana::gethmaximum(horg)*ymax);
   // hempty->SetAxisRange(-3.2, 3.2, "X");
   return hempty;
 }
