@@ -197,7 +197,11 @@ static const std::vector<varinfo_t> options_tracklet_1d = {
       "ntracklet", {"number of tracklets"}, {"ntracklet"},
       {{100, 0, 20000}},
       {600, 600}, 0x01, "(1)", "", TTree::kMaxEntries
-   }
+   }, {
+     "dr-wide", {"#Deltar"}, {"sqrt(dr2)"},
+     {{100, 0, 2.0}},
+     {600, 600}, 0x11, "abs(dr2)<4.0", "", 1000
+   },
 };
 
 int compare_tracklets(std::vector<varinfo_t> const& options,
