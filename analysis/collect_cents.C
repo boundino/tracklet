@@ -31,6 +31,7 @@ const float nparterr[NCENT] = {
   0. ,   0. ,  0. ,  0. ,  0.
 };
 
+std::string cmsprel = "CMS";
 void drawdNdeta(xjjroot::mypdf& pdf, std::string tag);
 int collect_cents(std::string tag="362294.cgm.epos.m.v1") {
   auto label = tag;
@@ -118,6 +119,7 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v1") {
 
   pdf.getc()->SetLogy();
   TH1F* gframe = new TH1F("gframe", "", 1, 0, 100);
+  xjjroot::sethempty(gframe, 0, 0);
   gframe->SetLabelOffset(999, "X"); gframe->SetTickLength(0, "X");
   htitle(gframe, ";Centrality [%];#scale[1.2]{#LT} d#it{N}_{ch}/d#kern[-0.08]{#it{#eta}} #scale[1.2]{#GT} #lower[0.05]{#scale[1.5]{#kern[-0.6]{#cbar}}} #lower[0.6]{#scale[0.6]{#it{#eta}#kern[0.2]{=}#kern[0.2]{0}}}");
   hrange(gframe, 1.5, 4000);
@@ -126,8 +128,8 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v1") {
   gframe->Draw();
 
   TGaxis* axis = new TGaxis(100, 1.5, 0, 1.5, 0, 100, 510, "-");
-  axis->SetLabelOffset(-0.032); axis->SetLabelFont(43);
-  axis->SetLabelSize(18); axis->Draw();
+  axis->SetLabelOffset(-0.032); axis->SetLabelFont(42);
+  axis->SetLabelSize(0.045); axis->Draw();
 
   gcms_pbpb_2p76->Draw("3 same"); galice_pbpb_2p76->Draw("3 same");
   gcms_xexe_5p44->Draw("3 same"); galice_xexe_5p44->Draw("3 same");
@@ -137,19 +139,21 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v1") {
   galice_pbpb_5p02->Draw("pX same");
   g->Draw("3 same"); g->Draw("pX same");
 
-  xjjroot::drawCMSleft("Internal", 0.05, -0.1);
-  TLegend* l2 = new TLegend(0.54, 0.23, 0.9, 0.53);
+  float heightperline = 0.0375;
+  
+  xjjroot::drawCMSleft(cmsprel.c_str(), 0.05, -0.1); // Preliminary
+  TLegend* l2 = new TLegend(0.54, 0.53-heightperline*8, 0.9, 0.53);
   TLegendEntry* hcms = l2->AddEntry((TObject*)0, "CMS", "");
-  hcms->SetTextFont(63); hcms->SetTextSize(17);
+  hcms->SetTextFont(63); hcms->SetTextSize(18);
   l2->AddEntry(g, "PbPb 5.36 TeV", "p");
   l2->AddEntry(gcms_pbpb_2p76, "PbPb 2.76 TeV", "p");
   l2->AddEntry(gcms_xexe_5p44, "XeXe 5.44 TeV", "p");
   TLegendEntry* halice = l2->AddEntry((TObject*)0, "ALICE", "");
-  halice->SetTextFont(63); halice->SetTextSize(17);
+  halice->SetTextFont(63); halice->SetTextSize(18);
   l2->AddEntry(galice_pbpb_5p02, "PbPb 5.02 TeV", "p");
   l2->AddEntry(galice_pbpb_2p76, "PbPb 2.76 TeV", "p");
   l2->AddEntry(galice_xexe_5p44, "XeXe 5.44 TeV", "p");
-  lstyle(l2, 43, 15); l2->Draw();
+  lstyle(l2, 43, 18); l2->Draw();
 
   pdf.write(Form("figs/results/merged-%s-midy-int1.pdf", label.c_str()));
   
@@ -174,13 +178,14 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v1") {
 
   pdf.prepare();
   TH1F* g2aframe = new TH1F("g2aframe", "", 1, 0, 100);
+  xjjroot::sethempty(g2aframe, 0, 0);
   g2aframe->SetLabelOffset(999, "X"); g2aframe->SetTickLength(0, "X");
   htitle(g2aframe, ";Centrality [%];#lower[-0.05]{(}1/#kern[0.05]{2#it{A}}#lower[-0.05]{)}#kern[-0.1]{ }#scale[1.2]{#LT} d#it{N}_{ch}/d#kern[-0.08]{#it{#eta}} #scale[1.2]{#GT} #lower[0.05]{#scale[1.5]{#kern[-0.6]{#cbar}}} #lower[0.6]{#scale[0.6]{#it{#eta}#kern[0.2]{=}#kern[0.2]{0}}}");
   g2aframe->SetTitleOffset(1.3, "Y");
-  hrange(g2aframe, 0, 5.5); g2aframe->Draw();
+  hrange(g2aframe, 1.e-5, 5.5); g2aframe->Draw();
   TGaxis* axis2 = new TGaxis(100, 0, 0, 0, 0, 100, 510, "-");
-  axis2->SetLabelOffset(-0.032); axis2->SetLabelFont(43);
-  axis2->SetLabelSize(18); axis2->Draw();
+  axis2->SetLabelOffset(-0.032); axis2->SetLabelFont(42);
+  axis2->SetLabelSize(0.045); axis2->Draw();
  
   gcms_pbpb_2p76_n2a->Draw("3 same"); galice_pbpb_2p76_n2a->Draw("3 same");
   gcms_xexe_5p44_n2a->Draw("3 same"); galice_xexe_5p44_n2a->Draw("3 same");
@@ -193,29 +198,29 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v1") {
   gphobos_auau_0p2_n2a->Draw("pX same"); gphobos_cucu_0p2_n2a->Draw("pX same");
   g2a->Draw("pX same");
 
-  xjjroot::drawCMSleft("Internal", 0.05, -0.1);
-  TLegend* l7 = new TLegend(0.23, 0.77-0.15, 0.53, 0.77);
+  xjjroot::drawCMSleft(cmsprel.c_str(), 0.05, -0.1); // Preliminary
+  TLegend* l7 = new TLegend(0.23, 0.77-heightperline*4, 0.53, 0.77);
   TLegendEntry* h3cms = l7->AddEntry((TObject*)0, "CMS", "");
-  h3cms->SetTextFont(63); h3cms->SetTextSize(17);
+  h3cms->SetTextFont(63); h3cms->SetTextSize(18);
   l7->AddEntry(gnorm, "PbPb 5.36 TeV", "p");
   l7->AddEntry(gcms_pbpb_2p76_n2a, "PbPb 2.76 TeV", "p");
   l7->AddEntry(gcms_xexe_5p44_n2a, "XeXe 5.44 TeV", "p");
-  lstyle(l7, 43, 15); l7->Draw();
+  lstyle(l7, 43, 18); l7->Draw();
   
-  TLegend* l8 = new TLegend(0.23, 0.57-0.15, 0.53, 0.57);
+  TLegend* l8 = new TLegend(0.23, 0.57-heightperline*4, 0.53, 0.57);
   TLegendEntry* h3alice = l8->AddEntry((TObject*)0, "ALICE", "");
-  h3alice->SetTextFont(63); h3alice->SetTextSize(17);
+  h3alice->SetTextFont(63); h3alice->SetTextSize(18);
   l8->AddEntry(galice_pbpb_5p02_n2a, "PbPb 5.02 TeV", "p");
   l8->AddEntry(galice_pbpb_2p76_n2a, "PbPb 2.76 TeV", "p");
   l8->AddEntry(galice_xexe_5p44_n2a, "XeXe 5.44 TeV", "p");
-  lstyle(l8, 43, 15); l8->Draw();
+  lstyle(l8, 43, 18); l8->Draw();
 
-  TLegend* l9 = new TLegend(0.53, 0.62, 0.73, 0.62+0.11); // 0.11
+  TLegend* l9 = new TLegend(0.53, 0.77-heightperline*4, 0.73, 0.77-heightperline);
   TLegendEntry* h3phobos = l9->AddEntry((TObject*)0, "PHOBOS", "");
-  h3phobos->SetTextFont(63); h3phobos->SetTextSize(17);
+  h3phobos->SetTextFont(63); h3phobos->SetTextSize(18);
   l9->AddEntry(gphobos_auau_0p2_n2a, "AuAu 200 GeV", "p");
   l9->AddEntry(gphobos_cucu_0p2_n2a, "CuCu 200 GeV", "p");
-  lstyle(l9, 43, 15); l9->Draw();
+  lstyle(l9, 43, 18); l9->Draw();
 
   pdf.write(Form("figs/results/merged-%s-midy2a-int1.pdf", label.c_str()));
   
@@ -240,6 +245,7 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v1") {
   pdf.prepare();
   // TCanvas* c3 = new TCanvas("c3", "", 600, 600);
   TH1F* gnframe = new TH1F("gnframe", "", 1, -20, 420);
+  xjjroot::sethempty(gnframe, 0, 0);
   // htitle(gnframe, ";N_{part};#frac{dN}{d#eta}#lbar_{#eta=0}/#LTN_{part}#GT");
   htitle(gnframe, ";#scale[1.2]{#LT}#it{N}#lower[0.4]{#scale[0.7]{#kern[-0.05]{part}}}#scale[1.2]{#GT};#lower[-0.05]{(}1/#kern[0.1]{#scale[1.2]{#LT}}#lower[0.1]{#it{N}}#lower[0.5]{#scale[0.6]{#kern[-0.08]{part}}}#scale[1.2]{#GT}#lower[-0.05]{)}#kern[-0.1]{ }#scale[1.2]{#LT}d#it{N}_{ch}/d#kern[-0.08]{#it{#eta}}#scale[1.2]{#GT}#lower[0.05]{#scale[1.5]{#kern[-0.6]{#cbar}}}#lower[0.6]{#scale[0.6]{#kern[0.15]{#cbar}#it{#eta}#kern[-0.4]{#cbar}#kern[0.2]{<}#kern[0.2]{0.5}}}");
   gnframe->SetTitleOffset(1.3, "Y");
@@ -256,36 +262,36 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v1") {
   gphobos_auau_0p2_nnpart_x_npart->Draw("pX same"); gphobos_cucu_0p2_nnpart_x_npart->Draw("pX same");
   gnorm->Draw("pX same");
 
-  xjjroot::drawCMSleft("Internal", 0.05, -0.1);
-  TLegend* l3 = new TLegend(0.6, 0.57-0.15, 0.9, 0.57);
+  xjjroot::drawCMSleft(cmsprel.c_str(), 0.05, -0.1); // Preliminary
+  TLegend* l3 = new TLegend(0.6, 0.57-heightperline*4, 0.9, 0.57);
   TLegendEntry* h2cms = l3->AddEntry((TObject*)0, "CMS", "");
-  h2cms->SetTextFont(63); h2cms->SetTextSize(17);
+  h2cms->SetTextFont(63); h2cms->SetTextSize(18);
   l3->AddEntry(gnorm, "PbPb 5.36 TeV", "p");
   l3->AddEntry(gcms_pbpb_2p76_nnpart_x_npart, "PbPb 2.76 TeV", "p");
   l3->AddEntry(gcms_xexe_5p44_nnpart_x_npart, "XeXe 5.44 TeV", "p");
-  lstyle(l3, 43, 15); l3->Draw();
+  lstyle(l3, 43, 18); l3->Draw();
   
-  TLegend* l6 = new TLegend(0.6, 0.34-0.15, 0.9, 0.34);
+  TLegend* l6 = new TLegend(0.6, 0.34-heightperline*4, 0.9, 0.34);
   TLegendEntry* h2alice = l6->AddEntry((TObject*)0, "ALICE", "");
-  h2alice->SetTextFont(63); h2alice->SetTextSize(17);
+  h2alice->SetTextFont(63); h2alice->SetTextSize(18);
   l6->AddEntry(galice_pbpb_5p02_nnpart_x_npart, "PbPb 5.02 TeV", "p");
   l6->AddEntry(galice_pbpb_2p76_nnpart_x_npart, "PbPb 2.76 TeV", "p");
   l6->AddEntry(galice_xexe_5p44_nnpart_x_npart, "XeXe 5.44 TeV", "p");
-  lstyle(l6, 43, 15); l6->Draw();
+  lstyle(l6, 43, 18); l6->Draw();
 
-  TLegend* l4 = new TLegend(0.23, 0.19, 0.53, 0.30);
+  TLegend* l4 = new TLegend(0.23, 0.34-heightperline*4, 0.53, 0.34-heightperline);
   TLegendEntry* hphobos = l4->AddEntry((TObject*)0, "PHOBOS", "");
-  hphobos->SetTextFont(63); hphobos->SetTextSize(17);
+  hphobos->SetTextFont(63); hphobos->SetTextSize(18);
   l4->AddEntry(gphobos_auau_0p2_nnpart_x_npart, "AuAu 200 GeV", "p");
   l4->AddEntry(gphobos_cucu_0p2_nnpart_x_npart, "CuCu 200 GeV", "p");
-  lstyle(l4, 43, 15); l4->Draw();
+  lstyle(l4, 43, 18); l4->Draw();
 
   // TLegend* l5 = new TLegend(0.35, 0.18, 0.65, 0.30);
   // TLegendEntry* h3cms = l5->AddEntry((TObject*)0, "CMS", "");
-  // h3cms->SetTextFont(63); h3cms->SetTextSize(17);
+  // h3cms->SetTextFont(63); h3cms->SetTextSize(18);
   // l5->AddEntry(gcms_pp_13p0_nnpart_x_npart, "pp 13 TeV", "p");
   // l5->AddEntry(gcms_ppb_8p16_nnpart_x_npart, "pPb 8.16 TeV", "p");
-  // lstyle(l5, 43, 15); l5->Draw();
+  // lstyle(l5, 43, 18); l5->Draw();
 
   pdf.write(Form("figs/results/merged-%s-midynorm-int1.pdf", label.c_str()));
   
@@ -309,6 +315,7 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v1") {
 
   pdf.prepare();
   TH1F* gn2aframe = new TH1F("gn2aframe", "", 1, -0.02, 1);
+  xjjroot::sethempty(gn2aframe, 0, 0);
   htitle(gn2aframe, ";#scale[1.2]{#LT}#it{N}#lower[0.4]{#scale[0.7]{#kern[-0.05]{part}}}#scale[1.2]{#GT}#kern[0.1]{#lower[0.15]{#scale[1.25]{/}}}2#it{A};#lower[-0.05]{(}1/#kern[0.1]{#scale[1.2]{#LT}}#lower[0.1]{#it{N}}#lower[0.5]{#scale[0.6]{#kern[-0.08]{part}}}#scale[1.2]{#GT}#lower[-0.05]{)}#kern[-0.1]{ }#scale[1.2]{#LT}d#it{N}_{ch}/d#kern[-0.08]{#it{#eta}}#scale[1.2]{#GT}#lower[0.05]{#scale[1.5]{#kern[-0.6]{#cbar}}}#lower[0.6]{#scale[0.6]{#kern[0.15]{#cbar}#it{#eta}#kern[-0.4]{#cbar}#kern[0.2]{<}#kern[0.2]{0.5}}}");
   gn2aframe->SetTitleOffset(1.3, "Y");
   hrange(gn2aframe, 0, 6); gn2aframe->Draw();
@@ -324,36 +331,36 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v1") {
   gphobos_auau_0p2_nnpart_x_npart2a->Draw("pX same"); gphobos_cucu_0p2_nnpart_x_npart2a->Draw("pX same");
   gnorm2a->Draw("pX same");
 
-  xjjroot::drawCMSleft("Internal", 0.05, -0.1);
-  TLegend* l10 = new TLegend(0.6, 0.57-0.15, 0.9, 0.57);
+  xjjroot::drawCMSleft(cmsprel.c_str(), 0.05, -0.1); // Preliminary
+  TLegend* l10 = new TLegend(0.6, 0.57-heightperline*4, 0.9, 0.57);
   TLegendEntry* h4cms = l10->AddEntry((TObject*)0, "CMS", "");
-  h4cms->SetTextFont(63); h4cms->SetTextSize(17);
+  h4cms->SetTextFont(63); h4cms->SetTextSize(18);
   l10->AddEntry(gnorm2a, "PbPb 5.36 TeV", "p");
   l10->AddEntry(gcms_pbpb_2p76_nnpart_x_npart2a, "PbPb 2.76 TeV", "p");
   l10->AddEntry(gcms_xexe_5p44_nnpart_x_npart2a, "XeXe 5.44 TeV", "p");
-  lstyle(l10, 43, 15); l10->Draw();
+  lstyle(l10, 43, 18); l10->Draw();
   
-  TLegend* l11 = new TLegend(0.6, 0.34-0.15, 0.9, 0.34);
+  TLegend* l11 = new TLegend(0.6, 0.34-heightperline*4, 0.9, 0.34);
   TLegendEntry* h4alice = l11->AddEntry((TObject*)0, "ALICE", "");
-  h4alice->SetTextFont(63); h4alice->SetTextSize(17);
+  h4alice->SetTextFont(63); h4alice->SetTextSize(18);
   l11->AddEntry(galice_pbpb_5p02_nnpart_x_npart2a, "PbPb 5.02 TeV", "p");
   l11->AddEntry(galice_pbpb_2p76_nnpart_x_npart2a, "PbPb 2.76 TeV", "p");
   l11->AddEntry(galice_xexe_5p44_nnpart_x_npart2a, "XeXe 5.44 TeV", "p");
-  lstyle(l11, 43, 15); l11->Draw();
+  lstyle(l11, 43, 18); l11->Draw();
 
-  TLegend* l12 = new TLegend(0.23, 0.19, 0.53, 0.30);
+  TLegend* l12 = new TLegend(0.23, 0.34-heightperline*4, 0.53, 0.34-heightperline);
   TLegendEntry* h4phobos = l12->AddEntry((TObject*)0, "PHOBOS", "");
-  h4phobos->SetTextFont(63); h4phobos->SetTextSize(17);
+  h4phobos->SetTextFont(63); h4phobos->SetTextSize(18);
   l12->AddEntry(gphobos_auau_0p2_nnpart_x_npart2a, "AuAu 200 GeV", "p");
   l12->AddEntry(gphobos_cucu_0p2_nnpart_x_npart2a, "CuCu 200 GeV", "p");
-  lstyle(l12, 43, 15); l12->Draw();
+  lstyle(l12, 43, 18); l12->Draw();
 
   // TLegend* l5 = new TLegend(0.35, 0.18, 0.65, 0.30);
   // TLegendEntry* h3cms = l5->AddEntry((TObject*)0, "CMS", "");
-  // h3cms->SetTextFont(63); h3cms->SetTextSize(17);
+  // h3cms->SetTextFont(63); h3cms->SetTextSize(18);
   // l5->AddEntry(gcms_pp_13p0_nnpart_x_npart2a, "pp 13 TeV", "p");
   // l5->AddEntry(gcms_ppb_8p16_nnpart_x_npart2a, "pPb 8.16 TeV", "p");
-  // lstyle(l5, 43, 15); l5->Draw();
+  // lstyle(l5, 43, 18); l5->Draw();
 
   pdf.write(Form("figs/results/merged-%s-midynorm2a-int1.pdf", label.c_str()));
   
@@ -377,6 +384,7 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v1") {
 
   pdf.prepare();
   TH1F* gn2a2aframe = new TH1F("gn2a2aframe", "", 1, -0.02, 1);
+  xjjroot::sethempty(gn2a2aframe, 0, 0);
   htitle(gn2a2aframe, ";#scale[1.2]{#LT}#it{N}#lower[0.4]{#scale[0.7]{#kern[-0.05]{part}}}#scale[1.2]{#GT}#kern[0.1]{#lower[0.15]{#scale[1.25]{/}}}2#it{A};#lower[-0.05]{(}1/#kern[0.05]{2#it{A}}#lower[-0.05]{)}#kern[-0.1]{ }#scale[1.2]{#LT}d#it{N}_{ch}/d#kern[-0.08]{#it{#eta}}#scale[1.2]{#GT}#lower[0.05]{#scale[1.5]{#kern[-0.6]{#cbar}}}#lower[0.6]{#scale[0.6]{#kern[0.15]{#cbar}#it{#eta}#kern[-0.4]{#cbar}#kern[0.2]{<}#kern[0.2]{0.5}}}");
   gn2a2aframe->SetTitleOffset(1.3, "Y");
   hrange(gn2a2aframe, 0, 6); gn2a2aframe->Draw();
@@ -392,36 +400,36 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v1") {
   gphobos_auau_0p2_n2a_x_npart2a->Draw("pX same"); gphobos_cucu_0p2_n2a_x_npart2a->Draw("pX same");
   gnorm2a2a->Draw("pX same");
 
-  xjjroot::drawCMSleft("Internal", 0.05, -0.1);
-  TLegend* l13 = new TLegend(0.23, 0.77-0.15, 0.53, 0.77);
+  xjjroot::drawCMSleft(cmsprel.c_str(), 0.05, -0.1); // Preliminary
+  TLegend* l13 = new TLegend(0.22, 0.77-heightperline*4, 0.52, 0.77);
   TLegendEntry* h5cms = l13->AddEntry((TObject*)0, "CMS", "");
-  h5cms->SetTextFont(63); h5cms->SetTextSize(17);
+  h5cms->SetTextFont(63); h5cms->SetTextSize(18);
   l13->AddEntry(gnorm2a2a, "PbPb 5.36 TeV", "p");
   l13->AddEntry(gcms_pbpb_2p76_n2a_x_npart2a, "PbPb 2.76 TeV", "p");
   l13->AddEntry(gcms_xexe_5p44_n2a_x_npart2a, "XeXe 5.44 TeV", "p");
-  lstyle(l13, 43, 15); l13->Draw();
+  lstyle(l13, 43, 18); l13->Draw();
   
-  TLegend* l14 = new TLegend(0.23, 0.57-0.15, 0.53, 0.57);
+  TLegend* l14 = new TLegend(0.22, 0.57-heightperline*4, 0.52, 0.57);
   TLegendEntry* h5alice = l14->AddEntry((TObject*)0, "ALICE", "");
-  h5alice->SetTextFont(63); h5alice->SetTextSize(17);
+  h5alice->SetTextFont(63); h5alice->SetTextSize(18);
   l14->AddEntry(galice_pbpb_5p02_n2a_x_npart2a, "PbPb 5.02 TeV", "p");
   l14->AddEntry(galice_pbpb_2p76_n2a_x_npart2a, "PbPb 2.76 TeV", "p");
   l14->AddEntry(galice_xexe_5p44_n2a_x_npart2a, "XeXe 5.44 TeV", "p");
-  lstyle(l14, 43, 15); l14->Draw();
+  lstyle(l14, 43, 18); l14->Draw();
 
-  TLegend* l15 = new TLegend(0.53, 0.62, 0.73, 0.62+0.11);
+  TLegend* l15 = new TLegend(0.53, 0.77-heightperline*4, 0.73, 0.77-heightperline);
   TLegendEntry* h5phobos = l15->AddEntry((TObject*)0, "PHOBOS", "");
-  h5phobos->SetTextFont(63); h5phobos->SetTextSize(17);
+  h5phobos->SetTextFont(63); h5phobos->SetTextSize(18);
   l15->AddEntry(gphobos_auau_0p2_n2a_x_npart2a, "AuAu 200 GeV", "p");
   l15->AddEntry(gphobos_cucu_0p2_n2a_x_npart2a, "CuCu 200 GeV", "p");
-  lstyle(l15, 43, 15); l15->Draw();
+  lstyle(l15, 43, 18); l15->Draw();
 
   // TLegend* l5 = new TLegend(0.35, 0.18, 0.65, 0.30);
   // TLegendEntry* h3cms = l5->AddEntry((TObject*)0, "CMS", "");
-  // h3cms->SetTextFont(63); h3cms->SetTextSize(17);
+  // h3cms->SetTextFont(63); h3cms->SetTextSize(18);
   // l5->AddEntry(gcms_pp_13p0_n2a_x_npart2a, "pp 13 TeV", "p");
   // l5->AddEntry(gcms_ppb_8p16_n2a_x_npart2a, "pPb 8.16 TeV", "p");
-  // lstyle(l5, 43, 15); l5->Draw();
+  // lstyle(l5, 43, 18); l5->Draw();
 
   pdf.write(Form("figs/results/merged-%s-midynorm2a2a-int1.pdf", label.c_str()));
   
@@ -475,8 +483,8 @@ spectrum::spectrum(std::string filename, std::string title, float xleg, float yl
   TFile* f = new TFile(filename.c_str());
   hsym = xjjroot::gethist<TH1D>(filename + "::hsym");
   gsyst = xjjroot::gethist<TGraphErrors>(filename + "::gsyst");
-  leg = new TLegend(xleg, yleg-0.030*6, xleg+0.2, yleg);
-  xjjroot::setleg(leg, 0.028);
+  leg = new TLegend(xleg, yleg-0.032*6, xleg+0.2, yleg);
+  xjjroot::setleg(leg, 0.03);
   leg->AddEntry((TObject*)0, Form("#bf{%s}", title.c_str()), NULL);
   leg->AddEntry(gsyst, "data", "pf");
   gh1WGhadron = combgh1WGhadron(filename, leg);
@@ -508,13 +516,14 @@ void drawdNdeta(xjjroot::mypdf& pdf, std::string tag) {
   hempty2->SetAxisRange(-3.2, 3.4, "X");
   
   xjjroot::setgstyle(1);
-  xjjc::sconfig itext("362294 corr. w. E#scale[0.8]{POS} #scale[0.9]{LHC}", ",", "&");
+  // xjjc::sconfig itext("362294 corr. w. E#scale[0.8]{POS} #scale[0.9]{LHC}", ",", "&");
+  xjjc::sconfig itext("", ",", "&");
 #define DRAWTEX                                                         \
   for(int i=0; i<itext.n(); i++)                                        \
     { xjjroot::drawtex(0.24, 0.79-i*0.033, itext.value[i][0].c_str(), 0.030, 13); } \
   xjjroot::drawtex(0.88, 0.82, tcent(tag).c_str(), 0.030, 31);          \
-  xjjroot::drawCMSleft("Internal", 0.05, -0.1);                         \
-  xjjroot::drawCMSright("PbPb (5.36 TeV)");                             \
+  xjjroot::drawCMSleft(cmsprel.c_str(), 0.05, -0.1); /*Preliminary*/                 \
+  xjjroot::drawCMSright("PbPb #sqrt{s_{NN}} = 5.36 TeV");               \
   
   pdf.prepare();
   hempty->Draw("axis");

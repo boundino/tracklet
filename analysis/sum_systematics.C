@@ -48,7 +48,7 @@ int macro(std::string input_avg, std::string tag,
     hsyst->SetBinError(i+1, relerr2[i]*hsyst->GetBinContent(i+1));
     hrelerrtotal->SetBinContent(i+1, relerr2[i]);
   }
-  // xjjroot::printhistvalue(hsyst);
+  xjjroot::printhistvalue(hsyst, {17, 18, 19, 20});
   xjjroot::setthgrstyle(hrelerrtotal, kBlack, 21, 1.0, kBlack);
   TGraphErrors* gsyst = xjjana::shifthistcenter(hsyst, "gsyst");
   xjjroot::setthgrstyle(gsyst, kGray+3, 21, 0.8, 0, 0, 0, kGray+3, 0.3, 1001, 1, 1);
@@ -76,7 +76,7 @@ int macro(std::string input_avg, std::string tag,
     { xjjroot::drawtex(0.24, 0.79-i*0.033, itext.value[i][0].c_str(), 0.030, 13); } \
   xjjroot::drawtex(0.88, 0.82, tcent(tag).c_str(), 0.030, 31);          \
   xjjroot::drawCMSleft("Internal", 0.05, -0.1);                         \
-  xjjroot::drawCMSright("PbPb (5.36 TeV)");                             \
+  xjjroot::drawCMSright("PbPb #sqrt{s_{NN}} = 5.36 TeV");                             \
   
   xjjroot::mypdf pdf("figspdf/comp/syst-"+tag+".pdf", "c", 600, 600);
 

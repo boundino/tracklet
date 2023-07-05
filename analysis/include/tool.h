@@ -185,9 +185,12 @@ std::vector<TGraphErrors*> combgh1WGhadron(std::string filename,
     xjjroot::setleg(legTRUTH, 0.028);
   }
   std::vector<TGraphErrors*> gh1WGhadron;
+  gStyle->SetLineStyleString(9,"40 20");
   for(int i=0; i<itruth.n(); i++) {
     auto gr = xjjroot::gethist<TGraphErrors>(filename + "::gh1WGhadron-"+itruth.value[i][0]);
     if(!gr) continue;
+    if(xjjc::str_contains(itruth.value[i][0], "amptsm"))
+      gr->SetLineStyle(9);
     gh1WGhadron.push_back(gr);
     legTRUTH->AddEntry(gr, Form("%s", itruth.value[i][1].c_str()), "l");
   }
