@@ -19,6 +19,7 @@
 #include "include/cosmetics.h"
 #include "include/defines.h"
 #include "include/xjjmypdf.h"
+#include "include/xjjanauti.h"
 
 #define OPT(val)  options[opt].val
 #define CS(str)   str.data()
@@ -495,7 +496,7 @@ int compare_map_pixels(std::vector<varinfo_t> const& options,
 
   PIXELS1P(SETUP_2D_PIXELS_COMPARE)
 
-    xjjroot::mypdf* pdf_DRAW_2D_PIXELS_COMPARE = new xjjroot::mypdf(Form("figspdf/ratio/ratio-%s-%s.pdf", OS(id), label), "c_DRAW_2D_RATIO",  600, 600);
+    xjjroot::mypdf* pdf_DRAW_2D_PIXELS_COMPARE = new xjjroot::mypdf(Form("figspdf/ratio/ratio-%s-%s.pdf", OS(id), label), "c_DRAW_2D_RATIO", OPT(csize[0]), OPT(csize[1]));
 
 #define DRAW_2D_PIXELS_COMPARE(q)                                       \
   for (std::size_t j = 0; j < nfiles; ++j) {                            \
@@ -614,7 +615,7 @@ int compare_map_tracklets(std::vector<varinfo_t> const& options,
 
   TRKLTS2P(SETUP_2D_TRACKLETS_COMPARE)
 
-    xjjroot::mypdf* pdf_DRAW_2D_TRACKLETS_COMPARE = new xjjroot::mypdf(Form("figspdf/ratio/ratio-%s-%s.pdf", OS(id), label), "c_DRAW_2D_RATIO",  600, 600);
+    xjjroot::mypdf* pdf_DRAW_2D_TRACKLETS_COMPARE = new xjjroot::mypdf(Form("figspdf/ratio/ratio-%s-%s.pdf", OS(id), label), "c_DRAW_2D_RATIO",  OPT(csize[0]), OPT(csize[1]));
 
 #define DRAW_2D_TRACKLETS_COMPARE(q, w)                                 \
   for (std::size_t j = 0; j < nfiles; ++j) {                            \
