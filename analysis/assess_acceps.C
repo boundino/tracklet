@@ -16,6 +16,7 @@
 
 #include "include/xjjrootuti.h"
 #include "include/xjjanauti.h"
+#include "include/xjjmypdf.h"
 
 void convert(TH2* h1) {
   TH1D* hvz = (TH1D*)h1->ProjectionY("hvz");
@@ -38,11 +39,11 @@ int assess_acceps(bool recreate, int type, float maxdr2,
   TTree *tdata = 0, *tmc = 0;
   TFile* fout = 0;
   if (recreate) {
-      tdata = (TTree*)TFile::Open(data_list)->Get(Form("TrackletTree%i", type));
-      tmc = (TTree*)TFile::Open(mc_list)->Get(Form("TrackletTree%i", type));
-      xjjroot::mkdir(Form("%s/acceptance-%i.root", path, type));
-      fout = new TFile(Form("%s/acceptance-%i.root", path, type), "recreate");
-    }
+    tdata = (TTree*)TFile::Open(data_list)->Get(Form("TrackletTree%i", type));
+    tmc = (TTree*)TFile::Open(mc_list)->Get(Form("TrackletTree%i", type));
+    xjjroot::mkdir(Form("%s/acceptance-%i.root", path, type));
+    fout = new TFile(Form("%s/acceptance-%i.root", path, type), "recreate");
+  }
   else
     fout = TFile::Open(Form("%s/acceptance-%i.root", path, type));
 
@@ -53,31 +54,31 @@ int assess_acceps(bool recreate, int type, float maxdr2,
   //
   TH2D *hdata, *hdatacoarse, *hmc, *hmccoarse;
   if (!recreate) {
-      hdata = (TH2D*)fout->Get("hdata");
-      hdatacoarse = (TH2D*)fout->Get("hdatacoarse");
-      hmc = (TH2D*)fout->Get("hmc");
-      hmccoarse = (TH2D*)fout->Get("hmccoarse");
-    }
+    hdata = (TH2D*)fout->Get("hdata");
+    hdatacoarse = (TH2D*)fout->Get("hdatacoarse");
+    hmc = (TH2D*)fout->Get("hmc");
+    hmccoarse = (TH2D*)fout->Get("hmccoarse");
+  }
   else {
-      int nfeta = neta * 100;
-      int nfvz = nvz * 100;
+    int nfeta = neta * 100;
+    int nfvz = nvz * 100;
 
-      hdata = new TH2D("hdata", "", nfeta, etamin, etamax, nfvz, vzmin, vzmax);
-      tdata->Project("hdata", "vz[1]:eta1", Form("dr2<%f && abs(vz[1])<15", maxdr2), "");
-      convert(hdata);
-      htitle(hdata, ";#eta;v_{z}");
-      hdatacoarse = (TH2D*)hdata->Clone("hdatacoarse");
-      hdatacoarse->RebinX(nfeta / neta);
-      hdatacoarse->RebinY(nfvz / nvz);
+    hdata = new TH2D("hdata", "", nfeta, etamin, etamax, nfvz, vzmin, vzmax);
+    tdata->Project("hdata", "vz[1]:eta1", Form("dr2<%f && abs(vz[1])<15", maxdr2), "");
+    convert(hdata);
+    htitle(hdata, ";#eta;v_{z}");
+    hdatacoarse = (TH2D*)hdata->Clone("hdatacoarse");
+    hdatacoarse->RebinX(nfeta / neta);
+    hdatacoarse->RebinY(nfvz / nvz);
 
-      hmc = new TH2D("hmc", "", nfeta, etamin, etamax, nfvz, vzmin, vzmax);
-      tmc->Project("hmc", "vz[1]:eta1", Form("dr2<%f && abs(vz[1])<15", maxdr2), "");
-      convert(hmc);
-      htitle(hmc, ";#eta;v_{z}");
-      hmccoarse = (TH2D*)hmc->Clone("hmccoarse");
-      hmccoarse->RebinX(nfeta / neta);
-      hmccoarse->RebinY(nfvz / nvz);
-    }
+    hmc = new TH2D("hmc", "", nfeta, etamin, etamax, nfvz, vzmin, vzmax);
+    tmc->Project("hmc", "vz[1]:eta1", Form("dr2<%f && abs(vz[1])<15", maxdr2), "");
+    convert(hmc);
+    htitle(hmc, ";#eta;v_{z}");
+    hmccoarse = (TH2D*)hmc->Clone("hmccoarse");
+    hmccoarse->RebinX(nfeta / neta);
+    hmccoarse->RebinY(nfvz / nvz);
+  }
 
   TH2D* hratio = (TH2D*)hmccoarse->Clone("hratio");
   hratio->Divide(hdatacoarse);
@@ -98,37 +99,37 @@ int assess_acceps(bool recreate, int type, float maxdr2,
   hmccoarse->SetStats(0);
 
   if (recreate) {
-      fout->cd();
-      hdata->Write();
-      hdatacoarse->Write();
-      hmc->Write();
-      hmccoarse->Write();
-    }
+    fout->cd();
+    hdata->Write();
+    hdatacoarse->Write();
+    hmc->Write();
+    hmccoarse->Write();
+  }
 
-  xjjroot::mkdir("figs/corrections/x");
-  //
-  TCanvas* c1 = new TCanvas("c1", "", 1200, 600);
-  c1->Divide(2, 1);
-  c1->cd(1);
-  hdata->Draw("colz");
-  c1->cd(2);
-  hmc->Draw("colz");
-  c1->SaveAs(Form("figs/corrections/geometric-%s-%i-fine.png", label, type));
-
-  TCanvas* c2 = new TCanvas("c2", "", 1200, 600);
-  c2->Divide(2, 1);
-  c2->cd(1);
-  hdatacoarse->Draw("colz");
-  c2->cd(2);
-  hmccoarse->Draw("colz");
-  c2->SaveAs(Form("figs/corrections/geometric-%s-%i-binned.png", label, type));
-
-  TCanvas* c3 = new TCanvas("c3", "", 600, 600);
-  // hratio->SetMaximum(5);
+  xjjroot::mypdf pdf(Form("figspdf/geometric/geometric-%s-%i.pdf", label, type), "c", 600, 600);
+  pdf.prepare();
   hratio->Draw("colz");
   xjjana::drawhoutline(h2amapxev, kRed);
-  c3->SaveAs(Form("figs/corrections/geometric-%s-%i.png", label, type));
+  pdf.write(Form("figs/corrections/geometric-%s-%i.png", label, type));
 
+  pdf.prepare();
+  hdata->Draw("colz");
+  pdf.write(Form("figs/geometric/geometric-%s-%i-hdata.png", label, type));
+
+  pdf.prepare();
+  hdatacoarse->Draw("colz");
+  pdf.write(Form("figs/geometric/geometric-%s-%i-hdatacoarse.png", label, type));
+
+  pdf.prepare();
+  hmc->Draw("colz");
+  pdf.write(Form("figs/geometric/geometric-%s-%i-hmc.png", label, type));
+
+  pdf.prepare();
+  hmccoarse->Draw("colz");
+  pdf.write(Form("figs/geometric/geometric-%s-%i-hmccoarse.png", label, type));
+
+  pdf.close();
+  
   return 0;
 }
 
