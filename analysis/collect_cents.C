@@ -155,7 +155,7 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v1") {
   l2->AddEntry(galice_xexe_5p44, "XeXe 5.44 TeV", "p");
   lstyle(l2, 43, 18); l2->Draw();
 
-  pdf.write(Form("figs/results/merged-%s-midy-int1.pdf", label.c_str()));
+  pdf.write(Form("figs/results/merged-%s-midy-int1.pdf", label.c_str()), "Q");
   
   // c2->SaveAs(Form("figspdf/results/merged-%s-midy-int1.pdf", label.c_str()));
 
@@ -222,7 +222,7 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v1") {
   l9->AddEntry(gphobos_cucu_0p2_n2a, "CuCu 200 GeV", "p");
   lstyle(l9, 43, 18); l9->Draw();
 
-  pdf.write(Form("figs/results/merged-%s-midy2a-int1.pdf", label.c_str()));
+  pdf.write(Form("figs/results/merged-%s-midy2a-int1.pdf", label.c_str()), "Q");
   
   //  
   TGraphErrors* gcms_pbpb_2p76_nnpart_x_npart = cms_pbpb_2p76_nnpart_x_npart();
@@ -293,7 +293,7 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v1") {
   // l5->AddEntry(gcms_ppb_8p16_nnpart_x_npart, "pPb 8.16 TeV", "p");
   // lstyle(l5, 43, 18); l5->Draw();
 
-  pdf.write(Form("figs/results/merged-%s-midynorm-int1.pdf", label.c_str()));
+  pdf.write(Form("figs/results/merged-%s-midynorm-int1.pdf", label.c_str()), "Q");
   
   //  
   TGraphErrors* gcms_pbpb_2p76_nnpart_x_npart2a = cms_pbpb_2p76_nnpart_x_npart2a();
@@ -362,7 +362,7 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v1") {
   // l5->AddEntry(gcms_ppb_8p16_nnpart_x_npart2a, "pPb 8.16 TeV", "p");
   // lstyle(l5, 43, 18); l5->Draw();
 
-  pdf.write(Form("figs/results/merged-%s-midynorm2a-int1.pdf", label.c_str()));
+  pdf.write(Form("figs/results/merged-%s-midynorm2a-int1.pdf", label.c_str()), "Q");
   
   //  
   TGraphErrors* gcms_pbpb_2p76_n2a_x_npart2a = cms_pbpb_2p76_n2a_x_npart2a();
@@ -431,7 +431,7 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v1") {
   // l5->AddEntry(gcms_ppb_8p16_n2a_x_npart2a, "pPb 8.16 TeV", "p");
   // lstyle(l5, 43, 18); l5->Draw();
 
-  pdf.write(Form("figs/results/merged-%s-midynorm2a2a-int1.pdf", label.c_str()));
+  pdf.write(Form("figs/results/merged-%s-midynorm2a2a-int1.pdf", label.c_str()), "Q");
   
   // g->Write("", TObject::kOverwrite);
   // gcms_pbpb_2p76->Write("", TObject::kOverwrite);
@@ -483,8 +483,8 @@ spectrum::spectrum(std::string filename, std::string title, float xleg, float yl
   TFile* f = new TFile(filename.c_str());
   hsym = xjjroot::gethist<TH1D>(filename + "::hsym");
   gsyst = xjjroot::gethist<TGraphErrors>(filename + "::gsyst");
-  leg = new TLegend(xleg, yleg-0.032*6, xleg+0.2, yleg);
-  xjjroot::setleg(leg, 0.03);
+  leg = new TLegend(xleg, yleg-0.04*6, xleg+0.2, yleg);
+  xjjroot::setleg(leg, 0.038);
   leg->AddEntry((TObject*)0, Form("#bf{%s}", title.c_str()), NULL);
   leg->AddEntry(gsyst, "data", "pf");
   gh1WGhadron = combgh1WGhadron(filename, leg);
@@ -504,8 +504,8 @@ void spectrum::style(int color, Style_t ms) {
 
 void drawdNdeta(xjjroot::mypdf& pdf, std::string tag) {
   spectrum sp_4_20(Form("results/results-%s.s.%i.%i.root", tag.c_str(), 4, 20), "0 - 80\%", 0.55, 0.45),
-    sp_19_20(Form("results/results-%s.s.%i.%i.root", tag.c_str(), 19, 20), "0 - 5\%", 0.26, 0.60),
-    sp_9_10(Form("results/results-%s.s.%i.%i.root", tag.c_str(), 9, 10), "50 - 55\%", 0.60, 0.60);
+    sp_19_20(Form("results/results-%s.s.%i.%i.root", tag.c_str(), 19, 20), "0 - 5\%", 0.23, 0.62),
+    sp_9_10(Form("results/results-%s.s.%i.%i.root", tag.c_str(), 9, 10), "50 - 55\%", 0.59, 0.62);
   sp_4_20.style(COLOUR0, 21);
   sp_19_20.style(COLOUR1, 21);
   sp_9_10.style(COLOUR5, 21);
@@ -521,9 +521,9 @@ void drawdNdeta(xjjroot::mypdf& pdf, std::string tag) {
 #define DRAWTEX                                                         \
   for(int i=0; i<itext.n(); i++)                                        \
     { xjjroot::drawtex(0.24, 0.79-i*0.033, itext.value[i][0].c_str(), 0.030, 13); } \
-  xjjroot::drawtex(0.88, 0.82, tcent(tag).c_str(), 0.030, 31);          \
-  xjjroot::drawCMSleft(cmsprel.c_str(), 0.05, -0.1); /*Preliminary*/                 \
+  xjjroot::drawCMSleft(cmsprel.c_str(), 0.05, -0.1); /*Preliminary*/    \
   xjjroot::drawCMSright("PbPb #sqrt{s_{NN}} = 5.36 TeV");               \
+  // xjjroot::drawtex(0.88, 0.82, tcent(tag).c_str(), 0.030, 31);          \
   
   pdf.prepare();
   hempty->Draw("axis");
@@ -533,7 +533,7 @@ void drawdNdeta(xjjroot::mypdf& pdf, std::string tag) {
   sp_4_20.hsym->Draw("p same");
   sp_4_20.leg->Draw();
   DRAWTEX;
-  pdf.write(Form("figs/results/merged-%s-fulleta-1.pdf", tag.c_str()));
+  pdf.write(Form("figs/results/merged-%s-fulleta-1.pdf", tag.c_str()), "Q");
 
   pdf.getc()->SetLogy();
   pdf.prepare();
@@ -549,6 +549,6 @@ void drawdNdeta(xjjroot::mypdf& pdf, std::string tag) {
   sp_9_10.hsym->Draw("p same");
   sp_9_10.leg->Draw();
   DRAWTEX;
-  pdf.write(Form("figs/results/merged-%s-fulleta-2.pdf", tag.c_str()));
+  pdf.write(Form("figs/results/merged-%s-fulleta-2.pdf", tag.c_str()), "Q");
 
 }
