@@ -17,9 +17,9 @@ ctable=${8:-0}
 tagverdefault="v1"
 #
 TYPES=(12 13 14 23 24 34 56 57 67)
-CENTS=(
-    4 20
-)
+CENTS=(4 20)
+for i in {20..5} ; do CENTS+=($((i-1)) $i) ; done ;
+
 ##
 INPUTS_MC=/eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230322_pixel_230129_EposLHC_ReggeGribovParton_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4.root,epos
 INPUTS_DATA=/eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230322_pixel_230126_HITestRaw0-6_HIRun2022A_MBPVfilTh4_362294.root,362294
@@ -85,16 +85,18 @@ while [ $c -lt $((${#CENTS[@]}-1)) ] ; do
                 ./reap_results $t $INPUT_MC $tages $cmin $cmax \
                                0 ${cgm:0:1} ${cgm:1:1} ${cgm:2:1} "null" \
                                $multhandle $maxdr2 0 "null" \
-                               $ctable "$asel" \
+                               3 "$asel" \
                                2>&1 | tee logs/$tages-$t.txt & # \
                     set +x
             done # for t in ${TYPES[@]}
             wait
-            trash figs/corrections/alpha-$tages-*.png \
-                  figs/corrections/sdfrac-$tages-*.png \
-                  figs/corrections/trigger-$tages-*.png \
-                  figs/acceptance/accep-$tages-*.png \
-                  figspdf/fits/alphafit-$tages-*.pdf
+            trash figs/corrections/alpha-$tages-*.png
+            [[ $cmin -eq 0 && $cmax -eq 20 ]] || {
+                trash figs/corrections/sdfrac-$tages-*.png \
+                      figs/corrections/trigger-$tages-*.png \
+                      figs/acceptance/accep-$tages-*.png \
+                      figspdf/fits/alphafit-$tages-*.pdf
+            }
         }
     }
 
@@ -127,7 +129,13 @@ while [ $c -lt $((${#CENTS[@]}-1)) ] ; do
     #    average combinations, w. centrality     #
     ##############################################
     [[ ${execu:3:1} -eq 1 ]] && {
-        ./merge_monde $tagappl "${taglabel[${TAG_DATA%%CLOSE}]} corr. w. ${taglabel[$TAG_MC]}"
+        mergecomb=
+        for t in ${TYPES[@]} ; do
+	    mergecomb=$mergecomb","$t
+        done
+        mergecomb=${mergecomb##,}
+        truth="epos.m.v1.s."$cmin"."$cmax"&"${taglabel[epos]}"&2,hydjet.m.v1.s."$cmin"."$cmax"&"${taglabel[hydjet]}"&1,amptsm.m.v1.s."$cmin"."$cmax"&"${taglabel[amptsm]}"&4,amptnm.m.v1.s."$cmin"."$cmax"&"${taglabel[amptnm]}"&6"
+        ./merge_monde $tagappl "${taglabel[${TAG_DATA%%CLOSE}]} corr. w. ${taglabel[$TAG_MC]}" $mergecomb "$truth"
     }
     
     c=$((c+2))
