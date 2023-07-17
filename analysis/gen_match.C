@@ -5,6 +5,8 @@
 #include "include/utili.h"
 #include "include/xjjcuti.h"
 
+#include "include/acceptance.h"
+
 #define PIXELS1P(EXPAND)                        \
   BPIX1P(EXPAND)                                \
   FPIX1P(EXPAND)                                \
@@ -36,6 +38,7 @@ int gen_match(std::string inputname, std::string outputname) {
   float *pt##q##w = new float[MAXT]; newt##q##w->Branch("gpt", pt##q##w, "gpt[ntracklet]/F"); \
   float *eta##q##w = new float[MAXT]; newt##q##w->Branch("geta", eta##q##w, "geta[ntracklet]/F"); \
   float *phi##q##w = new float[MAXT]; newt##q##w->Branch("gphi", phi##q##w, "gphi[ntracklet]/F"); \
+  int *acc##q##w = new int[MAXT]; newt##q##w->Branch("acc", acc##q##w, "acc[ntracklet]/I"); \
   branch_event_truth(newt##q##w, truth);                                \
 
   TRKLTS2P(CREATE_NEW_TREE)
@@ -47,20 +50,30 @@ int gen_match(std::string inputname, std::string outputname) {
     xjjc::progressbar(i, nentries, 1000);
     ttruth->GetEntry(i);
 
+#define INCLUDE_VZ_BINS
+#define INCLUDE_ETA_BINS
+#include "include/bins.h"
+
+
 #define FILL_TREE(q, w)                                                 \
     t##q##w->GetEntry(i);                                               \
     for (int j=0; j<data##q##w.ntracklet; j++) {                        \
       pt##q##w[j] = -1;                                                 \
-      eta##q##w[j] = -1;                                                \
-      phi##q##w[j] = -1;                                                \
+      eta##q##w[j] = -99;                                               \
+      phi##q##w[j] = -99;                                               \
+      acc##q##w[j] = 0;                                                 \
+      auto ivz = xjjc::findibin(&vzb, data##q##w.vz[1]);                \
+      auto ieta = xjjc::findibin(&etab, data##q##w.eta1[j]);            \
+      if (ivz >=0 && ieta >= 0) {                                       \
+        acc##q##w[j] = a##q##w[(nvz-ivz-1)*neta+ieta]; \
+      }                                                                 \
     }                                                                   \
     for (int k=0; k<truth.npart; k++) {                                 \
       float drnow = maxDeltaR;                                          \
       int jnow = -1;                                                    \
       for (int j=0; j<data##q##w.ntracklet; j++) {                      \
         float drmatch1 = xjjana::cal_dr(data##q##w.phi1[j], data##q##w.eta1[j], truth.phi[k], truth.eta[k]); \
-        float drmatch2 = xjjana::cal_dr(data##q##w.phi2[j], data##q##w.eta2[j], truth.phi[k], truth.eta[k]); \
-        if (drmatch1 < maxDeltaR && drmatch2 < maxDeltaR && drmatch1 < drnow) { \
+        if (drmatch1 < maxDeltaR && drmatch1 < drnow) {                 \
           drnow = drmatch1;                                             \
           jnow = j;                                                     \
         }                                                               \
