@@ -86,6 +86,49 @@ void branch_event_truth(TTree* t, truth_t& truth) {
   t->Branch("chg", truth.chg, "chg[npart]/I");
 }
 
+void set_event_data(TTree* t, data_t& data) {
+
+  t->SetBranchAddress("run", &data.run);
+  t->SetBranchAddress("lumi", &data.lumi);
+  t->SetBranchAddress("event", &data.event);
+  t->SetBranchAddress("bx", &data.bx);
+
+  t->SetBranchAddress("nv", &data.nv);
+  t->SetBranchAddress("vx", data.vx);
+  t->SetBranchAddress("vy", data.vy);
+  t->SetBranchAddress("vz", data.vz);
+  t->SetBranchAddress("weight", &data.weight);
+
+  t->SetBranchAddress("hlt", &data.hlt);
+  t->SetBranchAddress("nhfp", &data.nhfp);
+  t->SetBranchAddress("nhfn", &data.nhfn);
+  t->SetBranchAddress("hft", &data.hft);
+
+  t->SetBranchAddress("nhits", &data.nhits);
+  t->SetBranchAddress("nhit1", &data.nhit1);
+  t->SetBranchAddress("nhit2", &data.nhit2);
+  t->SetBranchAddress("ntracklet", &data.ntracklet);
+  t->SetBranchAddress("eta1", data.eta1);
+  t->SetBranchAddress("phi1", data.phi1);
+  t->SetBranchAddress("r1", data.r1);
+  t->SetBranchAddress("eta2", data.eta2);
+  t->SetBranchAddress("phi2", data.phi2);
+  t->SetBranchAddress("r2", data.r2);
+  t->SetBranchAddress("deta", data.deta);
+  t->SetBranchAddress("dphi", data.dphi);
+  t->SetBranchAddress("dr2", data.dr2);
+}
+
+void set_event_truth(TTree* t, truth_t& truth) {
+  t->SetBranchAddress("process", &truth.process);
+  t->SetBranchAddress("npart", &truth.npart);
+  t->SetBranchAddress("pt", truth.pt);
+  t->SetBranchAddress("eta", truth.eta);
+  t->SetBranchAddress("phi", truth.phi);
+  t->SetBranchAddress("pdg", truth.pdg);
+  t->SetBranchAddress("chg", truth.chg);
+}
+
 struct PixelEvent {
   int run, lumi, event, bx;
   float bsx, bsy, bsz;
@@ -157,5 +200,6 @@ void set_pixel_data(TTree* t, PixelEvent& par) {
   t->SetBranchAddress("chg", par.chg);
   t->SetBranchAddress("pdg", par.pdg);
 }
+
 
 #endif   /* STRUCTS_H */
