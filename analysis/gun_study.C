@@ -38,18 +38,18 @@ int macro(std::string input_guns) {
   
   xjjroot::mypdf pdf("figspdf/gmatch/guns.pdf");
 
-#define DRAW_HIST(q, w)                         \
-  pdf.prepare();                                \
-  h_dr_pt_##q##w->Draw("colz");                 \
-  pdf.write();                                  \
-  pdf.prepare();                                \
-  hempty->Draw("axis");                         \
-  p_dreff_##q##w->Draw("ple");                  \
-  pdf.write();                                  \
+#define DRAW_HIST(q, w)                                 \
+  pdf.prepare();                                        \
+  h_dr_pt_##q##w->Draw("colz");                         \
+  pdf.write("figs/gmatch/gun_map_"#q#w".png", "X");     \
+  pdf.prepare();                                        \
+  hempty->Draw("axis");                                 \
+  p_dreff_##q##w->Draw("ple");                          \
+  pdf.write("figs/gmatch/guns_eff_"#q#w".png", "X");    \
 
   TRKLTS2P(DRAW_HIST)
   
-  pdf.close();
+    pdf.close();
 
   return 0;
 }

@@ -20,6 +20,8 @@
 #include "include/defines.h"
 #include "include/xjjmypdf.h"
 
+#include "include/pixgeo.h"
+
 #define OPT(val)  options[opt].val
 #define CS(str)   str.data()
 #define OS(val)   CS(OPT(val))
@@ -375,6 +377,8 @@ static const std::vector<varinfo_t> options_pixel_2d = {
    }
 };
 
+bool labelid = false;
+
 int map_pixels(std::vector<varinfo_t> const& options,
       const char* input, const char* label, int opt) {
 #define SELECTION(q)                                                          \
@@ -389,6 +393,8 @@ int map_pixels(std::vector<varinfo_t> const& options,
    const char* idstr = OS(id);
 
    gStyle->SetOptStat(0);
+
+   pixgeo geo("data/pixelGeo.root");
 
    TFile* f = new TFile(input, "r");
    TTree* t = (TTree*)f->Get("pixel/PixelTree");
@@ -408,15 +414,18 @@ int map_pixels(std::vector<varinfo_t> const& options,
 
      xjjroot::mypdf* pdf_DRAW_2D_PIXELS = new xjjroot::mypdf(Form("figspdf/pixel/pixel-%s-%s.pdf", OS(id), label), "c_DRAW_2D_PIXELS",  OPT(csize[0]), OPT(csize[1]));
 
-#define DRAW_2D_PIXELS(q)                                                     \
-   t->Draw(Form("%s:%s>>h" #q "%s", CS(y##q), CS(x##q), idstr),               \
-           fsel##q, "goff", OPT(maxnevt));                                    \
-                                                                              \
-   pdf_DRAW_2D_PIXELS->prepare();                                             \
-   h##q->Draw(OS(gopt));                                                      \
-                                                                              \
+#define DRAW_2D_PIXELS(q)                                               \
+   t->Draw(Form("%s:%s>>h" #q "%s", CS(y##q), CS(x##q), idstr),         \
+           fsel##q, "goff", OPT(maxnevt));                              \
+                                                                        \
+   pdf_DRAW_2D_PIXELS->prepare();                                       \
+   h##q->Draw(OS(gopt));                                                \
+   if (labelid)                                                         \
+     geo.draw##q(OS(id));                                               \
+                                                                        \
    pdf_DRAW_2D_PIXELS->write(Form("figs/pixel/pixel-%s-l" #q "-%s.png", \
                                   OS(id), label));                      \
+
 
    if (OPT(flags) & 0x1) { BPIX1P(DRAW_2D_PIXELS) }
    if (OPT(flags) & 0x2) { FPIX1P(DRAW_2D_PIXELS) }
