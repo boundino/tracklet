@@ -1,7 +1,7 @@
 #!/bin/bash
 
-if [[ $# -ne 5 ]]; then
-    echo "usage: ./tt-condor-checkfile.sh [input dir] [output dir] [max jobs] [log dir] [ishi] [evtfilt] [hltfilt] [mvafilt] [ptcut] [removeevent]"
+if [[ $# -ne 7 ]]; then
+    echo "usage: ./tt-condor-checkfile.sh [input dir] [output dir] [max jobs] [log dir] [random] [split]"
     exit 1
 fi
 
@@ -10,6 +10,8 @@ DESTINATION=$2
 MAXFILES=$3
 LOGDIR=$4
 USERANDOM=$5
+USESPLIT=$6
+USEDROP=$7
 
 PROXYFILE=$HOME/$(ls $HOME -lt | grep $USER | grep -m 1 x509 | awk '{print $NF}')
 
@@ -52,8 +54,7 @@ Universe     = vanilla
 Initialdir   = $PWD/
 Notification = Error
 Executable   = $PWD/tt-${tag}-checkfile.sh
-Arguments    = $inputname $DEST_CONDOR ${outputfile} $USERANDOM
-GetEnv       = True
+Arguments    = $inputname $DEST_CONDOR ${outputfile} $USERANDOM $USESPLIT $USEDROP
 Output       = $LOGDIR/log-${infn}.out
 Error        = $LOGDIR/log-${infn}.err
 Log          = $LOGDIR/log-${infn}.log
