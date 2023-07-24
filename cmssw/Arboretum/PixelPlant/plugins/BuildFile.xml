@@ -6,6 +6,7 @@
 <use name="DataFormats/CaloTowers"/>
 <use name="DataFormats/TrackerRecHit2D"/>
 <use name="DataFormats/VertexReco"/>
+<use name="DataFormats/HeavyIonEvent"/>
 <use name="Geometry/Records"/>
 <use name="Geometry/TrackerGeometryBuilder"/>
 <use name="FWCore/Framework"/>
@@ -14,4 +15,7 @@
 <use name="SimDataFormats/GeneratorProducts"/>
 <use name="SimDataFormats/Vertex"/>
 <use name="SimGeneral/HepPDTRecord"/>
+<use name="Alignment/CommonAlignment"/>
+<use name="Alignment/TrackerAlignment"/>
+<use name="CLHEP"/>
 <flags EDM_PLUGIN="1"/>
