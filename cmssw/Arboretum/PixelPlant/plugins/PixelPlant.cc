@@ -48,8 +48,13 @@
 #include "DataFormats/TrackerRecHit2D/interface/SiPixelRecHitCollection.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
+#include <DataFormats/HeavyIonEvent/interface/ClusterCompatibility.h>
+
 #include "SimDataFormats/GeneratorProducts/interface/HepMCProduct.h"
 #include "SimDataFormats/Vertex/interface/SimVertexContainer.h"
+
+#include "DataFormats/SiPixelDetId/interface/PXBDetId.h"
+#include "DataFormats/SiPixelDetId/interface/PXFDetId.h"
 
 #include "SimGeneral/HepPDTRecord/interface/ParticleDataTable.h"
 
@@ -92,6 +97,9 @@ struct PixelEvent {
 
    // hlt decision
    int hlt;
+
+  // HIClusterCompatibilityFilter decision
+   int cluscomp;
 
    // hf information
    int nhfp;
@@ -150,10 +158,13 @@ class PixelPlant : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
       void fill_hf(const edm::Event&);
       void fill_pixels(const edm::Event&);
       void fill_particles(const edm::Event&);
+      void fill_cluscomp(const edm::Event&);
+  double determineQuality(const reco::ClusterCompatibility& cc, double minZ, double maxZ);
 
       bool fillhlt_;
       bool fillgen_;
       bool fillhf_;
+      bool fillcluscomp_;
 
       edm::EDGetTokenT<edm::TriggerResults> hlt_;
       std::vector<std::string> paths_;
@@ -164,6 +175,8 @@ class PixelPlant : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
       edm::EDGetTokenT<CaloTowerCollection> towers_;
       edm::EDGetTokenT<SiPixelRecHitCollection> pixels_;
       edm::EDGetTokenT<edm::HepMCProduct> generator_;
+  edm::EDGetTokenT<reco::ClusterCompatibility> cluscomp_;
+  
 
       edm::ESHandle<ParticleDataTable> pdt_;
       edm::ESGetToken<ParticleDataTable, edm::DefaultRecord> pdt_token_;
@@ -178,6 +191,15 @@ class PixelPlant : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
 
       edm::Service<TFileService> fs_;
       TTree* tpix_;
+
+  std::vector<int> deads = {352633860, 352637956, 352642052, // l5p
+                            352872452, 352868356, 352864260, 352859140, 352855044, 352850948, // l6p
+                            353170436, 353174532, 353178628, 353195012, 353199108, // l7p
+                            344848388, 344794116, 344798212, 344802308, // l7m
+                            304136224, 304119828, 304181252, 304091156, // l2
+                            305299468, 305270796, // l3
+                            306245644, 306442272, 306380820, // l4
+  };
 };
 
 //
@@ -209,6 +231,11 @@ PixelPlant::PixelPlant(const edm::ParameterSet& iConfig) {
    if (fillhlt_) {
       hlt_ = consumes<edm::TriggerResults>(iConfig.getParameter<edm::InputTag>("hlt_tag"));
       paths_ = iConfig.getParameter<std::vector<std::string>>("hlt_paths");
+   }
+
+   fillcluscomp_ = iConfig.getParameter<bool>("fillcluscomp");
+   if (fillcluscomp_) {
+      cluscomp_ = consumes<reco::ClusterCompatibility>(iConfig.getParameter<edm::InputTag>("cluscomp_tag"));
    }
 
    fillhf_ = iConfig.getParameter<bool>("fillhf");
@@ -375,6 +402,11 @@ void PixelPlant::fill_pixels(const edm::Event& iEvent) {
       if (detid.subdetId() == PixelSubdetector::PixelEndcap)
          layer += 4;
 
+      if (std::find(deads.begin(), deads.end(), detid.rawId()) != deads.end()) {
+        // std::cout<<"additional masking: "<<detid.rawId()<<std::endl;
+        continue;
+      }
+
       const SiPixelRecHitCollection::DetSet dethits = *(pixdets->find(detid));
       for (const auto& hit : dethits) {
          const PixelGeomDetUnit* detunit = dynamic_cast<const PixelGeomDetUnit*>(geo_->idToDet(hit.geographicalId()));
@@ -430,6 +462,94 @@ void PixelPlant::fill_particles(const edm::Event& iEvent) {
    }
 }
 
+void PixelPlant::fill_cluscomp(const edm::Event& iEvent) {
+  edm::Handle<reco::ClusterCompatibility> cc;
+  iEvent.getByToken(cluscomp_, cc);
+
+  pix_.cluscomp = 1;
+  
+  std::vector<double> clusterPars_ = {0.0, 0.0045};
+  int nhitsTrunc_ = 150;
+  double clusterTrunc_ = 2.0;
+  
+  double clusVtxQual = determineQuality(*cc, -20.0, 20.05);
+  double nPxlHits = cc->nValidPixelHits();
+
+  // construct polynomial cut on cluster vertex quality vs. npixelhits
+  double polyCut = 0;
+  for (unsigned int i = 0; i < clusterPars_.size(); i++) {
+    polyCut += clusterPars_[i] * std::pow((double)nPxlHits, (int)i);
+  }
+  if (nPxlHits < nhitsTrunc_)
+    polyCut = 0;  // don't use cut below nhitsTrunc_ pixel hits
+  if (polyCut > clusterTrunc_ && clusterTrunc_ > 0)
+    polyCut = clusterTrunc_;  // no cut above clusterTrunc_
+
+  // std::cout<<clusVtxQual<<" "<<polyCut<<std::endl;
+  if (clusVtxQual < polyCut)
+    pix_.cluscomp = 0;
+
+}
+
+double PixelPlant::determineQuality(const reco::ClusterCompatibility& cc, double minZ, double maxZ) {
+  // will compare cluster compatibility at a determined best
+  // z position to + and - 10 cm from the best position
+
+  float best_z = 0.;
+  int best_n = 0., low_n = 0., high_n = 0.;
+
+  // look for best vertex z position within zMin to zMax range
+  // best position is determined by maximum nHit with
+  // chi used for breaking a tie
+
+  int nhits_max = 0;
+  double chi_max = 1e+9;
+  for (int i = 0; i < cc.size(); i++) {
+    if (cc.z0(i) > maxZ || cc.z0(i) < minZ)
+      continue;
+    if (cc.nHit(i) == 0)
+      continue;
+    if (cc.nHit(i) > nhits_max) {
+      chi_max = 1e+9;
+      nhits_max = cc.nHit(i);
+    }
+    if (cc.nHit(i) >= nhits_max && cc.chi(i) < chi_max) {
+      chi_max = cc.chi(i);
+      best_z = cc.z0(i);
+      best_n = cc.nHit(i);
+    }
+  }
+
+  // find compatible clusters at + or - 10 cm of the best,
+  // or get as close as possible in terms of z position.
+
+  double low_target = best_z - 10.0;
+  double high_target = best_z + 10.0;
+  double low_match = 1000., high_match = 1000.;
+  for (int i = 0; i < cc.size(); i++) {
+    if (fabs(cc.z0(i) - low_target) < low_match) {
+      low_n = cc.nHit(i);
+      low_match = fabs(cc.z0(i) - low_target);
+    }
+    if (fabs(cc.z0(i) - high_target) < high_match) {
+      high_n = cc.nHit(i);
+      high_match = fabs(cc.z0(i) - high_target);
+    }
+  }
+
+  // determine vertex compatibility quality score
+
+  double clusVtxQual = 0.0;
+  if ((low_n + high_n) > 0)
+    clusVtxQual = (2.0 * best_n) / (low_n + high_n);  // A/B
+  else if (best_n > 0)
+    clusVtxQual = 1000.0;  // A/0 (set to arbitrarily large number)
+  else
+    clusVtxQual = 0;
+
+  return clusVtxQual;
+}
+
 // ------------ method called for each event ------------
 void PixelPlant::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) {
    pdt_ = iSetup.getHandle(pdt_token_);
@@ -446,6 +566,7 @@ void PixelPlant::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
    fill_pixels(iEvent);
 
    if (fillhlt_) { fill_hlt(iEvent); } else { pix_.hlt = 1; }
+   if (fillcluscomp_) { fill_cluscomp(iEvent); } else { pix_.cluscomp = 1; }
    if (fillhf_) { fill_hf(iEvent); } else {
       pix_.nhfp = 0; pix_.nhfn = 0;
       pix_.hft = 0; pix_.hftp = 0; pix_.hftm = 0; }
@@ -474,6 +595,7 @@ void PixelPlant::beginJob() {
    tpix_->Branch("vz", pix_.vz, "vz[nv]/F");
 
    tpix_->Branch("hlt", &pix_.hlt, "hlt/I");
+   tpix_->Branch("cluscomp", &pix_.cluscomp, "cluscomp/I");
 
    tpix_->Branch("nhfp", &pix_.nhfp, "nhfp/I");
    tpix_->Branch("nhfn", &pix_.nhfn, "nhfn/I");
@@ -517,10 +639,13 @@ void PixelPlant::fillDescriptions(edm::ConfigurationDescriptions& descriptions) 
    desc.ifValue(edm::ParameterDescription<bool>("fillhlt", false, true),
       true >> (edm::ParameterDescription<edm::InputTag>("hlt_tag", edm::InputTag("TriggerResults::HLT"), true) and
                edm::ParameterDescription<std::vector<std::string>>("hlt_paths", true)) or
-      false >> edm::EmptyGroupDescription());
+      false >> edm::EmptyGroupDescription());   
+   desc.ifValue(edm::ParameterDescription<bool>("fillcluscomp", false, true),
+                true >> edm::ParameterDescription<edm::InputTag>("cluscomp_tag", edm::InputTag("hiClusterCompatibility"), true) or
+                false >> edm::EmptyGroupDescription());
    desc.ifValue(edm::ParameterDescription<bool>("fillhf", false, true),
-      true >> edm::ParameterDescription<edm::InputTag>("tower_tag", edm::InputTag("towerMaker"), true) or
-      false >> edm::EmptyGroupDescription());
+                true >> edm::ParameterDescription<edm::InputTag>("tower_tag", edm::InputTag("towerMaker"), true) or
+                false >> edm::EmptyGroupDescription());
    desc.ifValue(edm::ParameterDescription<bool>("fillgen", false, true),
       true >> (edm::ParameterDescription<edm::InputTag>("generator_tag", edm::InputTag("generatorSmeared"), true) and
                edm::ParameterDescription<edm::InputTag>("genvertex_tag", edm::InputTag("g4SimHits"), true)) or
