@@ -36,16 +36,13 @@ input_file=$INFILE
 ./transmute_trees $input_file $OUTFILE 0 1000000000 -1 0 0 $USERANDOM $USESPLIT $USEDROP
 
 if [[ $(wc -c $OUTFILE | awk '{print $1}') -gt 700 ]]; then
-    if [[ $DESTINATION == /mnt/T2_US_MIT/* ]]
-    then
-        # gfal-copy
-        # SRM_PREFIX="/mnt/T2_US_MIT/hadoop/" ; SRM_PATH=${DESTINATION#${SRM_PREFIX}} ;
-        # LD_LIBRARY_PATH='' PYTHONPATH='' gfal-copy file://$PWD/${OUTFILE} gsiftp://se01.cmsaf.mit.edu:2811/${SRM_PATH}/${OUTFILE}
+    # gfal-copy
+    # SRM_PREFIX="/mnt/T2_US_MIT/hadoop/" ; SRM_PATH=${DESTINATION#${SRM_PREFIX}} ;
+    # LD_LIBRARY_PATH='' PYTHONPATH='' gfal-copy file://$PWD/${OUTFILE} gsiftp://se01.cmsaf.mit.edu:2811/${SRM_PATH}/${OUTFILE}
 
-        # xrdcp
-        SRM_PREFIX="/eos/cms/" ; SRM_PATH=${DESTINATION#${SRM_PREFIX}} ;
-        xrdcp ${OUTFILE} root://eoscms.cern.ch//${SRM_PATH}/$OUTFILE
-    fi
+    # xrdcp
+    SRM_PREFIX="/eos/cms/" ; SRM_PATH=${DESTINATION#${SRM_PREFIX}} ;
+    xrdcp ${OUTFILE} root://eoscms.cern.ch//${SRM_PATH}/$OUTFILE
 fi
 set +x
 
