@@ -7,7 +7,7 @@ then
 fi
 
 #
-MAXFILENO=2
+MAXFILENO=300
 USERANDOM=0
 USESPLIT=0
 USEDROP=0
@@ -21,9 +21,14 @@ PRIMARY="tt_230724"
 # PRIMARY="tt_230724_drop"
 
 INPUTS=(
-    "filelists/filelist_pixel_230724_HITestRaw0_HIRun2022A_MBPVfilTh4_362294.txt"
-    # "/mnt/T2_US_MIT/hadoop/cms/store/user/wangj/MinBias_Drum5F_5p36TeV_hydjet/crab_pixel_230724_Hydjet_Drum5F_5360GeV_HINPbPbAutumn22DR/230724_163528/000*/"
-    # "/mnt/T2_US_MIT/hadoop/cms/store/user/wangj/HITestRaw0/crab_pixel_230724_HITestRaw0_HIRun2022A_MBPVfilTh4_362294/230724_150607/000*/"
+    # "filelists/filelist_pixel_230724_HITestRaw0_HIRun2022A_MBPVfilTh4_362294.txt"
+    # "filelists/filelist_pixel_230724_HITestRaw1_HIRun2022A_MBPVfilTh4_362294.txt"
+    # "filelists/filelist_pixel_230724_HITestRaw2_HIRun2022A_MBPVfilTh4_362294.txt"
+    # "filelists/filelist_pixel_230724_HITestRaw3_HIRun2022A_MBPVfilTh4_362294.txt"
+    # "filelists/filelist_pixel_230724_HITestRaw4_HIRun2022A_MBPVfilTh4_362294.txt"
+    # "filelists/filelist_pixel_230724_HITestRaw5_HIRun2022A_MBPVfilTh4_362294.txt"
+    # "filelists/filelist_pixel_230724_HITestRaw6_HIRun2022A_MBPVfilTh4_362294.txt"
+    "filelists/filelist_pixel_230724_Hydjet_Drum5F_5360GeV_HINPbPbAutumn22DR_shuf.txt"
 
     # # pre-approval #
     # "/mnt/T2_US_MIT/hadoop/cms/store/user/wangj/MinBias_EposLHC_ReggeGribovParton_PbPb_5360GeV/crab_pixel_230512_EposLHC_ReggeGribovParton_PbPb_5360GeV_230322_GTv9Th4/230515_111547/000*/"
@@ -43,22 +48,6 @@ INPUTS=(
     # "/mnt/T2_US_MIT/hadoop/cms/store/user/wangj/HITestRaw5/crab_pixel_230126_HITestRaw5_HIRun2022A_MBPVfilTh4_362294/230126_215914/100*/"
     # "/mnt/T2_US_MIT/hadoop/cms/store/user/wangj/HITestRaw6/crab_pixel_230126_HITestRaw6_HIRun2022A_MBPVfilTh4_362294/230126_220022/100*/"
 
-    # # obsolete #
-    # "/mnt/T2_US_MIT/hadoop/cms/store/user/wangj/MinBias_EposLHC_ReggeGribovParton_PbPb_5360GeV/crab_pixel_230129_EposLHC_ReggeGribovParton_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4/230131_141449/000*/"
-    # "/mnt/T2_US_MIT/hadoop/cms/store/user/wangj/MinBias_AMPT_StringMelting_PbPb_5360GeV/crab_pixel_230129_AMPT_StringMelting_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4/230131_142216/000*/"
-    # "/mnt/T2_US_MIT/hadoop/cms/store/user/wangj/MinBias_Hydjet_Drum5F_PbPb_5360GeV/crab_pixel_230129_Hydjet_Drum5F_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4/230129_205028/000*/"
-    # "/mnt/T2_US_MIT/hadoop/cms/store/user/wangj/MinBias_Hydjet_Drum5F_PbPb_5360GeV/crab_pixel_230126_Hydjet_Drum5F_PbPb_5360GeV_221224_GTv7priZ0_GTv8Th4/230126_191822/000*/"
-    # "/mnt/T2_US_MIT/hadoop/cms/store/user/wangj/MinBias_Hydjet_Drum5F_PbPb_5360GeV/crab_pixelpre_221229_Hydjet_Drum5F_PbPb_5360GeV_221224_GTv7priZ0_Th4/230106_125359/000*/"
-    # "/mnt/T2_US_MIT/hadoop/cms/store/user/wangj/MinBias_EposLHC_ReggeGribovParton_PbPb_5360GeV/crab_pixelpre_221229_EposLHC_ReggeGribovParton_PbPb_5360GeV_221224_GTv7priZ0_Th4/230106_140953/000*/"
-    # "/mnt/T2_US_MIT/hadoop/cms/store/user/wangj/MinBias_AMPT_NoStringMelting_PbPb_5360GeV/crab_pixelpre_221229_AMPT_NoStringMelting_PbPb_5360GeV_221224_GTv7priZ0_Th4/230106_143142/000*/"
-    # "/mnt/T2_US_MIT/hadoop/cms/store/user/wangj/MinBias_AMPT_StringMelting_PbPb_5360GeV/crab_pixelpre_221229_AMPT_StringMelting_PbPb_5360GeV_221224_GTv7priZ0_Th4/230106_142846/000*/"
-    # "/mnt/T2_US_MIT/hadoop/cms/store/user/wangj/HITestRaw0/crab_pixelpre_221201_HITestRaw0_HIRun2022A_MBPVfilTh4_362294/221201_192201/000*/"
-    # "/mnt/T2_US_MIT/hadoop/cms/store/user/wangj/HITestRaw1/crab_pixelpre_221201_HITestRaw1_HIRun2022A_MBPVfilTh4_362294/221205_222829/000*/"
-    # "/mnt/T2_US_MIT/hadoop/cms/store/user/wangj/HITestRaw2/crab_pixelpre_221201_HITestRaw2_HIRun2022A_MBPVfilTh4_362294/221222_173004/000*/"
-    # "/mnt/T2_US_MIT/hadoop/cms/store/user/wangj/HITestRaw3/crab_pixelpre_221201_HITestRaw3_HIRun2022A_MBPVfilTh4_362294/221222_193613/000*/"
-    # "/mnt/T2_US_MIT/hadoop/cms/store/user/wangj/HITestRaw4/crab_pixelpre_221201_HITestRaw4_HIRun2022A_MBPVfilTh4_362294/221222_200711/000*/"
-    # "/mnt/T2_US_MIT/hadoop/cms/store/user/wangj/HITestRaw5/crab_pixelpre_221201_HITestRaw5_HIRun2022A_MBPVfilTh4_362294/221222_201003/000*/"
-    # "/mnt/T2_US_MIT/hadoop/cms/store/user/wangj/HITestRaw6/crab_pixelpre_221201_HITestRaw6_HIRun2022A_MBPVfilTh4_362294/221222_201203/000*/"
 )
 
 OUTPUTPRIDIR="/eos/cms/store/cmst3/user/wangj/tracklet/"
