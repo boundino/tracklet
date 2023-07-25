@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# https://batchdocs.web.cern.ch/local/submit.html
+
 if [[ $# -ne 7 ]]; then
     echo "usage: ./tt-condor-checkfile.sh [input dir] [output dir] [max jobs] [log dir] [random] [split]"
     exit 1
@@ -13,7 +15,8 @@ USERANDOM=$5
 USESPLIT=$6
 USEDROP=$7
 
-PROXYFILE=$(ls /tmp/ -lt | grep $USER | grep -m 1 x509 | awk '{print $NF}')
+# PROXYFILE=$(ls /tmp/ -lt | grep $USER | grep -m 1 x509 | awk '{print $NF}')
+PROXYFILE=$HOME/$(ls $HOME -lt | grep $USER | grep -m 1 x509 | awk '{print $NF}')
 
 tag="tracklet"
 
@@ -53,11 +56,12 @@ Error        = $LOGDIR/log-${infn}.err
 Log          = $LOGDIR/log-${infn}.log
 # Rank         = Mips
 +AccountingGroup = "group_u_CMST3.all"
-Requirements = ( OpSysAndVer =?= "CentOS8" )
++JobFlavour = "longlunch"
+# Requirements = ( OpSysAndVer =?= "CentOS8" )
 should_transfer_files = YES
 use_x509userproxy = True
-x509userproxy = $HOME/$PROXYFILE
-transfer_input_files = transmute_trees
+x509userproxy = $PROXYFILE
+transfer_input_files = tracklet.tar.gz
 Queue 
 EOF
 

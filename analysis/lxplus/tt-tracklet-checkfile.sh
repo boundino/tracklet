@@ -11,16 +11,21 @@ OUTFILE=$3
 USERANDOM=$4
 USESPLIT=$5
 USEDROP=$6
-RELEASE=CMSSW_12_5_5_patch1
+# RELEASE=CMSSW_12_5_5_patch1
 
-source /cvmfs/cms.cern.ch/cmsset_default.sh
+echo $SCRAM_ARCH
+
+tar -xzvf tracklet.tar.gz
+g++ transmute_trees.C $(root-config --libs --cflags) -g -o transmute_trees
+
+# source /cvmfs/cms.cern.ch/cmsset_default.sh
+
+# scram p CMSSW $RELEASE
+# cd $RELEASE/src
+# eval `scram runtime -sh`
+# cd -
 
 set -x
-
-scram p CMSSW $RELEASE
-cd $RELEASE/src
-eval `scram runtime -sh`
-cd -
 
 root --version
 
@@ -44,5 +49,6 @@ if [[ $(wc -c $OUTFILE | awk '{print $1}') -gt 700 ]]; then
 fi
 set +x
 
+rm -r transmute_trees.C transmute_trees include tracklet.tar.gz
 rm $PWD/${INFILE##*/}
 rm $OUTFILE

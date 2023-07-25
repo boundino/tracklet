@@ -101,13 +101,16 @@ done
 
 if [ "$movetosubmit" -eq 1 ]
 then
-    cd ../
-    make transmute_trees || exit 1
-    cd lxplus
+    # cd ../
+    # make transmute_trees || exit 1
+    # cd lxplus    
+    # mv -v ../transmute_trees $WORKDIR/
 
-    mv -v ../transmute_trees $WORKDIR/
-    # cp -v $0 $WORKDIR/
-    # cp -v tt-tracklet-checkfile.sh $WORKDIR/
-    # cp -v tt-condor-checkfile.sh $WORKDIR/
+    cd ../
+    tar -czvf tracklet.tar.gz transmute_trees.C include
+    cd lxplus
+    
+    mv ../tracklet.tar.gz .
+    
 fi
 
