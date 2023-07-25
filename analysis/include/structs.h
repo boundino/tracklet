@@ -8,7 +8,7 @@
 struct data_t {
   int run, event, lumi, bx;
   int nv; float vx[8], vy[8], vz[8]; float weight;
-  int hlt; int nhfp, nhfn; float hft;
+  int hlt; int nhfp, nhfn; float hft; int cluscomp;
   float *eta1, *phi1, *r1;
   float *eta2, *phi2, *r2;
   float *deta, *dphi, *dr2;
@@ -60,6 +60,7 @@ void branch_event_data(TTree* t, data_t& data) {
   t->Branch("nhfp", &data.nhfp, "nhfp/I");
   t->Branch("nhfn", &data.nhfn, "nhfn/I");
   t->Branch("hft", &data.hft, "hft/F");
+  t->Branch("cluscomp", &data.cluscomp, "cluscomp/I");
 
   t->Branch("nhits", &data.nhits, "nhits/I");
   t->Branch("nhit1", &data.nhit1, "nhit1/I");
@@ -103,6 +104,7 @@ void set_event_data(TTree* t, data_t& data) {
   t->SetBranchAddress("nhfp", &data.nhfp);
   t->SetBranchAddress("nhfn", &data.nhfn);
   t->SetBranchAddress("hft", &data.hft);
+  t->SetBranchAddress("cluscomp", &data.cluscomp);
 
   t->SetBranchAddress("nhits", &data.nhits);
   t->SetBranchAddress("nhit1", &data.nhit1);
@@ -133,7 +135,7 @@ struct PixelEvent {
   int run, lumi, event, bx;
   float bsx, bsy, bsz;
   int nv; float vx[8], vy[8], vz[8];
-  int hlt; int nhfp, nhfn; float hft;
+  int hlt; int nhfp, nhfn; float hft; int cluscomp;
 
 #define DECLARE_LAYER_VARIABLES(q)              \
   int nhits##q;                                 \
@@ -182,6 +184,7 @@ void set_pixel_data(TTree* t, PixelEvent& par) {
   t->SetBranchAddress("nhfp", &par.nhfp);
   t->SetBranchAddress("nhfn", &par.nhfn);
   t->SetBranchAddress("hft", &par.hft);
+  t->SetBranchAddress("cluscomp", &par.cluscomp);
 
 #define SET_LAYER_BRANCHES(q)                           \
   t->SetBranchAddress("nhits" #q, &par.nhits##q);       \
