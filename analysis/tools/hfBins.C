@@ -34,7 +34,7 @@ int macro(std::string inputname, std::string var="pixel/PixelTree::hft", int div
     {
       xjjc::progressslide(i, nentries, 100*division);
       t->GetEntry(i);
-      if(!isMC && (nhfp <= 1 || nhfn <= 1 )) continue; // data
+      if(!isMC && (nhfp <= 2 || nhfn <= 2 )) continue; // data
       if(isMC && (process == 102 || process == 103 || process == 104)) continue; // MC
       vhft.push_back(hft);
       hhft->Fill(hft);
