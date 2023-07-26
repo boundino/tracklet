@@ -510,9 +510,9 @@ void drawdNdeta(xjjroot::mypdf& pdf, std::string tag) {
   sp_19_20.style(COLOUR1, 21);
   sp_9_10.style(COLOUR5, 21);
 
-  auto hempty = makehempty(sp_4_20.hsym, ";#it{#eta};d#it{N}_{ch}/d#kern[-0.08]{#it{#eta}}", 1.7);
+  auto hempty = makehempty(sp_4_20.hsym, ";#it{#eta};#scale[1.2]{#LT} d#it{N}_{ch}/d#kern[-0.08]{#it{#eta}} #scale[1.2]{#GT}", 1.7);
   hempty->SetAxisRange(-3.2, 3.4, "X");
-  auto hempty2 = makehempty(sp_19_20.hsym, ";#it{#eta};d#it{N}_{ch}/d#kern[-0.08]{#it{#eta}}", 3, 0.04);
+  auto hempty2 = makehempty(sp_19_20.hsym, ";#it{#eta};#scale[1.2]{#LT} d#it{N}_{ch}/d#kern[-0.08]{#it{#eta}} #scale[1.2]{#GT}", 3, 0.04);
   hempty2->SetAxisRange(-3.2, 3.4, "X");
   
   xjjroot::setgstyle(1);
