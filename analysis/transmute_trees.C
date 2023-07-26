@@ -57,29 +57,21 @@ int transmute_trees(const char* input,
    if (t->GetEntries("run < 10") != 0) {
       printf("$ Monte Carlo analysis\n");
 
-      /* Realistic25ns13p6TeVEarly2022Collision */
-      /* Nominal2022PbPbCollision */
-      vx = 0.100629;
-      vy = -0.014995;
-      /* RealisticXeXeCollision2017 */
-      // vx = -0.026006;
-      // vy = 0.0810894;
+      /* Realistic2022PbPbCollision */
+      vx = 0.1017599;
+      vy = -0.015602;
 
-      vz_shift = -0.36;
+      vz_shift = -0.355;
 
       /* pixel barycentre */
-      // vz_shift = -0.323346;
-      /* x:  0.10882  */
-      /* y: -0.110405 */
-      /* z: -0.323346 */
+      /* x: 0.0712278 */
+      /* y: -0.167261 */
+      /* z: -0.355162 */
    } else {
       printf("$ data analysis\n");
 
       vx = 0.1729877;
       vy = -0.182863;
-      /* 94X_dataRun2_ReReco_EOY17_v2 */
-      // vx = 0.0830378;
-      // vy = -0.030276;
 
       pileup = 0.0f;
       sample = -1;
@@ -280,6 +272,7 @@ int transmute_trees(const char* input,
       trkltdata##q##w.event      = par.event;                                 \
       trkltdata##q##w.bx         = par.bx;                                    \
       trkltdata##q##w.hlt        = hltor;                                     \
+      trkltdata##q##w.cluscomp   = par.cluscomp;                              \
       trkltdata##q##w.nhfp       = par.nhfp;                                  \
       trkltdata##q##w.nhfn       = par.nhfn;                                  \
       trkltdata##q##w.hft        = hftsum;                                    \

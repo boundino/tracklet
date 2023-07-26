@@ -33,19 +33,19 @@ process.TFileService = cms.Service('TFileService',
 from Configuration.AlCa.GlobalTag import GlobalTag
 process.GlobalTag = GlobalTag(
     process.GlobalTag,
-    # 'auto:phase1_2022_realistic_hi', # -> v6
-    '125X_mcRun3_2022_realistic_HI_v9',
+    # 'auto:phase1_2022_realistic_hi', # CMSSW_12_5_5_patch1 -> v8
+    '125X_mcRun3_2022_realistic_HI_v13',
     ''
 )
 
 process.pixel = cms.EDAnalyzer('PixelPlant',
-	pixel_tag = cms.InputTag("siPixelRecHits"),
-	vertex_tags = cms.VInputTag(cms.InputTag("offlinePrimaryVertices")),
-	fillhf = cms.bool(True),
-    fillgen = cms.bool(True),
-	fillhlt = cms.bool(False),
-    # hlt_tag = cms.InputTag("TriggerResults::HLT"),
-    # hlt_paths = cms.vstring('HLT_HIL1MinimumBiasHF_OR_SinglePixelTrack_v1'),
+	                       pixel_tag = cms.InputTag("siPixelRecHits"),
+	                       vertex_tags = cms.VInputTag(cms.InputTag("offlinePrimaryVertices")),
+	                       fillhf = cms.bool(True),
+	                       fillhlt = cms.bool(True),
+                               hlt_paths = cms.vstring('HLT_HIMinimumBias_v2'),
+                               fillcluscomp = cms.bool(True),
+                               fillgen = cms.bool(True),
 )
 
 # process.raw2digi_step = cms.Path(process.hcalDigis + process.ecalDigis + process.siPixelDigis)
@@ -65,8 +65,8 @@ ivars = VarParsing.VarParsing('analysis')
 
 ivars.maxEvents = -1
 ivars.outputFile='pixelsim_fullreco.root'
-# ivars.inputFiles='/store/user/wangj/MinBias_Hydjet_Drum5F_PbPb_5360GeV/MC_221213_DIGIRAW_1252p1_privateZ/221215_152406/0000/step2_digiraw_268.root'
-ivars.inputFiles='file:/afs/cern.ch/work/w/wangj/privateMC/run2022/CMSSW_12_5_4/src/step2_digiraw.root'
+ivars.inputFiles='/store/mc/HINPbPbAutumn22DR/MinBias_Drum5F_5p36TeV_hydjet/GEN-SIM-RAW/NoPU_125X_mcRun3_2022_realistic_HI_v13-v2/60003/4fb43d80-0dbe-4920-b7b6-02e62a53145a.root'
+# ivars.inputFiles='/store/user/wangj/MinBias_EposLHC_ReggeGribovParton_PbPb_5360GeV/MC_230324_DIGIRAW_1254_GTv9/230325_191449/0000/step2_digiraw_354.root'
 ivars.parseArguments()
 
 process.source.fileNames = cms.untracked.vstring(ivars.inputFiles)

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# https://batchdocs.web.cern.ch/local/submit.html
+
 if [[ $# -ne 7 ]]; then
     echo "usage: ./tt-condor-checkfile.sh [input dir] [output dir] [max jobs] [log dir] [random] [split]"
     exit 1
@@ -13,6 +15,7 @@ USERANDOM=$5
 USESPLIT=$6
 USEDROP=$7
 
+# PROXYFILE=$(ls /tmp/ -lt | grep $USER | grep -m 1 x509 | awk '{print $NF}')
 PROXYFILE=$HOME/$(ls $HOME -lt | grep $USER | grep -m 1 x509 | awk '{print $NF}')
 
 tag="tracklet"
@@ -21,14 +24,7 @@ DEST_CONDOR=${DESTINATION}
 
 if [ ! -d $DESTINATION ]
 then
-    if [[ $DESTINATION == /mnt/T2_US_MIT/* ]]
-    then
-        SRM_PREFIX="/mnt/T2_US_MIT/hadoop/" ; SRM_PATH=${DEST_CONDOR#${SRM_PREFIX}} ;
-        # gfal-mkdir -p srm://se01.cmsaf.mit.edu:8443/srm/v2/server?SFN=$DESTINATION
-        LD_LIBRARY_PATH='' PYTHONPATH='' gfal-mkdir -p gsiftp://se01.cmsaf.mit.edu:2811/${SRM_PATH} # default for T2 hadoop output
-    else
-        mkdir -p $DESTINATION
-    fi
+    mkdir -p $DESTINATION
 fi
 
 mkdir -p $LOGDIR
@@ -58,19 +54,18 @@ Arguments    = $inputname $DEST_CONDOR ${outputfile} $USERANDOM $USESPLIT $USEDR
 Output       = $LOGDIR/log-${infn}.out
 Error        = $LOGDIR/log-${infn}.err
 Log          = $LOGDIR/log-${infn}.log
-Rank         = Mips
-+AccountingGroup = "group_cmshi.$(whoami)"
-# Requirements = ( BOSCOCluster =!= "t3serv008.mit.edu" && BOSCOCluster =!= "ce03.cmsaf.mit.edu" && BOSCOCluster =!= "eofe8.mit.edu")
-+DESIRED_Sites = "mit_tier3"
-job_lease_duration = 240
+# Rank         = Mips
++AccountingGroup = "group_u_CMST3.all"
++JobFlavour = "longlunch"
+# Requirements = ( OpSysAndVer =?= "CentOS8" )
 should_transfer_files = YES
 use_x509userproxy = True
 x509userproxy = $PROXYFILE
-transfer_input_files = transmute_trees
+transfer_input_files = tracklet.tar.gz
 Queue 
 EOF
 
-condor_submit tt-${tag}.condor -name submit04.mit.edu
+condor_submit tt-${tag}.condor
 mv tt-${tag}.condor $LOGDIR/log-${infn}.condor
 counter=$(($counter+1))
     fi

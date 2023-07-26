@@ -7,19 +7,29 @@ then
 fi
 
 #
-MAXFILENO=5
+MAXFILENO=100000
 USERANDOM=0
+USESPLIT=0
+USEDROP=0.005
 #
 movetosubmit=${1:-0}
 runjobs=${2:-0}
 
-PRIMARY="tt_230612"
+# PRIMARY="tt_230612"
+# PRIMARY="tt_230612_randomvz"
+# PRIMARY="tt_230612_split"
+PRIMARY="tt_230612_drop"
 
 INPUTS=(
     "/mnt/T2_US_MIT/hadoop/cms/store/user/wangj/MinBias_EposLHC_ReggeGribovParton_PbPb_5360GeV/crab_pixel_230512_EposLHC_ReggeGribovParton_PbPb_5360GeV_230322_GTv9Th4/230515_111547/000*/"
     # "/mnt/T2_US_MIT/hadoop/cms/store/user/wangj/MinBias_Hydjet_Drum5F_PbPb_5360GeV/crab_pixel_230512_Hydjet_Drum5F_PbPb_5360GeV_230322_GTv9Th4/230525_160137/000*/"
     # "/mnt/T2_US_MIT/hadoop/cms/store/user/wangj/MinBias_AMPT_StringMelting_PbPb_5360GeV/crab_pixel_230512_AMPT_StringMelting_PbPb_5360GeV_230322_GTv9Th4/230526_165052/000*/"
 
+    # "/mnt/T2_US_MIT/hadoop/cms/store/user/wangj/HITestRaw1/crab_pixel_230126_HITestRaw1_HIRun2022A_MBPVfilTh4_362318/230614_005326/000*/"
+    # "/mnt/T2_US_MIT/hadoop/cms/store/user/wangj/HITestRaw2/crab_pixel_230126_HITestRaw2_HIRun2022A_MBPVfilTh4_362318/230614_010146/000*/"
+    # "/mnt/T2_US_MIT/hadoop/cms/store/user/wangj/HITestRaw3/crab_pixel_230126_HITestRaw3_HIRun2022A_MBPVfilTh4_362318/230614_010318/000*/"
+    # "/mnt/T2_US_MIT/hadoop/cms/store/user/wangj/HITestRaw4/crab_pixel_230126_HITestRaw4_HIRun2022A_MBPVfilTh4_362318/230614_010433/000*/"
+    
     # "/mnt/T2_US_MIT/hadoop/cms/store/user/wangj/HITestRaw0/crab_pixel_230126_HITestRaw0_HIRun2022A_MBPVfilTh4_362294/230126_184212/100*/"
     # "/mnt/T2_US_MIT/hadoop/cms/store/user/wangj/HITestRaw1/crab_pixel_230126_HITestRaw1_HIRun2022A_MBPVfilTh4_362294/230126_214813/100*/"
     # "/mnt/T2_US_MIT/hadoop/cms/store/user/wangj/HITestRaw2/crab_pixel_230126_HITestRaw2_HIRun2022A_MBPVfilTh4_362294/230126_214952/100*/"
@@ -78,7 +88,7 @@ do
     if [ "$runjobs" -eq 1 ]
     then 
         set -x
-        ./tt-condor-checkfile.sh "$INPUTFILELIST" $OUTPUTDIR $MAXFILENO $LOGDIR $USERANDOM
+        ./tt-condor-checkfile.sh "$INPUTFILELIST" $OUTPUTDIR $MAXFILENO $LOGDIR $USERANDOM $USESPLIT $USEDROP
         set +x
     fi
 
