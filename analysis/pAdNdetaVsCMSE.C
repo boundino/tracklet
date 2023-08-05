@@ -12,11 +12,12 @@
 #include "TLatex.h"
 #include "TLegend.h"
 
-#define _PP_NSD_COLOUR kTeal+9
-#define _PP_INEL_COLOUR kOrange-2
-#define _PA_COLOUR kAzure+1
-#define _PA_INEL_COLOUR kViolet+1
-#define _AA_COLOUR kRed-4
+#define _PP_NSD_COLOUR kBlack
+#define _PP_INEL_COLOUR kGray+1
+#define _PA_COLOUR kOrange-2
+#define _PA_INEL_COLOUR kOrange+2
+#define _AA_COLOUR kAzure+1
+#define _HIGHLIGHT_COLOUR kRed
 
 // pp, pA, AA points from Constantin Loizides
 // INEL pp points from Jan Fiete's compilation
@@ -32,7 +33,7 @@ int pAdNdetaVsCMSE() {
     c->SetRightMargin(0.05);
     c->SetTopMargin(0.06);
     c->SetBottomMargin(0.12);
-    c->SetLeftMargin(0.12);
+    c->SetLeftMargin(0.14);
     c->SetFrameFillColor(0);
     c->SetFrameBorderMode(0);
     c->SetFrameFillColor(0);
@@ -40,28 +41,10 @@ int pAdNdetaVsCMSE() {
     c->SetTickx();
     c->SetTicky();
 
-    TH2D* frame = new TH2D("frame", "", 1, 5.0, 20000.0, 240, 0.0, 12.0);
+    TH2D* frame = new TH2D("frame", "", 1, 5.0, 20000.0, 240, 0.0, 14.0);
     frame->SetStats(0);
     frame->SetFillColor(10);
     frame->SetFillStyle(0);
-    frame->SetMarkerSize(1.2);
-    frame->GetXaxis()->SetTitle("#sqrt{#font[52]{s}_{NN}}  (GeV)");
-    frame->GetXaxis()->SetNdivisions(506);
-    frame->GetXaxis()->CenterTitle();
-    frame->GetXaxis()->SetTitleFont(43);
-    frame->GetXaxis()->SetTitleSize(20);
-    frame->GetXaxis()->SetTitleOffset(1.2);
-    frame->GetXaxis()->SetLabelFont(43);
-    frame->GetXaxis()->SetLabelSize(15);
-
-    frame->GetYaxis()->SetTitle("(d#font[52]{N}_{ch}/d#eta)/(0.5#LT#font[52]{N}_{part}#GT)");
-    frame->GetYaxis()->SetNdivisions(506);
-    frame->GetYaxis()->CenterTitle();
-    frame->GetYaxis()->SetTitleFont(43);
-    frame->GetYaxis()->SetTitleSize(20);
-    frame->GetYaxis()->SetTitleOffset(1.2);
-    frame->GetYaxis()->SetLabelFont(43);
-    frame->GetYaxis()->SetLabelSize(15);
 
     frame->Draw("A");
 
@@ -70,48 +53,54 @@ int pAdNdetaVsCMSE() {
     gaX->SetNdivisions(506);
     gaX->CenterTitle();
     gaX->SetTitleFont(43);
-    gaX->SetTitleSize(20);
-    gaX->SetTitleOffset(1.2);
+    gaX->SetTitleSize(22);
+    gaX->SetTitleOffset(1.4);
     gaX->SetLabelFont(43);
-    gaX->SetLabelSize(15);
+    gaX->SetLabelSize(20);
     gaX->Draw();
 
-    TGaxis* gaXT = new TGaxis(5.0, 12.0, 20000.0, 12.0, 5.0, 20000.0, 506, "G-U");
+    TGaxis* gaXT = new TGaxis(5.0, 14.0, 20000.0, 14.0, 5.0, 20000.0, 506, "G-U");
     gaXT->Draw();
 
-    TGaxis* gaY = new TGaxis(5.0, 0.0, 5.0, 12.0, 0.0, 6.0, 506);
-    gaY->SetTitle("(d#font[52]{N}_{ch}/d#eta)/#LT#font[52]{N}_{part}#GT");
-    gaY->SetNdivisions(506);
+    TGaxis* gaY = new TGaxis(5.0, 0.0, 5.0, 14.0, 0.0, 7.0, 510);
+    // gaY->SetTitle("(d#font[52]{N}_{ch}/d#eta)/#LT#font[52]{N}_{part}#GT");
+    gaY->SetTitle("#lower[-0.05]{(}1/#kern[0.1]{#scale[1.2]{#LT}}#lower[0.1]{#it{N}}#lower[0.5]{#scale[0.6]{#kern[-0.08]{part}}}#scale[1.2]{#GT}#lower[-0.05]{)}#kern[-0.1]{ }#scale[1.2]{#LT}d#it{N}_{ch}/d#kern[-0.08]{#it{#eta}}#scale[1.2]{#GT}#lower[0.05]{#scale[1.5]{#kern[-0.6]{#cbar}}}#lower[0.6]{#scale[0.6]{#it{#eta}_{cm}#kern[0.2]{#approx}#kern[0.2]{0}}}");
+    gaY->SetNdivisions(510);
     gaY->CenterTitle();
     gaY->SetTitleFont(43);
-    gaY->SetTitleSize(20);
-    gaY->SetTitleOffset(1.15);
+    gaY->SetTitleSize(22);
+    gaY->SetTitleOffset(1.4);
     gaY->SetLabelFont(43);
-    gaY->SetLabelSize(16);
+    gaY->SetLabelSize(20);
+    gaY->SetLabelOffset(0.01);
     gaY->Draw();
 
-    TGaxis* gaYR = new TGaxis(20000.0, 0.0, 20000.0, 12.0, 0.0, 6.0, 506, "+U");
+    TGaxis* gaYR = new TGaxis(20000.0, 0.0, 20000.0, 14.0, 0.0, 7.0, 510, "+U");
     gaYR->Draw();
 
     TLatex* lcms = new TLatex();
     lcms->SetTextFont(63);
-    lcms->SetTextSize(18);
-    lcms->DrawLatexNDC(0.13, 0.95, "CMS");
+    lcms->SetTextSize(25);
+    lcms->SetTextAlign(32);
+    lcms->DrawLatexNDC(0.90, 0.88, "CMS");
 
-    TLatex* lprelim = new TLatex();
-    lprelim->SetTextFont(53);
-    lprelim->SetTextSize(16);
-    lprelim->DrawLatexNDC(0.20, 0.95, "Preliminary");
+    // TLatex* lprelim = new TLatex();
+    // lprelim->SetTextFont(53);
+    // lprelim->SetTextSize(16);
+    // lprelim->DrawLatexNDC(0.20, 0.95, "Preliminary");
 
     /******************************************************
     pp NSD data points
     ******************************************************/
 
+    Size_t size_l = 1.6, size_m = 1.2, size_s = 1.1;
+    
     TGraphAsymmErrors* Graph_pp_UA1 = new TGraphAsymmErrors(7);
     Graph_pp_UA1->SetName("Graph_pp_UA1");
     Graph_pp_UA1->SetMarkerStyle(33);
-    Graph_pp_UA1->SetMarkerSize(1.2);
+    Graph_pp_UA1->SetMarkerSize(size_l);
     Graph_pp_UA1->SetMarkerColor(_PP_NSD_COLOUR);
+    Graph_pp_UA1->SetLineColor(_PP_NSD_COLOUR);
     Graph_pp_UA1->SetPoint(0, 200, 2.65);
     Graph_pp_UA1->SetPointError(0, 0, 0, 0.08, 0.08);
     Graph_pp_UA1->SetPoint(1, 260, 2.71);
@@ -131,8 +120,9 @@ int pAdNdetaVsCMSE() {
     TGraphAsymmErrors* Graph_pp_UA5 = new TGraphAsymmErrors(4);
     Graph_pp_UA5->SetName("Graph_pp_UA5");
     Graph_pp_UA5->SetMarkerStyle(23);
-    Graph_pp_UA5->SetMarkerSize(1.0);
+    Graph_pp_UA5->SetMarkerSize(size_m);
     Graph_pp_UA5->SetMarkerColor(_PP_NSD_COLOUR);
+    Graph_pp_UA5->SetLineColor(_PP_NSD_COLOUR);
     Graph_pp_UA5->SetPoint(0, 53, 2);
     Graph_pp_UA5->SetPointError(0, 0, 0, 0.14, 0.14);
     Graph_pp_UA5->SetPoint(1, 200, 2.51);
@@ -146,8 +136,9 @@ int pAdNdetaVsCMSE() {
     TGraphAsymmErrors* Graph_pp_CDF = new TGraphAsymmErrors(2);
     Graph_pp_CDF->SetName("Graph_pp_CDF");
     Graph_pp_CDF->SetMarkerStyle(20);
-    Graph_pp_CDF->SetMarkerSize(0.9);
+    Graph_pp_CDF->SetMarkerSize(size_s);
     Graph_pp_CDF->SetMarkerColor(_PP_NSD_COLOUR);
+    Graph_pp_CDF->SetLineColor(_PP_NSD_COLOUR);
     Graph_pp_CDF->SetPoint(0, 630, 3.18);
     Graph_pp_CDF->SetPointError(0, 0, 0, 0.16, 0.16);
     Graph_pp_CDF->SetPoint(1, 1800, 3.95);
@@ -157,8 +148,9 @@ int pAdNdetaVsCMSE() {
     TGraphAsymmErrors* Graph_pp_CMS = new TGraphAsymmErrors(3);
     Graph_pp_CMS->SetName("Graph_pp_CMS");
     Graph_pp_CMS->SetMarkerStyle(21);
-    Graph_pp_CMS->SetMarkerSize(1.0);
+    Graph_pp_CMS->SetMarkerSize(size_s);
     Graph_pp_CMS->SetMarkerColor(_PP_NSD_COLOUR);
+    Graph_pp_CMS->SetLineColor(_PP_NSD_COLOUR);
     Graph_pp_CMS->SetPoint(0, 900, 3.48);
     Graph_pp_CMS->SetPointError(0, 0, 0, 0.13, 0.13);
     Graph_pp_CMS->SetPoint(1, 2360, 4.47);
@@ -170,8 +162,9 @@ int pAdNdetaVsCMSE() {
     TGraphAsymmErrors* Graph_pp_ALICE = new TGraphAsymmErrors(2);
     Graph_pp_ALICE->SetName("Graph_pp_ALICE");
     Graph_pp_ALICE->SetMarkerStyle(22);
-    Graph_pp_ALICE->SetMarkerSize(1.0);
+    Graph_pp_ALICE->SetMarkerSize(size_m);
     Graph_pp_ALICE->SetMarkerColor(_PP_NSD_COLOUR);
+    Graph_pp_ALICE->SetLineColor(_PP_NSD_COLOUR);
     Graph_pp_ALICE->SetPoint(0, 900, 3.58);
     Graph_pp_ALICE->SetPointError(0, 0, 0, 0.12, 0.12);
     Graph_pp_ALICE->SetPoint(1, 2360, 4.43);
@@ -181,8 +174,9 @@ int pAdNdetaVsCMSE() {
     TGraphAsymmErrors* Graph_pp_STAR = new TGraphAsymmErrors(1);
     Graph_pp_STAR->SetName("Graph_pp_STAR");
     Graph_pp_STAR->SetMarkerStyle(29);
-    Graph_pp_STAR->SetMarkerSize(1.2);
+    Graph_pp_STAR->SetMarkerSize(size_l);
     Graph_pp_STAR->SetMarkerColor(_PP_NSD_COLOUR);
+    Graph_pp_STAR->SetLineColor(_PP_NSD_COLOUR);
     Graph_pp_STAR->SetPoint(0, 200, 2.98);
     Graph_pp_STAR->SetPointError(0, 0, 0, 0.34, 0.34);
     Graph_pp_STAR->Draw("E1P");
@@ -216,13 +210,13 @@ int pAdNdetaVsCMSE() {
     fit_pp_nsd->SetParLimits(2, 0, 0);
     fit_pp_nsd->Draw("same");
 
-    TLegend* leg_pp_NSD = new TLegend(0.15, 0.64, 0.3, 0.92, NULL, "brNDC");
+    TLegend* leg_pp_NSD = new TLegend(0.17, 0.64, 0.3, 0.92, NULL, "brNDC");
     leg_pp_NSD->SetBorderSize(0);
     leg_pp_NSD->SetTextFont(43);
     leg_pp_NSD->SetTextSize(15);
     leg_pp_NSD->SetFillColor(0);
     leg_pp_NSD->SetFillStyle(0);
-    leg_pp_NSD->SetHeader("pp (p#bar{p}) NSD");
+    leg_pp_NSD->SetHeader("#bf{pp (p#bar{p}) NSD}");
     leg_pp_NSD->AddEntry(Graph_pp_CMS, "CMS", "P");
     leg_pp_NSD->AddEntry(Graph_pp_ALICE, "ALICE", "P");
     leg_pp_NSD->AddEntry(Graph_pp_CDF, "CDF", "P");
@@ -231,9 +225,10 @@ int pAdNdetaVsCMSE() {
     leg_pp_NSD->AddEntry(Graph_pp_STAR, "STAR", "P");
     leg_pp_NSD->Draw();
 
-    TLatex* pp_nsd_fit_label = new TLatex(2500, 5.2, "#propto #font[52]{s}_{_{NN}}^{0.11}");
+    TLatex* pp_nsd_fit_label = new TLatex(2000, 5.2, "#propto #font[52]{s}_{_{NN}}^{0.110}");
+    pp_nsd_fit_label->SetTextColor(_PP_NSD_COLOUR);
     pp_nsd_fit_label->SetTextFont(43);
-    pp_nsd_fit_label->SetTextSize(15);
+    pp_nsd_fit_label->SetTextSize(18);
     pp_nsd_fit_label->Draw();
 
     /******************************************************
@@ -243,8 +238,9 @@ int pAdNdetaVsCMSE() {
     TGraphAsymmErrors* Graph_pp_INEL_ISR = new TGraphAsymmErrors(5);
     Graph_pp_INEL_ISR->SetName("Graph_pp_INEL_ISR");
     Graph_pp_INEL_ISR->SetMarkerStyle(20);
-    Graph_pp_INEL_ISR->SetMarkerSize(0.9);
+    Graph_pp_INEL_ISR->SetMarkerSize(size_s);
     Graph_pp_INEL_ISR->SetMarkerColor(_PP_INEL_COLOUR);
+    Graph_pp_INEL_ISR->SetLineColor(_PP_INEL_COLOUR);
     Graph_pp_INEL_ISR->SetPoint(0, 23.6, 1.35);
     Graph_pp_INEL_ISR->SetPointError(0, 0, 0, 0.062, 0.062);
     Graph_pp_INEL_ISR->SetPoint(1, 30.8, 1.55);
@@ -260,8 +256,9 @@ int pAdNdetaVsCMSE() {
     TGraphAsymmErrors* Graph_pp_INEL_UA5 = new TGraphAsymmErrors(4);
     Graph_pp_INEL_UA5->SetName("Graph_pp_INEL_UA5");
     Graph_pp_INEL_UA5->SetMarkerStyle(23);
-    Graph_pp_INEL_UA5->SetMarkerSize(1.0);
+    Graph_pp_INEL_UA5->SetMarkerSize(size_m);
     Graph_pp_INEL_UA5->SetMarkerColor(_PP_INEL_COLOUR);
+    Graph_pp_INEL_UA5->SetLineColor(_PP_INEL_COLOUR);
     Graph_pp_INEL_UA5->SetPoint(0, 53, 1.776);
     Graph_pp_INEL_UA5->SetPointError(0, 0, 0, 0.113, 0.113);
     Graph_pp_INEL_UA5->SetPoint(1, 200, 2.22);
@@ -275,8 +272,9 @@ int pAdNdetaVsCMSE() {
     TGraphErrors* Graph_pp_INEL_PHOBOS = new TGraphErrors(1);
     Graph_pp_INEL_PHOBOS->SetName("Graph_pp_INEL_PHOBOS");
     Graph_pp_INEL_PHOBOS->SetMarkerStyle(33);
-    Graph_pp_INEL_PHOBOS->SetMarkerSize(1.2);
+    Graph_pp_INEL_PHOBOS->SetMarkerSize(size_l);
     Graph_pp_INEL_PHOBOS->SetMarkerColor(_PP_INEL_COLOUR);
+    Graph_pp_INEL_PHOBOS->SetLineColor(_PP_INEL_COLOUR);
     Graph_pp_INEL_PHOBOS->SetPoint(0, 200, 2.315);
     Graph_pp_INEL_PHOBOS->SetPointError(0, 0, 0.117);
     Graph_pp_INEL_PHOBOS->Draw("E1P");
@@ -284,8 +282,9 @@ int pAdNdetaVsCMSE() {
     TGraphAsymmErrors* Graph_pp_INEL_ALICE = new TGraphAsymmErrors(3);
     Graph_pp_INEL_ALICE->SetName("Graph_pp_INEL_ALICE");
     Graph_pp_INEL_ALICE->SetMarkerStyle(22);
-    Graph_pp_INEL_ALICE->SetMarkerSize(1.0);
+    Graph_pp_INEL_ALICE->SetMarkerSize(size_m);
     Graph_pp_INEL_ALICE->SetMarkerColor(_PP_INEL_COLOUR);
+    Graph_pp_INEL_ALICE->SetLineColor(_PP_INEL_COLOUR);
     Graph_pp_INEL_ALICE->SetPoint(0, 920, 3.02104);
     Graph_pp_INEL_ALICE->SetPointError(0, 0, 0, 0.054948, 0.075834);
     Graph_pp_INEL_ALICE->SetPoint(1, 2360, 3.76606);
@@ -297,19 +296,20 @@ int pAdNdetaVsCMSE() {
     TGraphErrors* Graph_pp_INEL_CMS = new TGraphErrors(1);
     Graph_pp_INEL_CMS->SetName("Graph_pp_INEL_CMS");
     Graph_pp_INEL_CMS->SetMarkerStyle(21);
-    Graph_pp_INEL_CMS->SetMarkerSize(1.0);
+    Graph_pp_INEL_CMS->SetMarkerSize(size_s);
     Graph_pp_INEL_CMS->SetMarkerColor(_PP_INEL_COLOUR);
+    Graph_pp_INEL_CMS->SetLineColor(_PP_INEL_COLOUR);
     Graph_pp_INEL_CMS->SetPoint(0, 13000, 5.49);
     Graph_pp_INEL_CMS->SetPointError(0, 0, 0.18);
     Graph_pp_INEL_CMS->Draw("E1P");
 
-    TLegend* leg_pp_INEL = new TLegend(0.15, 0.40, 0.30, 0.64, NULL, "brNDC");
+    TLegend* leg_pp_INEL = new TLegend(0.17, 0.40, 0.30, 0.64, NULL, "brNDC");
     leg_pp_INEL->SetBorderSize(0);
     leg_pp_INEL->SetTextFont(43);
     leg_pp_INEL->SetTextSize(15);
     leg_pp_INEL->SetFillColor(0);
     leg_pp_INEL->SetFillStyle(0);
-    leg_pp_INEL->SetHeader("pp (p#bar{p}) Inel.");
+    leg_pp_INEL->SetHeader("#bf{pp (p#bar{p}) Inel.}");
     leg_pp_INEL->AddEntry(Graph_pp_INEL_CMS, "CMS", "P");
     leg_pp_INEL->AddEntry(Graph_pp_INEL_ALICE, "ALICE", "P");
     leg_pp_INEL->AddEntry(Graph_pp_INEL_UA5, "UA5", "P");
@@ -332,9 +332,10 @@ int pAdNdetaVsCMSE() {
     fit_pp_inel->SetParLimits(1, 0, 0);
     fit_pp_inel->Draw("same");
 
-    TLatex* pp_inel_fit_label = new TLatex(2500, 3.25, "#propto #font[52]{s}_{_{NN}}^{0.10}");
+    TLatex* pp_inel_fit_label = new TLatex(2500, 3.25, "#propto #font[52]{s}_{_{NN}}^{0.103}");
+    pp_inel_fit_label->SetTextColor(_PP_INEL_COLOUR);
     pp_inel_fit_label->SetTextFont(43);
-    pp_inel_fit_label->SetTextSize(15);
+    pp_inel_fit_label->SetTextSize(18);
     pp_inel_fit_label->Draw();
 
     /******************************************************
@@ -343,9 +344,10 @@ int pAdNdetaVsCMSE() {
 
     TGraphErrors* Graph_AA_NA50 = new TGraphErrors(1);
     Graph_AA_NA50->SetName("Graph");
-    Graph_AA_NA50->SetMarkerStyle(5);
-    Graph_AA_NA50->SetMarkerSize(1.2);
+    Graph_AA_NA50->SetMarkerStyle(47);
+    Graph_AA_NA50->SetMarkerSize(size_m);
     Graph_AA_NA50->SetMarkerColor(_AA_COLOUR);
+    Graph_AA_NA50->SetLineColor(_AA_COLOUR);
     Graph_AA_NA50->SetPoint(0, 17.3, 2.14);
     Graph_AA_NA50->SetPointError(0, 0, 0.17);
     Graph_AA_NA50->Draw("E1P");
@@ -354,8 +356,9 @@ int pAdNdetaVsCMSE() {
     Graph_AA_STAR->SetName("Graph_AA_STAR");
     Graph_AA_STAR->SetLineWidth(1);
     Graph_AA_STAR->SetMarkerStyle(29);
-    Graph_AA_STAR->SetMarkerSize(1.2);
+    Graph_AA_STAR->SetMarkerSize(size_l);
     Graph_AA_STAR->SetMarkerColor(_AA_COLOUR);
+    Graph_AA_STAR->SetLineColor(_AA_COLOUR);
     Graph_AA_STAR->SetPoint(0, 130, 3.296512);
     Graph_AA_STAR->SetPointError(0, 0, 0.2209302);
     Graph_AA_STAR->Draw("E1P");
@@ -363,19 +366,33 @@ int pAdNdetaVsCMSE() {
     TGraphErrors* Graph_AA_PHENIX = new TGraphErrors(2);
     Graph_AA_PHENIX->SetName("Graph");
     Graph_AA_PHENIX->SetMarkerStyle(34);
-    Graph_AA_PHENIX->SetMarkerSize(1.1);
+    Graph_AA_PHENIX->SetMarkerSize(size_m);
     Graph_AA_PHENIX->SetMarkerColor(_AA_COLOUR);
-    Graph_AA_PHENIX->SetPoint(0, 130, 3.58);
-    Graph_AA_PHENIX->SetPointError(0, 0, 0.26);
-    Graph_AA_PHENIX->SetPoint(1, 200, 4.09);
-    Graph_AA_PHENIX->SetPointError(1, 0, 0.26);
+    Graph_AA_PHENIX->SetLineColor(_AA_COLOUR);
+    Graph_AA_PHENIX->SetPoint(0, 7.7, 1.16);
+    Graph_AA_PHENIX->SetPointError(0, 0, 0.10);
+    Graph_AA_PHENIX->SetPoint(1, 14.5, 1.49);
+    Graph_AA_PHENIX->SetPointError(1, 0, 0.13);
+    Graph_AA_PHENIX->SetPoint(2, 19.6, 1.69);
+    Graph_AA_PHENIX->SetPointError(2, 0, 0.15);
+    Graph_AA_PHENIX->SetPoint(3, 27, 1.90);
+    Graph_AA_PHENIX->SetPointError(3, 0, 0.17);
+    Graph_AA_PHENIX->SetPoint(4, 39, 2.14);
+    Graph_AA_PHENIX->SetPointError(4, 0, 0.19);
+    Graph_AA_PHENIX->SetPoint(5, 62.4, 2.61);
+    Graph_AA_PHENIX->SetPointError(5, 0, 0.23);
+    Graph_AA_PHENIX->SetPoint(6, 130, 3.46);
+    Graph_AA_PHENIX->SetPointError(6, 0, 0.19);
+    Graph_AA_PHENIX->SetPoint(7, 200, 3.92);
+    Graph_AA_PHENIX->SetPointError(7, 0, 0.22);
     Graph_AA_PHENIX->Draw("E1P");
 
     TGraphErrors* Graph_AA_BRAHMS = new TGraphErrors(2);
     Graph_AA_BRAHMS->SetName("Graph");
-    Graph_AA_BRAHMS->SetMarkerColor(_AA_COLOUR);
     Graph_AA_BRAHMS->SetMarkerStyle(23);
-    Graph_AA_BRAHMS->SetMarkerSize(1.0);
+    Graph_AA_BRAHMS->SetMarkerSize(size_m);
+    Graph_AA_BRAHMS->SetMarkerColor(_AA_COLOUR);
+    Graph_AA_BRAHMS->SetLineColor(_AA_COLOUR);
     Graph_AA_BRAHMS->SetPoint(0, 130, 3.14);
     Graph_AA_BRAHMS->SetPointError(0, 0, 0.205);
     Graph_AA_BRAHMS->SetPoint(1, 200, 3.501);
@@ -385,8 +402,9 @@ int pAdNdetaVsCMSE() {
     TGraphErrors* Graph_AA_PHOBOS = new TGraphErrors(5);
     Graph_AA_PHOBOS->SetName("Graph_AA_PHOBOS");
     Graph_AA_PHOBOS->SetMarkerStyle(33);
-    Graph_AA_PHOBOS->SetMarkerSize(1.2);
+    Graph_AA_PHOBOS->SetMarkerSize(size_l);
     Graph_AA_PHOBOS->SetMarkerColor(_AA_COLOUR);
+    Graph_AA_PHOBOS->SetLineColor(_AA_COLOUR);
     Graph_AA_PHOBOS->SetPoint(0, 19.6, 1.87);
     Graph_AA_PHOBOS->SetPointError(0, 0, 0.15);
     Graph_AA_PHOBOS->SetPoint(1, 56, 2.47);
@@ -407,9 +425,10 @@ int pAdNdetaVsCMSE() {
     Double_t e_AA_502_ALICE = 0.3 / TMath::Sqrt(2.0);
     TGraphErrors* Graph_AA_ALICE = new TGraphErrors(2);
     Graph_AA_ALICE->SetName("Graph_AA_ALICE");
-    Graph_AA_ALICE->SetMarkerStyle(22);
-    Graph_AA_ALICE->SetMarkerSize(1.0);
+    Graph_AA_ALICE->SetMarkerStyle(26);
+    Graph_AA_ALICE->SetMarkerSize(size_m);
     Graph_AA_ALICE->SetMarkerColor(_AA_COLOUR);
+    Graph_AA_ALICE->SetLineColor(_AA_COLOUR);
     Graph_AA_ALICE->SetPoint(0, 2760 / 1.1, 8.3);
     Graph_AA_ALICE->SetPointError(0, 0, 0.4);
     Graph_AA_ALICE->SetPoint(1, 5020, v_AA_502_ALICE);
@@ -426,9 +445,10 @@ int pAdNdetaVsCMSE() {
     Double_t e_AA_ATLAS = 0.4 / TMath::Sqrt(3.0);
     TGraphErrors* Graph_AA_ATLAS = new TGraphErrors(1);
     Graph_AA_ATLAS->SetName("Graph_AA_ATLAS");
-    Graph_AA_ATLAS->SetMarkerStyle(20);
-    Graph_AA_ATLAS->SetMarkerSize(0.9);
+    Graph_AA_ATLAS->SetMarkerStyle(24);
+    Graph_AA_ATLAS->SetMarkerSize(size_s);
     Graph_AA_ATLAS->SetMarkerColor(_AA_COLOUR);
+    Graph_AA_ATLAS->SetLineColor(_AA_COLOUR);
     Graph_AA_ATLAS->SetPoint(0, 2760.0 * 1.1, v_AA_ATLAS);
     Graph_AA_ATLAS->SetPointError(0, 0.0, e_AA_ATLAS);
     Graph_AA_ATLAS->Draw("E1P");
@@ -443,19 +463,22 @@ int pAdNdetaVsCMSE() {
     TGraphErrors* Graph_AA_CMS = new TGraphErrors(1);
     Graph_AA_CMS->SetName("Graph_AA_CMS");
     Graph_AA_CMS->SetMarkerStyle(21);
-    Graph_AA_CMS->SetMarkerSize(1.0);
-    Graph_AA_CMS->SetMarkerColor(_AA_COLOUR);
+    Graph_AA_CMS->SetMarkerSize(size_s);
+    Graph_AA_CMS->SetMarkerColor(_HIGHLIGHT_COLOUR);
+    Graph_AA_CMS->SetLineColor(_HIGHLIGHT_COLOUR);
     Graph_AA_CMS->SetPoint(0, 2760.0, v_AA_CMS);
     Graph_AA_CMS->SetPointError(0, 0.0, e_AA_CMS);
+    Graph_AA_CMS->SetPoint(1, 5360.0, 5.30042*2);
+    Graph_AA_CMS->SetPointError(1, 0.0, 0.234662*2);
     Graph_AA_CMS->Draw("E1P");
 
-    TLegend* leg_AA = new TLegend(0.32, 0.56, 0.47, 0.92, NULL, "brNDC");
+    TLegend* leg_AA = new TLegend(0.34, 0.56, 0.47, 0.92, NULL, "brNDC");
     leg_AA->SetBorderSize(0);
     leg_AA->SetTextFont(43);
     leg_AA->SetTextSize(15);
     leg_AA->SetFillColor(0);
     leg_AA->SetFillStyle(0);
-    leg_AA->SetHeader("Central AA");
+    leg_AA->SetHeader("#bf{Central AA}");
     leg_AA->AddEntry(Graph_AA_CMS, "CMS", "P");
     leg_AA->AddEntry(Graph_AA_ALICE, "ALICE", "P");
     leg_AA->AddEntry(Graph_AA_ATLAS, "ATLAS", "P");
@@ -472,24 +495,25 @@ int pAdNdetaVsCMSE() {
     // fit_AA_log->SetLineStyle(9);
     // fit_AA_log->Draw("same");
 
-    TF1* fit_AA = new TF1("fit_AA", "[0]*pow(x*x/abs([1]),[2])", 13, 6500);
+    TF1* fit_AA = new TF1("fit_AA", "[0]*pow(x*x/abs([1]),[2])", 5, 9000);
     fit_AA->SetLineWidth(1);
     fit_AA->SetLineColor(_AA_COLOUR);
     fit_AA->SetLineStyle(2);
-    fit_AA->SetParameter(0, 0.7772692);
+    fit_AA->SetParameter(0, 0.69);
     fit_AA->SetParError(0, 0);
     fit_AA->SetParLimits(0, 0, 0);
     fit_AA->SetParameter(1, 1);
     fit_AA->SetParError(1, 0);
     fit_AA->SetParLimits(1, 0, 0);
-    fit_AA->SetParameter(2, 0.15);
+    fit_AA->SetParameter(2, 0.158);
     fit_AA->SetParError(2, 0);
     fit_AA->SetParLimits(2, 0, 0);
     fit_AA->Draw("same");
 
-    TLatex* AA_fit_label = new TLatex(2500, 10.2, "#propto #font[52]{s}_{_{NN}}^{0.15}");
+    TLatex* AA_fit_label = new TLatex(2500, 7.5, "#propto #font[52]{s}_{_{NN}}^{0.158}");
+    AA_fit_label->SetTextColor(_AA_COLOUR);
     AA_fit_label->SetTextFont(43);
-    AA_fit_label->SetTextSize(15);
+    AA_fit_label->SetTextSize(18);
     AA_fit_label->Draw();
 
     /******************************************************
@@ -509,9 +533,10 @@ int pAdNdetaVsCMSE() {
     e_dAu_PHOBOS = TMath::Sqrt(et1_PHOBOS * et1_PHOBOS + et2_PHOBOS * et2_PHOBOS);
     TGraphErrors* Graph_dAu_PHOBOS = new TGraphErrors(1);
     Graph_dAu_PHOBOS->SetName("Graph_dAu_PHOBOS");
-    Graph_dAu_PHOBOS->SetMarkerStyle(33);
+    Graph_dAu_PHOBOS->SetMarkerStyle(27);
+    Graph_dAu_PHOBOS->SetMarkerSize(size_l);
     Graph_dAu_PHOBOS->SetMarkerColor(_PA_COLOUR);
-    Graph_dAu_PHOBOS->SetMarkerSize(1.2);
+    Graph_dAu_PHOBOS->SetLineColor(_PA_COLOUR);
     Graph_dAu_PHOBOS->SetPoint(0, 200.0, v_dAu_PHOBOS);
     Graph_dAu_PHOBOS->SetPointError(0, 0.0, e_dAu_PHOBOS);
     Graph_dAu_PHOBOS->Draw("E1P");
@@ -528,8 +553,9 @@ int pAdNdetaVsCMSE() {
     TGraphErrors* Graph_pA_ALICE = new TGraphErrors(1);
     Graph_pA_ALICE->SetName("Graph_pA_ALICE");
     Graph_pA_ALICE->SetMarkerStyle(22);
-    Graph_pA_ALICE->SetMarkerSize(1.0);
+    Graph_pA_ALICE->SetMarkerSize(size_m);
     Graph_pA_ALICE->SetMarkerColor(_PA_COLOUR);
+    Graph_pA_ALICE->SetLineColor(_PA_COLOUR);
     Graph_pA_ALICE->SetPoint(0, 5023.0, v_pA_ALICE);
     Graph_pA_ALICE->SetPointError(0, 0.0, e_pA_ALICE);
     Graph_pA_ALICE->Draw("E1P");
@@ -540,20 +566,21 @@ int pAdNdetaVsCMSE() {
     TGraphErrors* Graph_pA_CMS = new TGraphErrors(2);
     Graph_pA_CMS->SetName("Graph_pA_CMS");
     Graph_pA_CMS->SetMarkerStyle(21);
-    Graph_pA_CMS->SetMarkerSize(1.0);
+    Graph_pA_CMS->SetMarkerSize(size_s);
     Graph_pA_CMS->SetMarkerColor(_PA_COLOUR);
+    Graph_pA_CMS->SetLineColor(_PA_COLOUR);
     Graph_pA_CMS->SetPoint(0, 5020.0, v_pA_CMS_5020);
     Graph_pA_CMS->SetPointError(0, 0.0, 0.045 * 2);
     Graph_pA_CMS->SetPoint(1, 8160.0, v_pA_CMS_8160);
     Graph_pA_CMS->SetPointError(1, 0.0, 0.068 * 2);
     Graph_pA_CMS->Draw("E1P");
 
-    TLegend* leg_pA = new TLegend(0.49, 0.76, 0.64, 0.92, NULL, "brNDC");
+    TLegend* leg_pA = new TLegend(0.51, 0.76, 0.64, 0.92, NULL, "brNDC");
     leg_pA->SetBorderSize(0);
     leg_pA->SetTextFont(43);
     leg_pA->SetTextSize(15);
     leg_pA->SetFillColor(0);
-    leg_pA->SetHeader("pA NSD");
+    leg_pA->SetHeader("#bf{pA NSD}");
     leg_pA->AddEntry(Graph_pA_CMS, "pPb CMS", "P");
     leg_pA->AddEntry(Graph_pA_ALICE, "pPb ALICE", "P");
     leg_pA->AddEntry(Graph_dAu_PHOBOS, "dAu PHOBOS", "P");
@@ -580,8 +607,9 @@ int pAdNdetaVsCMSE() {
     TGraphErrors* Graph_pA_NA35 = new TGraphErrors(1);
     Graph_pA_NA35->SetName("Graph_pA_NA35");
     Graph_pA_NA35->SetMarkerStyle(20);
-    Graph_pA_NA35->SetMarkerSize(0.9);
+    Graph_pA_NA35->SetMarkerSize(size_s);
     Graph_pA_NA35->SetMarkerColor(_PA_INEL_COLOUR);
+    Graph_pA_NA35->SetLineColor(_PA_INEL_COLOUR);
     Graph_pA_NA35->SetPoint(0, 19.4, v_pA_NA35);
     Graph_pA_NA35->SetPointError(0, 0.0, e_pA_NA35);
     Graph_pA_NA35->Draw("E1P");
@@ -607,8 +635,9 @@ int pAdNdetaVsCMSE() {
     TGraphErrors* Graph_pA_E178 = new TGraphErrors(3);
     Graph_pA_E178->SetName("Graph_pA_E178");
     Graph_pA_E178->SetMarkerStyle(23);
-    Graph_pA_E178->SetMarkerSize(1.0);
+    Graph_pA_E178->SetMarkerSize(size_m);
     Graph_pA_E178->SetMarkerColor(_PA_INEL_COLOUR);
+    Graph_pA_E178->SetLineColor(_PA_INEL_COLOUR);
     Graph_pA_E178->SetPoint(0, 9.69, v_pA_E178[0]);
     Graph_pA_E178->SetPointError(0, 0.0, e_pA_E178[0] * 0.1);
     Graph_pA_E178->SetPoint(1, 13.7, v_pA_E178[1]);
@@ -617,12 +646,12 @@ int pAdNdetaVsCMSE() {
     Graph_pA_E178->SetPointError(2, 0.0, e_pA_E178[2] * 0.06);
     Graph_pA_E178->Draw("E1P");
 
-    TLegend* leg_pA_INEL = new TLegend(0.49, 0.64, 0.64, 0.76, NULL, "brNDC");
+    TLegend* leg_pA_INEL = new TLegend(0.51, 0.64, 0.64, 0.76, NULL, "brNDC");
     leg_pA_INEL->SetBorderSize(0);
     leg_pA_INEL->SetTextFont(43);
     leg_pA_INEL->SetTextSize(15);
     leg_pA_INEL->SetFillColor(0);
-    leg_pA_INEL->SetHeader("pA Inel.");
+    leg_pA_INEL->SetHeader("#bf{pA Inel.}");
     leg_pA_INEL->AddEntry(Graph_pA_E178, "pPb E178", "P");
     leg_pA_INEL->AddEntry(Graph_pA_NA35, "pAu NA35", "P");
     leg_pA_INEL->Draw();
