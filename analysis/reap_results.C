@@ -58,6 +58,7 @@ int reap_results(int type,
 
       if (applyg) {
          faccep = new TFile(Form("output/acceptances/%s/acceptance-%i.root",
+         // faccep = new TFile(Form("output/%s/acceptance-%i.root",
                accepdir, type));
          printf("$ applying geometric correction\n");
       }
@@ -99,7 +100,7 @@ int reap_results(int type,
 
    TCut ssel = Form("(dr2<%f)", maxdr2);
    TCut csel = Form("(hft>=%f && hft<%f)", hftmin, hftmax);
-   TCut osel = "(hlt && nhfn>1 && nhfp>1)";
+   TCut osel = "(hlt && nhfn>1 && nhfp>1 && cluscomp)";
    TCut psel = "(process!=102 && process!=103 && process!=104)";
 
    TCut esel = fsel && csel && osel;
