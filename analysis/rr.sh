@@ -3,19 +3,26 @@
 make reap_results || exit 1
 make merge_monde || exit 1
 
-maxdr2=0.25 ; tagdr="drlt0p5" ; tagver="v1"
+maxdr2=0.25 ; tagdr="drlt0p5" ; tagver="v3" ; nominal="epos" ; corrtagver="v3"
 
 TYPES=(12 13 14 23 24 34 56 57 67)
 # TYPES=(11 22 33 44 55 66 77)
 CENTS=(4 20)
-for i in {20..5} ; do CENTS+=($((i-1)) $i) ; done ; 
-# for i in 20 10 ; do CENTS+=($((i-1)) $i) ; done ; 
+# for i in {20..5} ; do CENTS+=($((i-1)) $i) ; done ; 
+# for i in {12..5} ; do CENTS+=($((i-1)) $i) ; done ; 
 # CENTS+=(0 20)
 
 
 ##
 INPUTS_MC=(
-    /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230612_pixel_230512_EposLHC_ReggeGribovParton_PbPb_5360GeV_230322_GTv9Th4.root,epos
+    /eos/cms/store/cmst3/user/wangj/tracklet/tt_230724_pixel_230724_EposLHC_ReggeGribovParton_5360GeV_1255p1.root,epos,3
+    # /eos/cms/store/cmst3/user/wangj/tracklet/tt_230724_pixel_230724_Hydjet_Drum5F_5360GeV_HINPbPbAutumn22DR_shuf.root,hydjet,4
+    # /eos/cms/store/cmst3/user/wangj/tracklet/tt_230724_pixel_230724_AMPT_NoStringMelting_5360GeV_HINPbPbAutumn22DR_v4_shuf.root,amptnm,5    
+    # /eos/cms/store/cmst3/user/wangj/tracklet/tt_230724_pixel_230724_AMPT_StringMelting_5360GeV_HINPbPbAutumn22DR_v4_shuf.root,amptsm,6
+    # /eos/cms/store/cmst3/user/wangj/tracklet/tt_230724_split_pixel_230724_EposLHC_ReggeGribovParton_5360GeV_1255p1.root,epos,3
+
+    # pre-approval
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230612_pixel_230512_EposLHC_ReggeGribovParton_PbPb_5360GeV_230322_GTv9Th4.root,epos
     # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230322_pixel_230129_EposLHC_ReggeGribovParton_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4.root,epos
     # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230322_pixel_230129_AMPT_StringMelting_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4.root,amptsm
     # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230322_pixel_230129_Hydjet_Drum5F_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4.root,hydjet
@@ -23,7 +30,16 @@ INPUTS_MC=(
 )
 
 INPUTS_DATA=(
-    /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230322_pixel_230126_HITestRaw0-6_HIRun2022A_MBPVfilTh4_362294.root,362294
+    # /eos/cms/store/cmst3/user/wangj/tracklet/tt_230724_pixel_230724_HITestRaw0-6_HIRun2022A_MBPVfilTh4_362294.root,362294
+    # /eos/cms/store/cmst3/user/wangj/tracklet/tt_230724_wclus_pixel_230724_HITestRaw0-5_HIRun2022A_MBPVfilTh4_362294.root,362294
+    /eos/cms/store/cmst3/user/wangj/tracklet/tt_230724_pixel_230724_HITestRaw0-1_HIRun2022A_MBPVfilTh4_362318.root,362318
+    # /eos/cms/store/cmst3/user/wangj/tracklet/tt_230724_pixel_230724_EposLHC_ReggeGribovParton_5360GeV_1255p1.root,eposCLOSE
+    # /eos/cms/store/cmst3/user/wangj/tracklet/tt_230724_pixel_230724_Hydjet_Drum5F_5360GeV_HINPbPbAutumn22DR_shuf.root,hydjetCLOSE
+    # /eos/cms/store/cmst3/user/wangj/tracklet/tt_230724_pixel_230724_AMPT_StringMelting_5360GeV_HINPbPbAutumn22DR_v4_shuf.root,amptsmCLOSE
+    # /eos/cms/store/cmst3/user/wangj/tracklet/tt_230724_pixel_230724_AMPT_NoStringMelting_5360GeV_HINPbPbAutumn22DR_v4_shuf.root,amptnmCLOSE
+    
+    # pre-approval
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230322_pixel_230126_HITestRaw0-6_HIRun2022A_MBPVfilTh4_362294.root,362294
     # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230612_pixel_230126_HITestRaw1n3_HIRun2022A_MBPVfilTh4_362318.root,362318
     # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230315_samelayer_pixel_230126_HITestRaw0-6_HIRun2022A_MBPVfilTh4_362294.root,362294
     # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230322_pixel_230129_EposLHC_ReggeGribovParton_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4.root,eposCLOSE
@@ -43,6 +59,7 @@ do
     IFS=',' ; VINPUTS_MC=($mm) ; unset IFS ;
     INPUT_MC=${VINPUTS_MC[0]}
     TAG_MC=${VINPUTS_MC[1]}
+    CENT_MC=${VINPUTS_MC[2]}
 
     echo $INPUT_MC
     echo $TAG_MC
@@ -54,7 +71,8 @@ do
     tcgm=m # correction, geometric, acceptance map
     cgm=$(getcgm $tcgm)
     # ==> tag name
-    tagcorr="incl."$TAG_MC"."$tcgm"."$tagver
+    # tagcorr="incl."$TAG_MC"."$tcgm"."$tagver
+    tagcorr="incl."$TAG_MC"."$tcgm"."$corrtagver
     echo $tagcorr
     # <== tag name
     for t in ${TYPES[@]}
@@ -83,20 +101,21 @@ do
 
         tcgm=m # correction, geometric, acceptance map
         cgm=$(getcgm $tcgm)
-        tages="epos.m."$tagver".s."$cmin"."$cmax ;
-        [[ $TAG_MC == *epos* ]] && {
+        # tages=$nominal".m."$tagver".s."$cmin"."$cmax ;
+        tages=$nominal".m."$corrtagver".s."$cmin"."$cmax ;
+        [[ $TAG_MC == *${nominal}* || ${2:-0} -eq 2 ]] && {
             # ==> tag name
             tages=$TAG_MC"."$tcgm"."$tagver".s."$cmin"."$cmax
             [[ $cmin -eq 0 && $cmax -eq 20 ]] && tages="incl."$TAG_MC"."$tcgm"."$tagver
             echo $tages
             # <== tag name
-            [[ ${2:-0} -eq 1 ]] && {
+            [[ ${2:-0} -gt 0 ]] && {
                 for t in ${TYPES[@]} ; do
                     set -x
                     ./reap_results $t $INPUT_MC $tages $cmin $cmax \
                                    0 ${cgm:0:1} ${cgm:1:1} ${cgm:2:1} "null" \
                                    $multhandle $maxdr2 0 "null" \
-                                   3 "(1)" \
+                                   $CENT_MC "(1)" \
                                    2>&1 | tee logs/$tages-$t.txt & # \
                         set +x
                 done # for t in ${TYPES[@]}
@@ -131,7 +150,8 @@ do
             cgm=$(getcgm $tcgm)
 
             # ==> tag name
-            tagappl=$TAG_DATA"."$tcgm"."${tagcorr##incl.}".s."$cmin"."$cmax
+            # tagappl=$TAG_DATA"."$tcgm"."${tagcorr##incl.}".s."$cmin"."$cmax
+            tagappl=$TAG_DATA"."$tcgm"."$TAG_MC".m."$tagver".s."$cmin"."$cmax
             echo $tagappl
             echo $tages
             # <== tag name
@@ -158,11 +178,11 @@ do
             done
             mergecomb=${mergecomb##,}
             [[ ${4:-0} -eq 1 ]] && {
-                truth="epos.m.v1.s."$cmin"."$cmax"&"${taglabel[epos]}"&2,hydjet.m.v1.s."$cmin"."$cmax"&"${taglabel[hydjet]}"&1,amptsm.m.v1.s."$cmin"."$cmax"&"${taglabel[amptsm]}"&4,amptnm.m.v1.s."$cmin"."$cmax"&"${taglabel[amptnm]}"&6"
+                truth="epos.m.v3.s."$cmin"."$cmax"&"${taglabel[epos]}"&2,hydjet.m.v3.s."$cmin"."$cmax"&"${taglabel[hydjet]}"&1,amptsm.m.v3.s."$cmin"."$cmax"&"${taglabel[amptsm]}"&4,amptnm.m.v3.s."$cmin"."$cmax"&"${taglabel[amptnm]}"&6"
                 [[ $TAG_DATA == *CLOSE* ]] && {
                     [[ $cmin -eq 0 && $cmax -eq 20 ]] &&
-                        { truth="incl."${TAG_DATA%%CLOSE}".m.v1&"${taglabel[${TAG_DATA%%CLOSE}]}"&1" ; } ||
-                            { ${TAG_DATA%%CLOSE}".m.v1.s."$cmin"."$cmax"&"${taglabel[${TAG_DATA%%CLOSE}]}"&1" ; }
+                        { truth="incl."${TAG_DATA%%CLOSE}".m.v1&"${taglabel[${TAG_DATA%%CLOSE}]}"&1" ; }
+                            # { ${TAG_DATA%%CLOSE}".m.v1.s."$cmin"."$cmax"&"${taglabel[${TAG_DATA%%CLOSE}]}"&1" ; }
                 }
                 ./merge_monde $tagappl "${taglabel[${TAG_DATA%%CLOSE}]} corr. w. ${taglabel[$TAG_MC]}" $mergecomb "$truth"
             }

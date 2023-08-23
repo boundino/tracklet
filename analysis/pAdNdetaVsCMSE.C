@@ -701,7 +701,7 @@ int pAdNdetaVsCMSE() {
     c->SetSelected(c);
 
     c->SaveAs("figspdf/results/dNdeta_vs_CMSE.pdf");
-    c->SaveAs("figs/results/dNdeta_vs_CMSE.png");
+    c->SaveAs("figs/results/dNdeta_vs_CMSE.pdf");
 
     return 0;
 }

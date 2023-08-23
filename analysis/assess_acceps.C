@@ -63,6 +63,7 @@ int assess_acceps(bool recreate, int type, float maxdr2,
     int nfeta = neta * 100;
     int nfvz = nvz * 100;
 
+    std::cout<<"starting: "<<data_list<<std::endl;
     hdata = new TH2D("hdata", "", nfeta, etamin, etamax, nfvz, vzmin, vzmax);
     tdata->Project("hdata", "vz[1]:eta1", Form("dr2<%f && abs(vz[1])<15", maxdr2), "");
     convert(hdata);
@@ -71,6 +72,7 @@ int assess_acceps(bool recreate, int type, float maxdr2,
     hdatacoarse->RebinX(nfeta / neta);
     hdatacoarse->RebinY(nfvz / nvz);
 
+    std::cout<<"starting: "<<mc_list<<std::endl;
     hmc = new TH2D("hmc", "", nfeta, etamin, etamax, nfvz, vzmin, vzmax);
     tmc->Project("hmc", "vz[1]:eta1", Form("dr2<%f && abs(vz[1])<15", maxdr2), "");
     convert(hmc);

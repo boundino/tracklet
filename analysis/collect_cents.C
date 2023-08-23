@@ -18,22 +18,28 @@
 
 // 5.5 TeV https://dde.web.cern.ch/glauber_lhc.htm
 const float npart[NCENT] = {
-  3.1   , 4.5   , 6.4   , 9.1   , 13.1  ,
-  18.7  , 26.1  , 35.8  , 47.4  , 61.1  ,
-  76.9  , 96.4  , 118.2 , 143.  , 171.7 ,
-  204.2 , 241.5 , 284.4 , 333.1 , 384.5
+  2.179   , 3.327   , 5.529   , 8.524   , 12.92  ,
+  18.74  , 26.42  , 35.99  , 47.47  , 61.37  ,
+  77.73  , 96.65  , 118.4 , 143.6  , 172.0 ,
+  204.4 , 241.0 , 283.6 , 331.5 , 382.3
 };
 
 const float nparterr[NCENT] = {
-  0. , 0.   , 0.  , 0.  , 0.  ,
-  0. ,  0.  ,  0. ,  0. ,  0. ,
-  0. ,  0.  ,  0. ,  0. ,  0. ,
-  0. ,   0. ,  0. ,  0. ,  0.
+  0.290 , 0.273   , 0.119  , 0.219  , 0.37  ,
+  0.58 ,  0.79  ,  0.94 ,  1.17 ,  1.21 ,
+  1.32 ,  1.30  ,  1.4 ,  1.5 ,  1.5 ,
+  1.4 ,   1.3 ,  1.3 ,  1.2 ,  1.5
 };
+
+void printnpart() {
+  for (int i=NCENT-1; i>=0; i--) {
+    std::cout<<(NCENT-i-1)*5<<"--"<<(NCENT-i)*5<<" & $"<<Form("%.1f", npart[i])<<" \\pm "<<Form("%.1f", nparterr[i])<<"$ \\\\"<<std::endl;
+  }
+}
 
 std::string cmsprel = "CMS";
 void drawdNdeta(xjjroot::mypdf& pdf, std::string tag);
-int collect_cents(std::string tag="362294.cgm.epos.m.v1") {
+int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
   auto label = tag;
 
   constexpr int ntotal = NCENT - OFFSET;
@@ -46,13 +52,15 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v1") {
   TGraphErrors* g2a = (TGraphErrors*)g->Clone("g2a");
   gstyle(g2a, 21, COLOUR0, 0.8); g2a->SetFillColorAlpha(COLOUR0, 0.3);
   TGraphErrors* gnorm = (TGraphErrors*)g->Clone("gnorm");
-  gstyle(gnorm, 21, COLOUR0, 0.8); gnorm->SetFillColorAlpha(COLOUR0, 0.3);
+  gstyle(gnorm, 21, COLOUR0, 0.8); gnorm->SetFillColorAlpha(COLOUR0, 0.2);
   TGraphErrors* gnorm2a = (TGraphErrors*)g->Clone("gnorm2a");
-  gstyle(gnorm2a, 21, COLOUR0, 0.8); gnorm2a->SetFillColorAlpha(COLOUR0, 0.3);
+  gstyle(gnorm2a, 21, COLOUR0, 0.8); gnorm2a->SetFillColorAlpha(COLOUR0, 0.2);
   TGraphErrors* gnorm2a2a = (TGraphErrors*)g->Clone("gnorm2a2a");
-  gstyle(gnorm2a2a, 21, COLOUR0, 0.8); gnorm2a2a->SetFillColorAlpha(COLOUR0, 0.3);
+  gstyle(gnorm2a2a, 21, COLOUR0, 0.8); gnorm2a2a->SetFillColorAlpha(COLOUR0, 0.5);
   TGraph* gsnp = new TGraph(2 * ntotal + 2);
-  gstyle(gsnp, 21, COLOUR0, 0.8); gsnp->SetFillColorAlpha(COLOUR0, 0.3);
+  gstyle(gsnp, 21, COLOUR0, 0.8); gsnp->SetFillColorAlpha(COLOUR0, 0.2);
+  TGraph* gsnp2a = new TGraph(2 * ntotal + 2);
+  gstyle(gsnp2a, 21, COLOUR0, 0.8); gsnp2a->SetFillColorAlpha(COLOUR0, 0.2);
 
   for (int c = OFFSET; c < NCENT; c+=1) {
     TFile* f = new TFile(Form("results/results-%s.s.%i.%i.root",
@@ -77,13 +85,18 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v1") {
     case 0:
       gsnp->SetPoint(0, mnpart - mnparterr,
                      (midy - midyerr) / (mnpart - mnparterr));
+      gsnp2a->SetPoint(0, (mnpart - mnparterr) / 416.,
+                     (midy - midyerr) / (mnpart - mnparterr));
       break;
     case ntotal - 1:
       gsnp->SetPoint(ntotal + 1, mnpart + mnparterr,
                      (midy + midyerr) / (mnpart + mnparterr));
+      gsnp2a->SetPoint(ntotal + 1, (mnpart + mnparterr) / 416.,
+                     (midy + midyerr) / (mnpart + mnparterr));
       break;
     }
 
+    std::cout<<cindex<<" "<<midy<<" +- "<<midyerr<<std::endl;
     gnorm->SetPoint(cindex, mnpart, midy / mnpart);
     gnorm->SetPointError(cindex, mnparterr, midyerr / mnpart);
     gsnp->SetPoint(cindex + 1, mnpart - mnparterr,
@@ -92,6 +105,10 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v1") {
                    (midy - midyerr) / (mnpart + mnparterr));
     gnorm2a->SetPoint(cindex, mnpart / 416., midy / mnpart);
     gnorm2a->SetPointError(cindex, mnparterr / 416., midyerr / mnpart);
+    gsnp2a->SetPoint(cindex + 1, (mnpart - mnparterr) / 416.,
+                   (midy + midyerr) / (mnpart - mnparterr));
+    gsnp2a->SetPoint(2 * ntotal - cindex + 1, (mnpart + mnparterr) / 416.,
+                   (midy - midyerr) / (mnpart + mnparterr));
     gnorm2a2a->SetPoint(cindex, mnpart / 416., midy / 416.);
     gnorm2a2a->SetPointError(cindex, mnparterr / 416., midyerr / 416.);
   }
@@ -121,7 +138,7 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v1") {
   TH1F* gframe = new TH1F("gframe", "", 1, 0, 100);
   xjjroot::sethempty(gframe, 0, 0);
   gframe->SetLabelOffset(999, "X"); gframe->SetTickLength(0, "X");
-  htitle(gframe, ";Centrality [%];#scale[1.2]{#LT} d#it{N}_{ch}/d#kern[-0.08]{#it{#eta}} #scale[1.2]{#GT} #lower[0.05]{#scale[1.5]{#kern[-0.6]{#cbar}}} #lower[0.6]{#scale[0.6]{#it{#eta}#kern[0.2]{=}#kern[0.2]{0}}}");
+  htitle(gframe, ";Centrality [%];#scale[1.2]{#LT} d#it{N}_{ch}/d#kern[-0.08]{#it{#eta}} #scale[1.2]{#GT} #lower[0.05]{#scale[1.5]{#kern[-0.6]{#cbar}}} #lower[0.6]{#scale[0.6]{#kern[0.15]{#cbar}#it{#eta}#kern[-0.4]{#cbar}#kern[0.2]{<}#kern[0.2]{0.5}}}");
   hrange(gframe, 1.5, 4000);
 
   pdf.prepare();
@@ -180,7 +197,7 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v1") {
   TH1F* g2aframe = new TH1F("g2aframe", "", 1, 0, 100);
   xjjroot::sethempty(g2aframe, 0, 0);
   g2aframe->SetLabelOffset(999, "X"); g2aframe->SetTickLength(0, "X");
-  htitle(g2aframe, ";Centrality [%];#lower[-0.05]{(}1/#kern[0.05]{2#it{A}}#lower[-0.05]{)}#kern[-0.1]{ }#scale[1.2]{#LT} d#it{N}_{ch}/d#kern[-0.08]{#it{#eta}} #scale[1.2]{#GT} #lower[0.05]{#scale[1.5]{#kern[-0.6]{#cbar}}} #lower[0.6]{#scale[0.6]{#it{#eta}#kern[0.2]{=}#kern[0.2]{0}}}");
+  htitle(g2aframe, ";Centrality [%];#lower[-0.05]{(}1/#kern[0.05]{2#it{A}}#lower[-0.05]{)}#kern[-0.1]{ }#scale[1.2]{#LT} d#it{N}_{ch}/d#kern[-0.08]{#it{#eta}} #scale[1.2]{#GT} #lower[0.05]{#scale[1.5]{#kern[-0.6]{#cbar}}} #lower[0.6]{#scale[0.6]{#kern[0.15]{#cbar}#it{#eta}#kern[-0.4]{#cbar}#kern[0.2]{<}#kern[0.2]{0.5}}}");
   g2aframe->SetTitleOffset(1.3, "Y");
   hrange(g2aframe, 1.e-5, 5.5); g2aframe->Draw();
   TGaxis* axis2 = new TGaxis(100, 0, 0, 0, 0, 100, 510, "-");
@@ -255,6 +272,7 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v1") {
   gcms_xexe_5p44_nnpart_x_npart->Draw("3 same"); galice_xexe_5p44_nnpart_x_npart->Draw("3 same");
   galice_pbpb_5p02_nnpart_x_npart->Draw("3 same");
   gphobos_auau_0p2_nnpart_x_npart->Draw("3 same"); gphobos_cucu_0p2_nnpart_x_npart->Draw("3 same");
+  gsnp->Draw("f");  
   gnorm->Draw("3 same");  
   gcms_pbpb_2p76_nnpart_x_npart->Draw("pX same"); galice_pbpb_2p76_nnpart_x_npart->Draw("pX same");
   gcms_xexe_5p44_nnpart_x_npart->Draw("pX same"); galice_xexe_5p44_nnpart_x_npart->Draw("pX same");
@@ -286,6 +304,11 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v1") {
   l4->AddEntry(gphobos_cucu_0p2_nnpart_x_npart, "CuCu 200 GeV", "p");
   lstyle(l4, 43, 18); l4->Draw();
 
+  TLegend* l5 = new TLegend(0.23, 0.78-heightperline*2, 0.48, 0.78);
+  l5->AddEntry(gsnp, "(expt. + #LTN_{part}#GT) unc.", "f");
+  l5->AddEntry(gnorm2a2a, "expt. unc.", "f");
+  lstyle(l5, 43, 18); l5->Draw();
+  
   // TLegend* l5 = new TLegend(0.35, 0.18, 0.65, 0.30);
   // TLegendEntry* h3cms = l5->AddEntry((TObject*)0, "CMS", "");
   // h3cms->SetTextFont(63); h3cms->SetTextSize(18);
@@ -324,6 +347,7 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v1") {
   gcms_xexe_5p44_nnpart_x_npart2a->Draw("3 same"); galice_xexe_5p44_nnpart_x_npart2a->Draw("3 same");
   galice_pbpb_5p02_nnpart_x_npart2a->Draw("3 same");
   gphobos_auau_0p2_nnpart_x_npart2a->Draw("3 same"); gphobos_cucu_0p2_nnpart_x_npart2a->Draw("3 same");
+  gsnp2a->Draw("f");  
   gnorm2a->Draw("3 same");  
   gcms_pbpb_2p76_nnpart_x_npart2a->Draw("pX same"); galice_pbpb_2p76_nnpart_x_npart2a->Draw("pX same");
   gcms_xexe_5p44_nnpart_x_npart2a->Draw("pX same"); galice_xexe_5p44_nnpart_x_npart2a->Draw("pX same");
@@ -355,6 +379,8 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v1") {
   l12->AddEntry(gphobos_cucu_0p2_nnpart_x_npart2a, "CuCu 200 GeV", "p");
   lstyle(l12, 43, 18); l12->Draw();
 
+  l5->Draw();
+  
   // TLegend* l5 = new TLegend(0.35, 0.18, 0.65, 0.30);
   // TLegendEntry* h3cms = l5->AddEntry((TObject*)0, "CMS", "");
   // h3cms->SetTextFont(63); h3cms->SetTextSize(18);
@@ -551,4 +577,7 @@ void drawdNdeta(xjjroot::mypdf& pdf, std::string tag) {
   DRAWTEX;
   pdf.write(Form("figs/results/merged-%s-fulleta-2.pdf", tag.c_str()), "Q");
 
+
+  printnpart();
 }
+

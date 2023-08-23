@@ -17,7 +17,7 @@
 
 #include "include/structs.h"
 
-const float maxDeltaR = 1.;
+const float maxDeltaR = 2.;
 int gen_match(std::string inputname, std::string outputname) {
   auto inf = TFile::Open(inputname.c_str());
 
@@ -73,7 +73,8 @@ int gen_match(std::string inputname, std::string outputname) {
       int jnow = -1;                                                    \
       for (int j=0; j<data##q##w.ntracklet; j++) {                      \
         float drmatch1 = xjjana::cal_dr(data##q##w.phi1[j], data##q##w.eta1[j], truth.phi[k], truth.eta[k]); \
-        if (drmatch1 < maxDeltaR && drmatch1 < drnow) {                 \
+        float drmatch2 = xjjana::cal_dr(data##q##w.phi2[j], data##q##w.eta2[j], truth.phi[k], truth.eta[k]); \
+        if (drmatch1 < maxDeltaR && drmatch2 < maxDeltaR && drmatch1 < drnow) {                 \
           drnow = drmatch1;                                             \
           jnow = j;                                                     \
         }                                                               \

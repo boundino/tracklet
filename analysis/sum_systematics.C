@@ -94,6 +94,20 @@ int macro(std::string input_avg, std::string tag,
   hempty->Draw("axis");
   for(auto& hh : gh1WGhadron)
     hh->Draw("c same");
+  for(auto& hh : h1WEfinal)
+    hh->Draw("p same");
+  hsym->Draw("p same");
+  legPIX->Draw();
+  legTRUTH->Draw();
+  legDATA->Draw();
+  DRAWTEX;
+  pdf.write("figs/comp/syst-"+tag+"-hcomb.pdf");
+
+  // havg
+  pdf.prepare();
+  hempty->Draw("axis");
+  for(auto& hh : gh1WGhadron)
+    hh->Draw("c same");
   gsyst->Draw("2 same");
   for(auto& hh : h1WEfinal)
     hh->Draw("p same");

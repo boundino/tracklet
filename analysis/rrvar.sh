@@ -1,12 +1,9 @@
 #!/bin/bash
 
-make reap_results || exit 1
-make merge_monde || exit 1
-
 # ./rrvar.sh [execu] [tagver] [asel] [maxdr] [tagdr] [multhandle] [ctable]
 execu=${1:-0000}
 label=${2:-00}
-tagver=${3:-"v1"}
+tagver=${3:-"v2"}
 asel=${4:-"(1)"}
 maxdr2=${5:-0.25}
 tagdr=${6:-"drlt0p5"}
@@ -14,15 +11,15 @@ multhandle=${7:-0}
 ctable=${8:-0}
 
 
-tagverdefault="v1"
+tagverdefault="v3"
 #
 TYPES=(12 13 14 23 24 34 56 57 67)
 CENTS=(4 20)
-for i in {20..5} ; do CENTS+=($((i-1)) $i) ; done ;
+# for i in {20..5} ; do CENTS+=($((i-1)) $i) ; done ;
 
 ##
-INPUTS_MC=/eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230322_pixel_230129_EposLHC_ReggeGribovParton_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4.root,epos
-INPUTS_DATA=/eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230322_pixel_230126_HITestRaw0-6_HIRun2022A_MBPVfilTh4_362294.root,362294
+INPUTS_MC=/eos/cms/store/cmst3/user/wangj/tracklet/tt_230724_pixel_230724_EposLHC_ReggeGribovParton_5360GeV_1255p1.root,epos
+INPUTS_DATA=/eos/cms/store/cmst3/user/wangj/tracklet/tt_230724_pixel_230724_HITestRaw0-6_HIRun2022A_MBPVfilTh4_362294.root,362294
 
 source tool.shinc 
 
@@ -134,7 +131,7 @@ while [ $c -lt $((${#CENTS[@]}-1)) ] ; do
 	    mergecomb=$mergecomb","$t
         done
         mergecomb=${mergecomb##,}
-        truth="epos.m.v1.s."$cmin"."$cmax"&"${taglabel[epos]}"&2,hydjet.m.v1.s."$cmin"."$cmax"&"${taglabel[hydjet]}"&1,amptsm.m.v1.s."$cmin"."$cmax"&"${taglabel[amptsm]}"&4,amptnm.m.v1.s."$cmin"."$cmax"&"${taglabel[amptnm]}"&6"
+        truth="epos.m.v3.s."$cmin"."$cmax"&"${taglabel[epos]}"&2,hydjet.m.v3.s."$cmin"."$cmax"&"${taglabel[hydjet]}"&1,amptsm.m.v3.s."$cmin"."$cmax"&"${taglabel[amptsm]}"&4,amptnm.m.v3.s."$cmin"."$cmax"&"${taglabel[amptnm]}"&6"
         ./merge_monde $tagappl "${taglabel[${TAG_DATA%%CLOSE}]} corr. w. ${taglabel[$TAG_MC]}" $mergecomb "$truth"
     }
     

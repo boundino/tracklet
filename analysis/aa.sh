@@ -2,23 +2,26 @@
 
 make assess_acceps || exit 1
 
-recreate=0
+recreate=1
 maxdr2=0.25
-tag="0p5" # 0p5
+tag="0p6" # 0p5
 
 TYPES=(12 13 14 23 24 34 56 57 67)
-# TYPES=(12)
 
 # apply
 INPUTS_MC=(
+    /eos/cms/store/cmst3/user/wangj/tracklet/tt_230724_randomvz_pixel_230724_Hydjet_Drum5F_5360GeV_HINPbPbAutumn22DR_shuf.root,hydjet
+    # pre-approval
     # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230130_vzrandom_pixel_230129_Hydjet_Drum5F_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4.root,hydjet
-    /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230114_vzrandom_pixelpre_221229_EposLHC_ReggeGribovParton_PbPb_5360GeV_221224_GTv7priZ0_Th4.root,epos
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230114_vzrandom_pixelpre_221229_EposLHC_ReggeGribovParton_PbPb_5360GeV_221224_GTv7priZ0_Th4.root,epos
     # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230114_vzrandom_pixelpre_221229_AMPT_StringMelting_PbPb_5360GeV_221224_GTv7priZ0_Th4.root,amptsm
     # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230114_vzrandom_pixelpre_221229_AMPT_NoStringMelting_PbPb_5360GeV_221224_GTv7priZ0_Th4.root,amptnm
 )
 
 INPUTS_DATA=(
-    /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230130_vzrandom_pixel_230126_HITestRaw0-6_HIRun2022A_MBPVfilTh4_362294.root,362294a
+    /eos/cms/store/cmst3/user/wangj/tracklet/tt_230724_randomvz_pixel_230724_HITestRaw0-6_HIRun2022A_MBPVfilTh4_362294.root,362294a
+    # pre-approval
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230130_vzrandom_pixel_230126_HITestRaw0-6_HIRun2022A_MBPVfilTh4_362294.root,362294a
 )
 
 for ii in ${INPUTS_DATA[@]}

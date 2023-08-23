@@ -176,7 +176,8 @@ void gfill(TGraph* g, int colour, int alpha) {
 void gstyle(TGraph* g, int style, int colour) {
    g->SetMarkerStyle(style);
    g->SetMarkerColor(colour);
-   g->SetLineColor(colour);
+   g->SetLineColor(0);
+   g->SetLineWidth(0);
    g->SetFillStyle(1001); 
    g->SetFillColorAlpha(colour, 0.4);
 }
@@ -185,7 +186,9 @@ void gstyle(TGraph* g, int style, int colour, float size) {
    g->SetMarkerSize(size);
    g->SetMarkerStyle(style);
    g->SetMarkerColor(colour);
-   g->SetLineColor(colour);
+   g->SetLineColor(0);
+   g->SetLineWidth(0);
+   // g->SetLineColor(colour);
    g->SetFillColorAlpha(colour, 0.4);
 }
 
