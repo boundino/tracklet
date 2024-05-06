@@ -37,7 +37,15 @@ void printnpart() {
   }
 }
 
-std::string cmsprel = "#scale[1.1]{#bf{CMS}} #scale[0.9]{#it{Preliminary}}";
+// std::string cmsprel = "#scale[1.1]{#bf{CMS}} #scale[0.9]{#it{Preliminary}}";
+std::string cmsprel = "#scale[1.1]{#bf{CMS}}",
+                                                                                                                      att_slash = "#kern[0.1]{#lower[0.15]{#scale[1.25]{/}}}",
+                                                                                                                      att_dNdeta = "#scale[1.2]{#LT}d#it{N}_{ch}/d#kern[-0.08]{#it{#eta}}#scale[1.2]{#GT}",
+                                                                                                                      att_eta0p5 = "#lower[0.05]{#scale[1.5]{#kern[-0.6]{#cbar}}}#lower[0.6]{#scale[0.6]{#kern[0.15]{#cbar}#it{#eta}#kern[-0.4]{#cbar}#scale[0.5]{ }#kern[0.2]{<}#kern[0.2]{0.5}}}",
+                                                                                                                      att_2a = "#lower[-0.05]{(}1/#kern[0.05]{2#it{A}}#lower[-0.05]{)}",
+                                                                                                                      att_1npart = "#lower[-0.05]{(}1/#kern[0.1]{#scale[1.2]{#LT}}#lower[0.1]{#it{N}}#lower[0.5]{#scale[0.6]{#kern[-0.08]{part}}}#scale[1.2]{#GT}#lower[-0.05]{)}",
+                                                                                                                      att_npart = "#scale[1.2]{#LT}#it{N}#lower[0.4]{#scale[0.7]{#kern[-0.05]{part}}}#scale[1.2]{#GT}";
+  
 void drawdNdeta(xjjroot::mypdf& pdf, std::string tag);
 int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
   auto label = tag;
@@ -141,7 +149,7 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
   TH1F* gframe = new TH1F("gframe", "", 1, 0, 100);
   xjjroot::sethempty(gframe, 0, 0);
   gframe->SetLabelOffset(999, "X"); gframe->SetTickLength(0, "X");
-  htitle(gframe, ";Centrality [%];#scale[1.2]{#LT} d#it{N}_{ch}/d#kern[-0.08]{#it{#eta}} #scale[1.2]{#GT} #lower[0.05]{#scale[1.5]{#kern[-0.6]{#cbar}}} #lower[0.6]{#scale[0.6]{#kern[0.15]{#cbar}#it{#eta}#kern[-0.4]{#cbar}#kern[0.2]{<}#kern[0.2]{0.5}}}");
+  htitle(gframe, ";Centrality (%);" + att_dNdeta + " " + att_eta0p5);
   hrange(gframe, 1.5, 4000);
 
   pdf.prepare();
@@ -163,20 +171,25 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
   
   xjjroot::drawCMSleft(cmsprel.c_str(), 0.05, -0.1); // Preliminary
   xjjroot::drawCMSright("PbPb #sqrt{s_{NN}} = 5.36 TeV");
-  TLegend* l2 = new TLegend(0.54, 0.55-heightperline*9, 0.9, 0.55);
-  TLegendEntry* hcms = l2->AddEntry((TObject*)0, "CMS", "");
-  hcms->SetTextFont(63); hcms->SetTextSize(20);
-  l2->AddEntry(g, "PbPb 5.36 TeV", "p");
+
+  TLegend* l2 = new TLegend(0.55, 0.55-heightperline*5, 0.85, 0.55);
+  TLegendEntry* h23cms = l2->AddEntry((TObject*)0, "CMS", "");
+  h23cms->SetTextFont(63); h23cms->SetTextSize(20);
+  l2->AddEntry(gnorm, "PbPb 5.36 TeV", "p");
   l2->AddEntry((TObject*)0, "(this analysis)", NULL);
   l2->AddEntry(gcms_pbpb_2p76, "PbPb 2.76 TeV", "p");
   l2->AddEntry(gcms_xexe_5p44, "XeXe 5.44 TeV", "p");
-  TLegendEntry* halice = l2->AddEntry((TObject*)0, "ALICE", "");
-  halice->SetTextFont(63); halice->SetTextSize(20);
-  l2->AddEntry(galice_pbpb_5p02, "PbPb 5.02 TeV", "p");
-  l2->AddEntry(galice_pbpb_2p76, "PbPb 2.76 TeV", "p");
-  l2->AddEntry(galice_xexe_5p44, "XeXe 5.44 TeV", "p");
   lstyle(l2, 43, 20); l2->Draw();
+  
+  TLegend* l22 = new TLegend(0.55, 0.35-heightperline*4, 0.85, 0.35);
+  TLegendEntry* h23alice = l22->AddEntry((TObject*)0, "ALICE", "");
+  h23alice->SetTextFont(63); h23alice->SetTextSize(20);
+  l22->AddEntry(galice_pbpb_5p02, "PbPb 5.02 TeV", "p");
+  l22->AddEntry(galice_pbpb_2p76, "PbPb 2.76 TeV", "p");
+  l22->AddEntry(galice_xexe_5p44, "XeXe 5.44 TeV", "p");
+  lstyle(l22, 43, 20); l22->Draw();
 
+  
   pdf.write(Form("figs/results/merged-%s-midy-int1.pdf", label.c_str()), "Q");
   
   // c2->SaveAs(Form("figspdf/results/merged-%s-midy-int1.pdf", label.c_str()));
@@ -202,7 +215,7 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
   TH1F* g2aframe = new TH1F("g2aframe", "", 1, 0, 100);
   xjjroot::sethempty(g2aframe, 0, 0);
   g2aframe->SetLabelOffset(999, "X"); g2aframe->SetTickLength(0, "X");
-  htitle(g2aframe, ";Centrality [%];#lower[-0.05]{(}1/#kern[0.05]{2#it{A}}#lower[-0.05]{)}#kern[-0.1]{ }#scale[1.2]{#LT} d#it{N}_{ch}/d#kern[-0.08]{#it{#eta}} #scale[1.2]{#GT} #lower[0.05]{#scale[1.5]{#kern[-0.6]{#cbar}}} #lower[0.6]{#scale[0.6]{#kern[0.15]{#cbar}#it{#eta}#kern[-0.4]{#cbar}#kern[0.2]{<}#kern[0.2]{0.5}}}");
+  htitle(g2aframe, ";Centrality (%);" + att_2a + "#kern[-0.1]{ }" + att_dNdeta + " " + att_eta0p5);
   g2aframe->SetTitleOffset(1.3, "Y");
   hrange(g2aframe, 1.e-5, 5.5); g2aframe->Draw();
   TGaxis* axis2 = new TGaxis(100, 0, 0, 0, 0, 100, 510, "-");
@@ -271,7 +284,7 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
   TH1F* gnframe = new TH1F("gnframe", "", 1, -20, 420);
   xjjroot::sethempty(gnframe, 0, 0);
   // htitle(gnframe, ";N_{part};#frac{dN}{d#eta}#lbar_{#eta=0}/#LTN_{part}#GT");
-  htitle(gnframe, ";#scale[1.2]{#LT}#it{N}#lower[0.4]{#scale[0.7]{#kern[-0.05]{part}}}#scale[1.2]{#GT};#lower[-0.05]{(}1/#kern[0.1]{#scale[1.2]{#LT}}#lower[0.1]{#it{N}}#lower[0.5]{#scale[0.6]{#kern[-0.08]{part}}}#scale[1.2]{#GT}#lower[-0.05]{)}#kern[-0.1]{ }#scale[1.2]{#LT}d#it{N}_{ch}/d#kern[-0.08]{#it{#eta}}#scale[1.2]{#GT}#lower[0.05]{#scale[1.5]{#kern[-0.6]{#cbar}}}#lower[0.6]{#scale[0.6]{#kern[0.15]{#cbar}#it{#eta}#kern[-0.4]{#cbar}#kern[0.2]{<}#kern[0.2]{0.5}}}");
+  htitle(gnframe, ";" + att_npart + ";" + att_1npart + "#kern[-0.1]{ }" + att_dNdeta + " " + att_eta0p5);
   gnframe->SetTitleOffset(1.3, "Y");
   hrange(gnframe, 0, 6); gnframe->Draw();
 
@@ -316,8 +329,8 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
   lstyle(l4, 43, 20); l4->Draw();
 
   TLegend* l5 = new TLegend(0.23, 0.78-heightperline*2, 0.48, 0.78);
-  l5->AddEntry(gsnp, "(expt. + #LTN_{part}#GT) unc.", "f");
-  l5->AddEntry(gnorm2a2a, "expt. unc.", "f");
+  l5->AddEntry(gsnp, "(Expt. + #LTN_{part}#GT) unc.", "f");
+  l5->AddEntry(gnorm2a2a, "Expt. unc.", "f");
   lstyle(l5, 43, 20); l5->Draw();
   
   // TLegend* l5 = new TLegend(0.35, 0.18, 0.65, 0.30);
@@ -363,7 +376,7 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
   pdf.prepare();
   TH1F* gn2aframe = new TH1F("gn2aframe", "", 1, -0.02, 1);
   xjjroot::sethempty(gn2aframe, 0, 0);
-  htitle(gn2aframe, ";#scale[1.2]{#LT}#it{N}#lower[0.4]{#scale[0.7]{#kern[-0.05]{part}}}#scale[1.2]{#GT}#kern[0.1]{#lower[0.15]{#scale[1.25]{/}}}2#it{A};#lower[-0.05]{(}1/#kern[0.1]{#scale[1.2]{#LT}}#lower[0.1]{#it{N}}#lower[0.5]{#scale[0.6]{#kern[-0.08]{part}}}#scale[1.2]{#GT}#lower[-0.05]{)}#kern[-0.1]{ }#scale[1.2]{#LT}d#it{N}_{ch}/d#kern[-0.08]{#it{#eta}}#scale[1.2]{#GT}#lower[0.05]{#scale[1.5]{#kern[-0.6]{#cbar}}}#lower[0.6]{#scale[0.6]{#kern[0.15]{#cbar}#it{#eta}#kern[-0.4]{#cbar}#kern[0.2]{<}#kern[0.2]{0.5}}}");
+  htitle(gn2aframe, ";" + att_npart + "" + att_slash + "2#it{A};" + att_1npart + "#kern[-0.1]{ }" + att_dNdeta + " " + att_eta0p5);
   gn2aframe->SetTitleOffset(1.3, "Y");
   hrange(gn2aframe, 0, 6); gn2aframe->Draw();
 
@@ -438,7 +451,7 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
   pdf.prepare();
   TH1F* gn2a2aframe = new TH1F("gn2a2aframe", "", 1, -0.02, 1);
   xjjroot::sethempty(gn2a2aframe, 0, 0);
-  htitle(gn2a2aframe, ";#scale[1.2]{#LT}#it{N}#lower[0.4]{#scale[0.7]{#kern[-0.05]{part}}}#scale[1.2]{#GT}#kern[0.1]{#lower[0.15]{#scale[1.25]{/}}}2#it{A};#lower[-0.05]{(}1/#kern[0.05]{2#it{A}}#lower[-0.05]{)}#kern[-0.1]{ }#scale[1.2]{#LT}d#it{N}_{ch}/d#kern[-0.08]{#it{#eta}}#scale[1.2]{#GT}#lower[0.05]{#scale[1.5]{#kern[-0.6]{#cbar}}}#lower[0.6]{#scale[0.6]{#kern[0.15]{#cbar}#it{#eta}#kern[-0.4]{#cbar}#kern[0.2]{<}#kern[0.2]{0.5}}}");
+  htitle(gn2a2aframe, ";" + att_npart + "" + att_slash + "2#it{A};" + att_2a + "#kern[-0.1]{ }" + att_dNdeta + " " + att_eta0p5);
   gn2a2aframe->SetTitleOffset(1.3, "Y");
   hrange(gn2a2aframe, 0, 6); gn2a2aframe->Draw();
 
@@ -603,6 +616,10 @@ void spectrum::setgcolor(std::vector<int> color) {
   }
 }
 
+void drawNormtext() {
+  xjjroot::drawtex(0.23, 0.85, "Normalized to unity at #eta = 0", 0.09);  
+}
+
 void drawdNdeta(xjjroot::mypdf& pdf, std::string tag) {
   spectrum sp_4_20(Form("results/results-%s.s.%i.%i.root", tag.c_str(), 4, 20), "Cent. 0 - 80\%", 0.55, 0.45),
     sp_19_20(Form("results/results-%s.s.%i.%i.root", tag.c_str(), 19, 20), "Cent. 0 - 5\%", 0.23, 0.62),
@@ -611,18 +628,18 @@ void drawdNdeta(xjjroot::mypdf& pdf, std::string tag) {
   sp_19_20.style(COLOUR1, 21);
   sp_9_10.style(COLOUR5, 21);
 
-  auto hempty = makehempty(sp_4_20.hsym, ";#it{#eta};#scale[1.2]{#LT} d#it{N}_{ch}/d#kern[-0.08]{#it{#eta}} #scale[1.2]{#GT}", 1.5);
+  auto hempty = makehempty(sp_4_20.hsym, ";#it{#eta};" + att_dNdeta + "", 1.5);
   hempty->SetAxisRange(-2.6, 2.6, "X");
-  auto hemptyp1 = makehempty(sp_4_20.hsym, ";#it{#eta};#scale[1.2]{#LT} d#it{N}_{ch}/d#kern[-0.08]{#it{#eta}} #scale[1.2]{#GT}", 1.5);
+  auto hemptyp1 = makehempty(sp_4_20.hsym, ";#it{#eta};" + att_dNdeta + "", 1.5);
   hemptyp1->SetAxisRange(-2.6, 2.6, "X");
   hemptyp1->SetMinimum(1);
   auto hempty_ratio = (TH1F*)hemptyp1->Clone("hempty_ratio");
   hempty_ratio->GetYaxis()->SetTitle("MC / data");
   hempty_ratio->SetMinimum(0.7); hempty_ratio->SetMaximum(1.3);
   // hempty_ratio->SetAxisRange(-2.6, 2.6, "X");
-  auto hempty2 = makehempty(sp_19_20.hsym, ";#it{#eta};#scale[1.2]{#LT} d#it{N}_{ch}/d#kern[-0.08]{#it{#eta}} #scale[1.2]{#GT}", 3, 0.04);
+  auto hempty2 = makehempty(sp_19_20.hsym, ";#it{#eta};" + att_dNdeta + "", 3, 0.04);
   hempty2->SetAxisRange(-2.6, 2.6, "X");
-  auto hempty2p1 = makehempty(sp_19_20.hsym, ";#it{#eta};#scale[1.2]{#LT} d#it{N}_{ch}/d#kern[-0.08]{#it{#eta}} #scale[1.2]{#GT}", 3, 0.04);
+  auto hempty2p1 = makehempty(sp_19_20.hsym, ";#it{#eta};" + att_dNdeta + "", 3, 0.04);
   hempty2p1->SetAxisRange(-2.6, 2.6, "X");
   
   
@@ -662,7 +679,7 @@ void drawdNdeta(xjjroot::mypdf& pdf, std::string tag) {
   xjjroot::drawCMSleft(cmsprel.c_str(), 0.05, -0.15, 0.065); /*Preliminary*/
   xjjroot::drawCMSright("PbPb #sqrt{s_{NN}} = 5.36 TeV", 0, 0, 0.055);
   p2->cd();
-  xjjroot::drawtex(0.23, 0.85, "Normalized to #eta = 0", 0.09);
+  drawNormtext();
   sp_4_20.gsyst_ratio->Draw("p2 same");
   for(auto& gg : sp_4_20.gratio) {
     gg->Draw("c same");
@@ -691,7 +708,7 @@ void drawdNdeta(xjjroot::mypdf& pdf, std::string tag) {
   xjjroot::drawCMSleft(cmsprel.c_str(), 0.05, -0.15, 0.065); /*Preliminary*/
   xjjroot::drawCMSright("PbPb #sqrt{s_{NN}} = 5.36 TeV", 0, 0, 0.055);
   p1c02->cd();
-  xjjroot::drawtex(0.23, 0.85, "Normalized to #eta = 0", 0.09);
+  drawNormtext();
   sp_4_20.gsyst_ratio->Draw("p2 same");
   for(auto& gg : sp_4_20.gratio) {
     if (gg->GetLineColor())
@@ -713,7 +730,7 @@ void drawdNdeta(xjjroot::mypdf& pdf, std::string tag) {
   xjjroot::drawCMSleft(cmsprel.c_str(), 0.05, -0.15, 0.065); /*Preliminary*/
   xjjroot::drawCMSright("PbPb #sqrt{s_{NN}} = 5.36 TeV", 0, 0, 0.055);
   p1c12->cd();
-  xjjroot::drawtex(0.23, 0.85, "Normalized to #eta = 0", 0.09);
+  drawNormtext();
   sp_4_20.gsyst_ratio->Draw("p2 same");
   for(auto& gg : sp_4_20.gratio) {
     if (gg->GetLineColor())
@@ -735,7 +752,7 @@ void drawdNdeta(xjjroot::mypdf& pdf, std::string tag) {
   xjjroot::drawCMSleft(cmsprel.c_str(), 0.05, -0.15, 0.065); /*Preliminary*/
   xjjroot::drawCMSright("PbPb #sqrt{s_{NN}} = 5.36 TeV", 0, 0, 0.055);
   p1c22->cd();
-  xjjroot::drawtex(0.23, 0.85, "Normalized to #eta = 0", 0.09);
+  drawNormtext();
   sp_4_20.gsyst_ratio->Draw("p2 same");
   for(auto& gg : sp_4_20.gratio) {
     if (gg->GetLineColor())
@@ -757,7 +774,7 @@ void drawdNdeta(xjjroot::mypdf& pdf, std::string tag) {
   xjjroot::drawCMSleft(cmsprel.c_str(), 0.05, -0.15, 0.065); /*Preliminary*/
   xjjroot::drawCMSright("PbPb #sqrt{s_{NN}} = 5.36 TeV", 0, 0, 0.055);
   p1c32->cd();
-  xjjroot::drawtex(0.23, 0.85, "Normalized to #eta = 0", 0.09);
+  drawNormtext();
   sp_4_20.gsyst_ratio->Draw("p2 same");
   for(auto& gg : sp_4_20.gratio) {
     if (gg->GetLineColor())
@@ -816,7 +833,7 @@ void drawdNdeta(xjjroot::mypdf& pdf, std::string tag) {
   for(auto& gg : sp_9_10.gratio) {
     gg->Draw("c same");
   }
-  xjjroot::drawtex(0.23, 0.85, "Normalized to #eta = 0", 0.09);
+  drawNormtext();
   
   pdf.write(Form("figs/results/merged-%s-fulleta-2.pdf", tag.c_str()), "Q");
 
