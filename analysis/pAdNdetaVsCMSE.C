@@ -88,7 +88,7 @@ int pAdNdetaVsCMSE(bool onlyAA=false) {
     lprelim->SetTextFont(53);
     lprelim->SetTextSize(18);
     lprelim->SetTextAlign(32);
-    lprelim->DrawLatexNDC(0.90, 0.84, "Preliminary");
+    // lprelim->DrawLatexNDC(0.90, 0.84, "Preliminary");
 
     /******************************************************
     pp NSD data points

@@ -684,7 +684,7 @@ void drawdNdeta(xjjroot::mypdf& pdf, std::string tag) {
   for(auto& gg : sp_4_20.gratio) {
     gg->Draw("c same");
   }
-  pdf.write(Form("figs/results/merged-%s-fulleta-1.png", tag.c_str()), "Q");
+  pdf.write(Form("figs/results/merged-%s-fulleta-1.pdf", tag.c_str()), "Q");
 
   // for(auto& gg : sp_4_20.gh1WGhadron)
   //   std::cout<<gg->GetName()<<std::endl;
