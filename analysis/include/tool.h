@@ -178,7 +178,7 @@ std::vector<TH1D*> combh1WEfinal(std::string filename,
 
 std::vector<TGraphErrors*> combgh1WGhadron(std::string filename,
                                            TLegend* legTRUTH = 0,
-                                           std::string input_truth="epos&E#scale[0.8]{POS} #scale[0.9]{LHC},hydjet&H#scale[0.8]{YDJET},amptsm&A#scale[0.9]{MPT} #scale[0.9]{(string melting)},amptnm&A#scale[0.9]{MPT} #scale[0.9]{(no melting)}") {
+                                           std::string input_truth="amptnm&A#scale[0.9]{MPT} #scale[0.9]{(no melting)},amptsm&A#scale[0.9]{MPT} #scale[0.9]{(string melting)},hydjet&H#scale[0.8]{YDJET},epos&E#scale[0.8]{POS} #scale[0.9]{LHC}") {
   xjjc::sconfig itruth(input_truth, ",", "&", "v");
   if(!legTRUTH) {
     legTRUTH = new TLegend(0.55, 0.47-0.031*itruth.n(), 0.55+0.2, 0.47);

@@ -22,7 +22,7 @@
 // pp, pA, AA points from Constantin Loizides
 // INEL pp points from Jan Fiete's compilation
 
-int pAdNdetaVsCMSE() {
+int pAdNdetaVsCMSE(bool onlyAA=false) {
     TCanvas* c = new TCanvas("c", "", 600, 600);
     gStyle->SetOptStat(0);
     c->Range(0.6363689, -1.758823, 4.003324, 11.77059);
@@ -84,16 +84,19 @@ int pAdNdetaVsCMSE() {
     lcms->SetTextAlign(32);
     lcms->DrawLatexNDC(0.90, 0.88, "CMS");
 
-    // TLatex* lprelim = new TLatex();
-    // lprelim->SetTextFont(53);
-    // lprelim->SetTextSize(16);
-    // lprelim->DrawLatexNDC(0.20, 0.95, "Preliminary");
+    TLatex* lprelim = new TLatex();
+    lprelim->SetTextFont(53);
+    lprelim->SetTextSize(18);
+    lprelim->SetTextAlign(32);
+    lprelim->DrawLatexNDC(0.90, 0.84, "Preliminary");
 
     /******************************************************
     pp NSD data points
     ******************************************************/
 
     Size_t size_l = 1.6, size_m = 1.2, size_s = 1.1;
+
+    if (!onlyAA) {
     
     TGraphAsymmErrors* Graph_pp_UA1 = new TGraphAsymmErrors(7);
     Graph_pp_UA1->SetName("Graph_pp_UA1");
@@ -225,10 +228,10 @@ int pAdNdetaVsCMSE() {
     leg_pp_NSD->AddEntry(Graph_pp_STAR, "STAR", "P");
     leg_pp_NSD->Draw();
 
-    TLatex* pp_nsd_fit_label = new TLatex(2000, 5.2, "#propto #font[52]{s}_{_{NN}}^{0.110}");
+    TLatex* pp_nsd_fit_label = new TLatex(1500, 5.2, "#propto #font[52]{s}_{_{NN}}^{0.110}");
     pp_nsd_fit_label->SetTextColor(_PP_NSD_COLOUR);
     pp_nsd_fit_label->SetTextFont(43);
-    pp_nsd_fit_label->SetTextSize(18);
+    pp_nsd_fit_label->SetTextSize(25);
     pp_nsd_fit_label->Draw();
 
     /******************************************************
@@ -335,9 +338,10 @@ int pAdNdetaVsCMSE() {
     TLatex* pp_inel_fit_label = new TLatex(2500, 3.25, "#propto #font[52]{s}_{_{NN}}^{0.103}");
     pp_inel_fit_label->SetTextColor(_PP_INEL_COLOUR);
     pp_inel_fit_label->SetTextFont(43);
-    pp_inel_fit_label->SetTextSize(18);
+    pp_inel_fit_label->SetTextSize(25);
     pp_inel_fit_label->Draw();
 
+    }
     /******************************************************
     AA data points
     ******************************************************/
@@ -513,13 +517,20 @@ int pAdNdetaVsCMSE() {
     TLatex* AA_fit_label = new TLatex(2500, 7.5, "#propto #font[52]{s}_{_{NN}}^{0.158}");
     AA_fit_label->SetTextColor(_AA_COLOUR);
     AA_fit_label->SetTextFont(43);
-    AA_fit_label->SetTextSize(18);
+    AA_fit_label->SetTextSize(25);
     AA_fit_label->Draw();
+
+    TLatex* AA_label = new TLatex(450, 5.0, "#font[62]{Central AA}");
+    AA_label->SetTextColor(_AA_COLOUR);
+    AA_label->SetTextFont(43);
+    AA_label->SetTextSize(18);
+    AA_label->SetTextAngle(47);
+    AA_label->Draw();
 
     /******************************************************
     pA data points
     ******************************************************/
-
+    if (!onlyAA) {
     // PHOBOS dAu point
     // -0.6..0.6 http://arxiv.org/abs/nucl-ex/0311009 (BRAHMS looks very similar: http://arxiv.org/abs/nucl-ex/0401025 )
     Double_t v_dAu_PHOBOS = 9.4;
@@ -695,14 +706,16 @@ int pAdNdetaVsCMSE() {
     // fit_pA_pow->SetLineWidth(1);
     // fit_pA_pow->SetLineStyle(9);
     // fit_pA_pow->Draw("same");
-
+    }
     c->Modified();
     c->cd();
     c->SetSelected(c);
-
+    if(!onlyAA) {
     c->SaveAs("figspdf/results/dNdeta_vs_CMSE.pdf");
     c->SaveAs("figs/results/dNdeta_vs_CMSE.pdf");
-
+    } else {
+    c->SaveAs("figs/results/dNdeta_vs_CMSE-onlyAA.pdf");
+    }
     return 0;
 }
 
@@ -725,5 +738,8 @@ CGC: http://arxiv.org/pdf/1209.2001v2.pdf
 */
 
 int main() {
-    return pAdNdetaVsCMSE();
+    pAdNdetaVsCMSE();
+    pAdNdetaVsCMSE(true);
+
+    return 0;
 }

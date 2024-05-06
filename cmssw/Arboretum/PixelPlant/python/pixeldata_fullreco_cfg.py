@@ -51,6 +51,7 @@ process.filterSequence = cms.Sequence(process.hltfilter*process.primaryVertexFil
 # process.prefilter = cms.Path(process.filterSequence)
 
 process.pixel = cms.EDAnalyzer('PixelPlant',
+                               fillpixels = cms.bool(True),
 			       pixel_tag = cms.InputTag("siPixelRecHits"),
 			       vertex_tags = cms.VInputTag(cms.InputTag("offlinePrimaryVertices")),
 			       fillhf = cms.bool(True),
