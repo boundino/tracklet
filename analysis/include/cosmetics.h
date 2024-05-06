@@ -85,9 +85,10 @@ void hstyle(TH1* h, int style, int colour, float size) {
    h->SetLineColor(colour);
 }
 
-void htitle(TH1* h, const char* title) {
+// void htitle(TH1* h, const char* title) {
+void htitle(TH1* h, std::string title) {
    h->SetStats(0);
-   h->SetTitle(title);
+   h->SetTitle(title.c_str());
    h->GetXaxis()->CenterTitle();
    h->GetYaxis()->CenterTitle();
 }
