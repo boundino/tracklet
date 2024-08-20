@@ -12,6 +12,7 @@
 #include "include/xjjcuti.h"
 #include "include/xjjmypdf.h"
 #include "include/tool.h"
+#include "include/hepdata.h"
 
 #define NCENT   20
 #define OFFSET  4
@@ -44,7 +45,8 @@ std::string cmsprel = "#scale[1.1]{#bf{CMS}}",
                                                                                                                       att_eta0p5 = "#lower[0.05]{#scale[1.5]{#kern[-0.6]{#cbar}}}#lower[0.6]{#scale[0.6]{#kern[0.15]{#cbar}#it{#eta}#kern[-0.4]{#cbar}#scale[0.5]{ }#kern[0.2]{<}#kern[0.2]{0.5}}}",
                                                                                                                       att_2a = "#lower[-0.05]{(}1/#kern[0.05]{2#it{A}}#lower[-0.05]{)}",
                                                                                                                       att_1npart = "#lower[-0.05]{(}1/#kern[0.1]{#scale[1.2]{#LT}}#lower[0.1]{#it{N}}#lower[0.5]{#scale[0.6]{#kern[-0.08]{part}}}#scale[1.2]{#GT}#lower[-0.05]{)}",
-                                                                                                                      att_npart = "#scale[1.2]{#LT}#it{N}#lower[0.4]{#scale[0.7]{#kern[-0.05]{part}}}#scale[1.2]{#GT}";
+                                                                                                                      att_npart = "#scale[1.2]{#LT}#it{N}#lower[0.4]{#scale[0.7]{#kern[-0.05]{part}}}#scale[1.2]{#GT}",
+                                                                                                                      att_hep_dNdeta = "\\mathrm{d}N_{\\mathrm{ch}}/\\mathrm{d}\\eta";
   
 void drawdNdeta(xjjroot::mypdf& pdf, std::string tag);
 int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
@@ -56,22 +58,22 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
   //                         "recreate");
 
   TGraphErrors* g = new TGraphErrors(ntotal); g->SetName("g");
-  gstyle(g, 21, COLOUR0, 0.8); g->SetFillColorAlpha(COLOUR0, 0.5);
+  gstyle(g, 21, COLOUR0, 1.4); g->SetFillColorAlpha(COLOUR0, 0.5);
   TGraphErrors* g2a = (TGraphErrors*)g->Clone("g2a");
-  gstyle(g2a, 21, COLOUR0, 0.8); g2a->SetFillColorAlpha(COLOUR0, 0.3);
+  gstyle(g2a, 21, COLOUR0, 1.4); g2a->SetFillColorAlpha(COLOUR0, 0.3);
   TGraphErrors* gnorm = (TGraphErrors*)g->Clone("gnorm");
-  gstyle(gnorm, 21, COLOUR0, 0.8); gnorm->SetFillColorAlpha(COLOUR0, 0.2);
+  gstyle(gnorm, 21, COLOUR0, 1.4); gnorm->SetFillColorAlpha(COLOUR0, 0.2);
   TGraphErrors* gnorm2a = (TGraphErrors*)g->Clone("gnorm2a");
-  gstyle(gnorm2a, 21, COLOUR0, 0.8); gnorm2a->SetFillColorAlpha(COLOUR0, 0.2);
+  gstyle(gnorm2a, 21, COLOUR0, 1.4); gnorm2a->SetFillColorAlpha(COLOUR0, 0.2);
   TGraphErrors* gnorm2a2a = (TGraphErrors*)g->Clone("gnorm2a2a");
-  gstyle(gnorm2a2a, 21, COLOUR0, 0.8); gnorm2a2a->SetFillColorAlpha(COLOUR0, 0.4);
+  gstyle(gnorm2a2a, 21, COLOUR0, 1.4); gnorm2a2a->SetFillColorAlpha(COLOUR0, 0.4);
   gnorm2a2a->SetLineColor(COLOUR0);
   gnorm2a2a->SetLineWidth(1);
   gnorm2a2a->SetLineStyle(2);
   TGraph* gsnp = new TGraph(2 * ntotal + 2);
-  gstyle(gsnp, 21, COLOUR0, 0.8); gsnp->SetFillColorAlpha(COLOUR0, 0.2);
+  gstyle(gsnp, 21, COLOUR0, 1.4); gsnp->SetFillColorAlpha(COLOUR0, 0.2);
   TGraph* gsnp2a = new TGraph(2 * ntotal + 2);
-  gstyle(gsnp2a, 21, COLOUR0, 0.8); gsnp2a->SetFillColorAlpha(COLOUR0, 0.2);
+  gstyle(gsnp2a, 21, COLOUR0, 1.4); gsnp2a->SetFillColorAlpha(COLOUR0, 0.2);
 
   for (int c = OFFSET; c < NCENT; c+=1) {
     TFile* f = new TFile(Form("results/results-%s.s.%i.%i.root",
@@ -170,7 +172,7 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
   float heightperline = 0.0375;
   
   xjjroot::drawCMSleft(cmsprel.c_str(), 0.05, -0.1); // Preliminary
-  xjjroot::drawCMSright("PbPb #sqrt{s_{NN}} = 5.36 TeV");
+  xjjroot::drawCMSright("PbPb (5.36 TeV)");
 
   TLegend* l2 = new TLegend(0.55, 0.55-heightperline*5, 0.85, 0.55);
   TLegendEntry* h23cms = l2->AddEntry((TObject*)0, "CMS", "");
@@ -189,10 +191,26 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
   l22->AddEntry(galice_xexe_5p44, "XeXe 5.44 TeV", "p");
   lstyle(l22, 43, 20); l22->Draw();
 
-  
+  // Figure 2a
   pdf.write(Form("figs/results/merged-%s-midy-int1.pdf", label.c_str()), "Q");
-  
   // c2->SaveAs(Form("figspdf/results/merged-%s-midy-int1.pdf", label.c_str()));
+
+  TH1F* h_g = new TH1F("h_g", ";;", 20, 0, 100);
+  for (int i=0; i<g->GetN(); i++) {
+    auto x = 100-g->GetPointX(i), y = g->GetPointY(i), ey = g->GetErrorY(i);
+    auto ibin = h_g->FindBin(x);
+    h_g->SetBinContent(ibin, y);
+    h_g->SetBinError(ibin, ey);
+  }
+  std::ofstream outf_Table_2a("hepdatas/Table_2a.yaml");
+  xjjroot::hepdata hep_Table_2a(h_g, 0,
+                                {"CENTRALITY", "'$\\%$'", ""},
+                                {"'$"+att_hep_dNdeta+"$'", "", ""},
+                                { {"RE", "", "PB PB --> CHARGED X"},
+                                  {"SQRT(S)", "GEV", "5360"},
+                                  {"'$|\\eta|$'", "", "< 0.5"} }
+                                );
+  hep_Table_2a.print(outf_Table_2a, 0, 1, 0, 80);
 
   pdf.getc()->SetLogy(0);
 
@@ -208,8 +226,8 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
   gstyle(galice_pbpb_5p02_n2a, 20, COLOUR4);
   gstyle(gcms_xexe_5p44_n2a, 47, COLOUR2);
   gstyle(galice_xexe_5p44_n2a, 34, COLOUR1);
-  gstyle(gphobos_auau_0p2_n2a, 29, COLOUR6);
-  gstyle(gphobos_cucu_0p2_n2a, 43, COLOUR9);
+  gstyle(gphobos_auau_0p2_n2a, 29, COLOUR6, 1.7);
+  gstyle(gphobos_cucu_0p2_n2a, 43, COLOUR9, 1.7);
 
   pdf.prepare();
   TH1F* g2aframe = new TH1F("g2aframe", "", 1, 0, 100);
@@ -234,7 +252,7 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
   g2a->Draw("pX same");
 
   xjjroot::drawCMSleft(cmsprel.c_str(), 0.05, -0.1); // Preliminary
-  xjjroot::drawCMSright("PbPb #sqrt{s_{NN}} = 5.36 TeV");
+  xjjroot::drawCMSright("PbPb (5.36 TeV)");
   TLegend* l7 = new TLegend(0.23, 0.77-heightperline*5, 0.53, 0.77);
   TLegendEntry* h3cms = l7->AddEntry((TObject*)0, "CMS", "");
   h3cms->SetTextFont(63); h3cms->SetTextSize(20);
@@ -259,7 +277,25 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
   l9->AddEntry(gphobos_cucu_0p2_n2a, "CuCu 200 GeV", "p");
   lstyle(l9, 43, 20); l9->Draw();
 
+  // Figure 2b
   pdf.write(Form("figs/results/merged-%s-midy2a-int1.pdf", label.c_str()), "Q");
+  TH1F* h_g2a = new TH1F("h_g2a", ";;", 20, 0, 100);
+  for (int i=0; i<g2a->GetN(); i++) {
+    auto x = 100-g2a->GetPointX(i), y = g2a->GetPointY(i), ey = g2a->GetErrorY(i);
+    auto ibin = h_g2a->FindBin(x);
+    h_g2a->SetBinContent(ibin, y);
+    h_g2a->SetBinError(ibin, ey);
+  }
+  std::ofstream outf_Table_2b("hepdatas/Table_2b.yaml");
+  xjjroot::hepdata hep_Table_2b(h_g2a, 0,
+                                {"CENTRALITY", "'$\\%$'", ""},
+                                {"'$"+att_hep_dNdeta+"/2A$'", "", ""},
+                                { {"RE", "", "PB PB --> CHARGED X"},
+                                  {"SQRT(S)", "GEV", "5360"},
+                                  {"'$|\\eta|$'", "", "< 0.5"} }
+                                );
+  hep_Table_2b.print(outf_Table_2b, 0, 3, 0, 80);
+
   
   //  
   TGraphErrors* gcms_pbpb_2p76_nnpart_x_npart = cms_pbpb_2p76_nnpart_x_npart();
@@ -274,8 +310,8 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
   gstyle(galice_pbpb_5p02_nnpart_x_npart, 20, COLOUR4);
   gstyle(gcms_xexe_5p44_nnpart_x_npart, 47, COLOUR2);
   gstyle(galice_xexe_5p44_nnpart_x_npart, 34, COLOUR1);
-  gstyle(gphobos_auau_0p2_nnpart_x_npart, 29, COLOUR6);
-  gstyle(gphobos_cucu_0p2_nnpart_x_npart, 43, COLOUR9);
+  gstyle(gphobos_auau_0p2_nnpart_x_npart, 29, COLOUR6, 1.7);
+  gstyle(gphobos_cucu_0p2_nnpart_x_npart, 43, COLOUR9, 1.7);
   // gstyle(gcms_pp_13p0_nnpart_x_npart, 43, COLOUR0);
   // gstyle(gcms_ppb_8p16_nnpart_x_npart, 45, COLOUR6);
 
@@ -302,7 +338,7 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
   gnorm->Draw("pX same");
 
   xjjroot::drawCMSleft(cmsprel.c_str(), 0.05, -0.1); // Preliminary
-  xjjroot::drawCMSright("PbPb #sqrt{s_{NN}} = 5.36 TeV");
+  xjjroot::drawCMSright("PbPb (5.36 TeV)");
   TLegend* l3 = new TLegend(0.6, 0.59-heightperline*5, 0.9, 0.59);
   TLegendEntry* h2cms = l3->AddEntry((TObject*)0, "CMS", "");
   h2cms->SetTextFont(63); h2cms->SetTextSize(20);
@@ -340,7 +376,18 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
   // l5->AddEntry(gcms_ppb_8p16_nnpart_x_npart, "pPb 8.16 TeV", "p");
   // lstyle(l5, 43, 20); l5->Draw();
 
+  // Figure 3a
   pdf.write(Form("figs/results/merged-%s-midynorm-int1.pdf", label.c_str()), "Q");
+  std::ofstream outf_Table_3a("hepdatas/Table_3a.yaml");
+  xjjroot::hepdata hep_Table_3a(gnorm, 0,
+                                {"'$N_{part}$'", "", ""},
+                                {"'$"+att_hep_dNdeta+"/N_{part}$'", "", ""},
+                                { {"RE", "", "PB PB --> CHARGED X"},
+                                  {"SQRT(S)", "GEV", "5360"},
+                                  {"'$|\\eta|$'", "", "< 0.5"} }
+                                );
+  hep_Table_3a.print(outf_Table_3a, 1, 2);
+
   
   pdf.prepare();
   gnframe->Draw("axis");
@@ -350,7 +397,7 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
   gnorm->Draw("pX same");
 
   xjjroot::drawCMSleft(cmsprel.c_str(), 0.05, -0.1); // Preliminary
-  xjjroot::drawCMSright("PbPb #sqrt{s_{NN}} = 5.36 TeV");
+  xjjroot::drawCMSright("PbPb (5.36 TeV)");
   l3->Draw();
   l5->Draw();
   pdf.write(Form("figs/results/merged-%s-midynorm-int1-conf1.pdf", label.c_str()), "Q");
@@ -368,8 +415,8 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
   gstyle(galice_pbpb_5p02_nnpart_x_npart2a, 20, COLOUR4);
   gstyle(gcms_xexe_5p44_nnpart_x_npart2a, 47, COLOUR2);
   gstyle(galice_xexe_5p44_nnpart_x_npart2a, 34, COLOUR1);
-  gstyle(gphobos_auau_0p2_nnpart_x_npart2a, 29, COLOUR6);
-  gstyle(gphobos_cucu_0p2_nnpart_x_npart2a, 43, COLOUR9);
+  gstyle(gphobos_auau_0p2_nnpart_x_npart2a, 29, COLOUR6, 1.7);
+  gstyle(gphobos_cucu_0p2_nnpart_x_npart2a, 43, COLOUR9, 1.7);
   // gstyle(gcms_pp_13p0_nnpart_x_npart2a, 43, COLOUR0);
   // gstyle(gcms_ppb_8p16_nnpart_x_npart2a, 45, COLOUR6);
 
@@ -394,7 +441,7 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
   gnorm2a->Draw("pX same");
 
   xjjroot::drawCMSleft(cmsprel.c_str(), 0.05, -0.1); // Preliminary
-  xjjroot::drawCMSright("PbPb #sqrt{s_{NN}} = 5.36 TeV");
+  xjjroot::drawCMSright("PbPb (5.36 TeV)");
   TLegend* l10 = new TLegend(0.6, 0.59-heightperline*5, 0.9, 0.59);
   TLegendEntry* h4cms = l10->AddEntry((TObject*)0, "CMS", "");
   h4cms->SetTextFont(63); h4cms->SetTextSize(20);
@@ -428,7 +475,18 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
   // l5->AddEntry(gcms_ppb_8p16_nnpart_x_npart2a, "pPb 8.16 TeV", "p");
   // lstyle(l5, 43, 20); l5->Draw();
 
+  // Figure 3b
   pdf.write(Form("figs/results/merged-%s-midynorm2a-int1.pdf", label.c_str()), "Q");
+  std::ofstream outf_Table_3b("hepdatas/Table_3b.yaml");
+  xjjroot::hepdata hep_Table_3b(gnorm2a, 0,
+                                {"'$N_{part}/2A$'", "", ""},
+                                {"'$"+att_hep_dNdeta+"/N_{part}$'", "", ""},
+                                { {"RE", "", "PB PB --> CHARGED X"},
+                                  {"SQRT(S)", "GEV", "5360"},
+                                  {"'$|\\eta|$'", "", "< 0.5"} }
+                                );
+  hep_Table_3b.print(outf_Table_3b, 2, 2);
+
   
   //  
   TGraphErrors* gcms_pbpb_2p76_n2a_x_npart2a = cms_pbpb_2p76_n2a_x_npart2a();
@@ -443,8 +501,8 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
   gstyle(galice_pbpb_5p02_n2a_x_npart2a, 20, COLOUR4);
   gstyle(gcms_xexe_5p44_n2a_x_npart2a, 47, COLOUR2);
   gstyle(galice_xexe_5p44_n2a_x_npart2a, 34, COLOUR1);
-  gstyle(gphobos_auau_0p2_n2a_x_npart2a, 29, COLOUR6);
-  gstyle(gphobos_cucu_0p2_n2a_x_npart2a, 43, COLOUR9);
+  gstyle(gphobos_auau_0p2_n2a_x_npart2a, 29, COLOUR6, 1.7);
+  gstyle(gphobos_cucu_0p2_n2a_x_npart2a, 43, COLOUR9, 1.7);
   // gstyle(gcms_pp_13p0_n2a_x_npart2a, 43, COLOUR0);
   // gstyle(gcms_ppb_8p16_n2a_x_npart2a, 45, COLOUR6);
 
@@ -467,7 +525,7 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
   gnorm2a2a->Draw("pX same");
 
   xjjroot::drawCMSleft(cmsprel.c_str(), 0.05, -0.1); // Preliminary
-  xjjroot::drawCMSright("PbPb #sqrt{s_{NN}} = 5.36 TeV");
+  xjjroot::drawCMSright("PbPb (5.36 TeV)");
   TLegend* l13 = new TLegend(0.22, 0.77-heightperline*5, 0.52, 0.77);
   TLegendEntry* h5cms = l13->AddEntry((TObject*)0, "CMS", "");
   h5cms->SetTextFont(63); h5cms->SetTextSize(20);
@@ -563,6 +621,7 @@ spectrum::spectrum(std::string filename, std::string title, float xleg, float yl
   gsyst_ratio = (TGraphErrors*)gsyst->Clone("gsyst_ratio");
   for (int i=0; i<gsyst->GetN(); i++) {
     float bincontent = gsyst->GetPointY(i);
+    if (bincontent == 0) { bincontent = 1.; }
     gsyst_ratio->SetPointY(i, gsyst->GetPointY(i) / bincontent);
     gsyst_ratio->SetPointError(i, gsyst->GetErrorX(i), gsyst->GetErrorY(i) / bincontent);
   }
@@ -650,7 +709,7 @@ void drawdNdeta(xjjroot::mypdf& pdf, std::string tag) {
   for(int i=0; i<itext.n(); i++)                                        \
     { xjjroot::drawtex(0.24, 0.79-i*0.033, itext.value[i][0].c_str(), 0.030, 13); } \
   xjjroot::drawCMSleft(cmsprel.c_str(), 0.05, -0.1); /*Preliminary*/    \
-  xjjroot::drawCMSright("PbPb #sqrt{s_{NN}} = 5.36 TeV");               \
+  xjjroot::drawCMSright("PbPb (5.36 TeV)");                             \
   // xjjroot::drawtex(0.88, 0.82, tcent(tag).c_str(), 0.030, 31);       \
   
   pdf.prepare();
@@ -666,7 +725,8 @@ void drawdNdeta(xjjroot::mypdf& pdf, std::string tag) {
   sp_4_20.leg->SetY1NDC(0.05);
   sp_4_20.leg->SetY2NDC(0.42);
   sp_4_20.leg->SetTextSize(0.038 * 1.6);
-  
+
+  // Paper figure
   pdf.prepare();
   TPad *p1, *p2;
   xjjroot::twopads(pdf.getc(), p1, p2, hemptyp1, hempty_ratio);
@@ -677,7 +737,7 @@ void drawdNdeta(xjjroot::mypdf& pdf, std::string tag) {
   sp_4_20.hsym->Draw("p same");
   sp_4_20.leg->Draw();
   xjjroot::drawCMSleft(cmsprel.c_str(), 0.05, -0.15, 0.065); /*Preliminary*/
-  xjjroot::drawCMSright("PbPb #sqrt{s_{NN}} = 5.36 TeV", 0, 0, 0.055);
+  xjjroot::drawCMSright("PbPb (5.36 TeV)", 0, 0, 0.055);
   p2->cd();
   drawNormtext();
   sp_4_20.gsyst_ratio->Draw("p2 same");
@@ -685,6 +745,7 @@ void drawdNdeta(xjjroot::mypdf& pdf, std::string tag) {
     gg->Draw("c same");
   }
   pdf.write(Form("figs/results/merged-%s-fulleta-1.pdf", tag.c_str()), "Q");
+  pdf.getc()->SaveAs(Form("figs/results/merged-%s-fulleta-1.C", tag.c_str()));
 
   // for(auto& gg : sp_4_20.gh1WGhadron)
   //   std::cout<<gg->GetName()<<std::endl;
@@ -706,7 +767,7 @@ void drawdNdeta(xjjroot::mypdf& pdf, std::string tag) {
   sp_4_20.hsym->Draw("p same");
   sp_4_20.leg->Draw();
   xjjroot::drawCMSleft(cmsprel.c_str(), 0.05, -0.15, 0.065); /*Preliminary*/
-  xjjroot::drawCMSright("PbPb #sqrt{s_{NN}} = 5.36 TeV", 0, 0, 0.055);
+  xjjroot::drawCMSright("PbPb (5.36 TeV)", 0, 0, 0.055);
   p1c02->cd();
   drawNormtext();
   sp_4_20.gsyst_ratio->Draw("p2 same");
@@ -728,7 +789,7 @@ void drawdNdeta(xjjroot::mypdf& pdf, std::string tag) {
   sp_4_20.hsym->Draw("p same");
   sp_4_20.leg->Draw();
   xjjroot::drawCMSleft(cmsprel.c_str(), 0.05, -0.15, 0.065); /*Preliminary*/
-  xjjroot::drawCMSright("PbPb #sqrt{s_{NN}} = 5.36 TeV", 0, 0, 0.055);
+  xjjroot::drawCMSright("PbPb (5.36 TeV)", 0, 0, 0.055);
   p1c12->cd();
   drawNormtext();
   sp_4_20.gsyst_ratio->Draw("p2 same");
@@ -750,7 +811,7 @@ void drawdNdeta(xjjroot::mypdf& pdf, std::string tag) {
   sp_4_20.hsym->Draw("p same");
   sp_4_20.leg->Draw();
   xjjroot::drawCMSleft(cmsprel.c_str(), 0.05, -0.15, 0.065); /*Preliminary*/
-  xjjroot::drawCMSright("PbPb #sqrt{s_{NN}} = 5.36 TeV", 0, 0, 0.055);
+  xjjroot::drawCMSright("PbPb (5.36 TeV)", 0, 0, 0.055);
   p1c22->cd();
   drawNormtext();
   sp_4_20.gsyst_ratio->Draw("p2 same");
@@ -772,7 +833,7 @@ void drawdNdeta(xjjroot::mypdf& pdf, std::string tag) {
   sp_4_20.hsym->Draw("p same");
   sp_4_20.leg->Draw();
   xjjroot::drawCMSleft(cmsprel.c_str(), 0.05, -0.15, 0.065); /*Preliminary*/
-  xjjroot::drawCMSright("PbPb #sqrt{s_{NN}} = 5.36 TeV", 0, 0, 0.055);
+  xjjroot::drawCMSright("PbPb (5.36 TeV)", 0, 0, 0.055);
   p1c32->cd();
   drawNormtext();
   sp_4_20.gsyst_ratio->Draw("p2 same");
@@ -823,7 +884,7 @@ void drawdNdeta(xjjroot::mypdf& pdf, std::string tag) {
   sp_9_10.hsym->Draw("p same");
   sp_9_10.leg->Draw();
   xjjroot::drawCMSleft(cmsprel.c_str(), 0.05, -0.15, 0.065); /*Preliminary*/
-  xjjroot::drawCMSright("PbPb #sqrt{s_{NN}} = 5.36 TeV", 0, 0, 0.055);
+  xjjroot::drawCMSright("PbPb (5.36 TeV)", 0, 0, 0.055);
   p22->cd();
   sp_19_20.gsyst_ratio->Draw("p2 same");
   sp_9_10.gsyst_ratio->Draw("p2 same");
@@ -836,6 +897,33 @@ void drawdNdeta(xjjroot::mypdf& pdf, std::string tag) {
   drawNormtext();
   
   pdf.write(Form("figs/results/merged-%s-fulleta-2.pdf", tag.c_str()), "Q");
+  pdf.write(Form("figs/results/merged-%s-fulleta-2.C", tag.c_str()), "Q");
+
+  std::ofstream outf_Table_1("hepdatas/Table_1.yaml");
+  xjjroot::hepdata hep_4_20(sp_4_20.hsym, sp_4_20.gsyst,
+                            {"'$\\eta$'", "", ""},
+                            {"'$"+att_hep_dNdeta+"$'", "", ""},
+                            { {"RE", "", "PB PB --> CHARGED X"},
+                              {"SQRT(S)", "GEV", "5360"},
+                              {"CENTRALITY", "'$\\%$'", "0 - 80"} }
+                            );
+  hep_4_20.print(outf_Table_1, 1, 1, -2.6, 2.6);
+  xjjroot::hepdata hep_19_20(sp_19_20.hsym, sp_19_20.gsyst,
+                             {"'$\\eta$'", "", ""},
+                             {"'$"+att_hep_dNdeta+"$'", "", ""},
+                             { {"RE", "", "PB PB --> CHARGED X"},
+                               {"SQRT(S)", "GEV", "5360"},
+                               {"CENTRALITY", "'$\\%$'", "0 - 5"} }
+                             );
+  hep_19_20.print(outf_Table_1, 1, 1, -2.6, 2.6, true);
+  xjjroot::hepdata hep_9_10(sp_9_10.hsym, sp_9_10.gsyst,
+                            {"'$\\eta$'", "", ""},
+                            {"'$"+att_hep_dNdeta+"$'", "", ""},
+                            { {"RE", "", "PB PB --> CHARGED X"},
+                              {"SQRT(S)", "GEV", "5360"},
+                              {"CENTRALITY", "'$\\%$'", "50 - 55"} }
+                            );
+  hep_9_10.print(outf_Table_1, 1, 1, -2.6, 2.6, true);
 
 
   printnpart();

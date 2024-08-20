@@ -1,0 +1,74 @@
+independent_variables:
+- header: {name: '$N_{part}/2A$'}
+  values:
+  - {value: 0.03}
+  - {value: 0.05}
+  - {value: 0.06}
+  - {value: 0.09}
+  - {value: 0.11}
+  - {value: 0.15}
+  - {value: 0.19}
+  - {value: 0.23}
+  - {value: 0.28}
+  - {value: 0.34}
+  - {value: 0.41}
+  - {value: 0.49}
+  - {value: 0.58}
+  - {value: 0.68}
+  - {value: 0.80}
+  - {value: 0.92}
+dependent_variables:
+- header: {name: '$\mathrm{d}N_{\mathrm{ch}}/\mathrm{d}\eta/N_{part}$'}
+  qualifiers:
+  - {name: RE, value: PB PB --> CHARGED X}
+  - {name: SQRT(S), units: GEV, value: 5360}
+  - {name: '$|\eta|$', value: < 0.5}
+  values:
+  - value: 2.41
+    errors:
+    - {symerror: 0.12, label: total}
+  - value: 2.58
+    errors:
+    - {symerror: 0.12, label: total}
+  - value: 2.78
+    errors:
+    - {symerror: 0.12, label: total}
+  - value: 2.98
+    errors:
+    - {symerror: 0.11, label: total}
+  - value: 3.20
+    errors:
+    - {symerror: 0.12, label: total}
+  - value: 3.39
+    errors:
+    - {symerror: 0.12, label: total}
+  - value: 3.58
+    errors:
+    - {symerror: 0.12, label: total}
+  - value: 3.73
+    errors:
+    - {symerror: 0.14, label: total}
+  - value: 3.91
+    errors:
+    - {symerror: 0.16, label: total}
+  - value: 4.08
+    errors:
+    - {symerror: 0.16, label: total}
+  - value: 4.22
+    errors:
+    - {symerror: 0.15, label: total}
+  - value: 4.34
+    errors:
+    - {symerror: 0.16, label: total}
+  - value: 4.54
+    errors:
+    - {symerror: 0.18, label: total}
+  - value: 4.72
+    errors:
+    - {symerror: 0.17, label: total}
+  - value: 4.94
+    errors:
+    - {symerror: 0.19, label: total}
+  - value: 5.31
+    errors:
+    - {symerror: 0.24, label: total}

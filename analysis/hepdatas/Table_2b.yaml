@@ -1,0 +1,74 @@
+independent_variables:
+- header: {name: CENTRALITY, units: '$\%$'}
+  values:
+  - {low: 0, high: 5}
+  - {low: 5, high: 10}
+  - {low: 10, high: 15}
+  - {low: 15, high: 20}
+  - {low: 20, high: 25}
+  - {low: 25, high: 30}
+  - {low: 30, high: 35}
+  - {low: 35, high: 40}
+  - {low: 40, high: 45}
+  - {low: 45, high: 50}
+  - {low: 50, high: 55}
+  - {low: 55, high: 60}
+  - {low: 60, high: 65}
+  - {low: 65, high: 70}
+  - {low: 70, high: 75}
+  - {low: 75, high: 80}
+dependent_variables:
+- header: {name: '$\mathrm{d}N_{\mathrm{ch}}/\mathrm{d}\eta/2A$'}
+  qualifiers:
+  - {name: RE, value: PB PB --> CHARGED X}
+  - {name: SQRT(S), units: GEV, value: 5360}
+  - {name: '$|\eta|$', value: < 0.5}
+  values:
+  - value: 4.884
+    errors:
+    - {symerror: 0.219, label: total}
+  - value: 3.934
+    errors:
+    - {symerror: 0.155, label: total}
+  - value: 3.215
+    errors:
+    - {symerror: 0.117, label: total}
+  - value: 2.628
+    errors:
+    - {symerror: 0.102, label: total}
+  - value: 2.132
+    errors:
+    - {symerror: 0.077, label: total}
+  - value: 1.741
+    errors:
+    - {symerror: 0.062, label: total}
+  - value: 1.405
+    errors:
+    - {symerror: 0.055, label: total}
+  - value: 1.112
+    errors:
+    - {symerror: 0.044, label: total}
+  - value: 0.863
+    errors:
+    - {symerror: 0.032, label: total}
+  - value: 0.666
+    errors:
+    - {symerror: 0.023, label: total}
+  - value: 0.497
+    errors:
+    - {symerror: 0.018, label: total}
+  - value: 0.363
+    errors:
+    - {symerror: 0.014, label: total}
+  - value: 0.255
+    errors:
+    - {symerror: 0.009, label: total}
+  - value: 0.176
+    errors:
+    - {symerror: 0.008, label: total}
+  - value: 0.116
+    errors:
+    - {symerror: 0.005, label: total}
+  - value: 0.076
+    errors:
+    - {symerror: 0.004, label: total}

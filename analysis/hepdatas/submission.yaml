@@ -1,0 +1,49 @@
+name: "Table 1"
+location: Data from Figure 1
+description: Charged-hadron $\mathrm{d}N_{\mathrm{ch}}/\mathrm{d}\eta$ distributions in PbPb collisions at 5.36 TeV for events in the 0--80%, 0--5% and 50--55% centrality class.
+keywords: 
+  - {name: reactions, values: [PB PB --> CHARGED X]}
+  - {name: observables, values: [DN/DETA]}
+  - {name: cmenergies, values: [5360.0]}
+  - {name: phrases, values: [lead-lead, pseudorapidity density]}
+data_file: Table_1.yaml
+---
+name: "Table 2a"
+location: Data from Figure 2 (left)
+description: Charged-hadron $\mathrm{d}N_{\mathrm{ch}}/\mathrm{d}\eta$ in PbPb collisions at 5.36 TeV at midrapidity as a function of event centrality.
+keywords: 
+  - {name: reactions, values: [PB PB --> CHARGED X]}
+  - {name: observables, values: [DN/DETA]}
+  - {name: cmenergies, values: [5360.0]}
+  - {name: phrases, values: [lead-lead, pseudorapidity density]}
+data_file: Table_2a.yaml
+---
+name: "Table 2b"
+location: Data from Figure 2 (right)
+description: Charged-hadron $\mathrm{d}N_{\mathrm{ch}}/\mathrm{d}\eta/2A$ in PbPb collisions at 5.36 TeV at midrapidity as a function of event centrality.
+keywords: 
+  - {name: reactions, values: [PB PB --> CHARGED X]}
+  - {name: observables, values: [DN/DETA]}
+  - {name: cmenergies, values: [5360.0]}
+  - {name: phrases, values: [lead-lead, pseudorapidity density]}
+data_file: Table_2b.yaml
+---
+name: "Table 3a"
+location: Data from Figure 3 (left)
+description: Charged-hadron $\mathrm{d}N_{\mathrm{ch}}/\mathrm{d}\eta/N_{part}$ in PbPb collisions at 5.36 TeV at midrapidity as a function of $N_{part}$.
+keywords: 
+  - {name: reactions, values: [PB PB --> CHARGED X]}
+  - {name: observables, values: [DN/DETA]}
+  - {name: cmenergies, values: [5360.0]}
+  - {name: phrases, values: [lead-lead, pseudorapidity density]}
+data_file: Table_3a.yaml
+---
+name: "Table 3b"
+location: Data from Figure 3 (right)
+description: Charged-hadron $\mathrm{d}N_{\mathrm{ch}}/\mathrm{d}\eta/N_{part}$ in PbPb collisions at 5.36 TeV at midrapidity as a function of $N_{part}/2A$.
+keywords: 
+  - {name: reactions, values: [PB PB --> CHARGED X]}
+  - {name: observables, values: [DN/DETA]}
+  - {name: cmenergies, values: [5360.0]}
+  - {name: phrases, values: [lead-lead, pseudorapidity density]}
+data_file: Table_3b.yaml

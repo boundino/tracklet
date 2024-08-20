@@ -1,0 +1,362 @@
+independent_variables:
+- header: {name: '$\eta$'}
+  values:
+  - {low: -2.6, high: -2.4}
+  - {low: -2.4, high: -2.2}
+  - {low: -2.2, high: -2.0}
+  - {low: -2.0, high: -1.8}
+  - {low: -1.8, high: -1.6}
+  - {low: -1.6, high: -1.4}
+  - {low: -1.4, high: -1.2}
+  - {low: -1.2, high: -1.0}
+  - {low: -1.0, high: -0.8}
+  - {low: -0.8, high: -0.6}
+  - {low: -0.6, high: -0.4}
+  - {low: -0.4, high: -0.2}
+  - {low: -0.2, high: -0.0}
+  - {low: -0.0, high: 0.2}
+  - {low: 0.2, high: 0.4}
+  - {low: 0.4, high: 0.6}
+  - {low: 0.6, high: 0.8}
+  - {low: 0.8, high: 1.0}
+  - {low: 1.0, high: 1.2}
+  - {low: 1.2, high: 1.4}
+  - {low: 1.4, high: 1.6}
+  - {low: 1.6, high: 1.8}
+  - {low: 1.8, high: 2.0}
+  - {low: 2.0, high: 2.2}
+  - {low: 2.2, high: 2.4}
+  - {low: 2.4, high: 2.6}
+dependent_variables:
+- header: {name: '$\mathrm{d}N_{\mathrm{ch}}/\mathrm{d}\eta$'}
+  qualifiers:
+  - {name: RE, value: PB PB --> CHARGED X}
+  - {name: SQRT(S), units: GEV, value: 5360}
+  - {name: CENTRALITY, units: '$\%$', value: 0 - 80}
+  values:
+  - value: 643.8
+    errors:
+    - {symerror: 0.3, label: stat}
+    - {symerror: 31.6, label: sys}
+  - value: 670.9
+    errors:
+    - {symerror: 0.3, label: stat}
+    - {symerror: 22.8, label: sys}
+  - value: 683.7
+    errors:
+    - {symerror: 0.3, label: stat}
+    - {symerror: 23.5, label: sys}
+  - value: 694.1
+    errors:
+    - {symerror: 0.3, label: stat}
+    - {symerror: 22.8, label: sys}
+  - value: 700.1
+    errors:
+    - {symerror: 0.4, label: stat}
+    - {symerror: 20.7, label: sys}
+  - value: 692.4
+    errors:
+    - {symerror: 0.3, label: stat}
+    - {symerror: 22.4, label: sys}
+  - value: 689.7
+    errors:
+    - {symerror: 0.2, label: stat}
+    - {symerror: 25.9, label: sys}
+  - value: 677.9
+    errors:
+    - {symerror: 0.2, label: stat}
+    - {symerror: 22.2, label: sys}
+  - value: 665.7
+    errors:
+    - {symerror: 0.2, label: stat}
+    - {symerror: 19.5, label: sys}
+  - value: 652.4
+    errors:
+    - {symerror: 0.2, label: stat}
+    - {symerror: 20.6, label: sys}
+  - value: 640.7
+    errors:
+    - {symerror: 0.2, label: stat}
+    - {symerror: 20.3, label: sys}
+  - value: 631.6
+    errors:
+    - {symerror: 0.2, label: stat}
+    - {symerror: 21.8, label: sys}
+  - value: 622.0
+    errors:
+    - {symerror: 0.2, label: stat}
+    - {symerror: 23.9, label: sys}
+  - value: 622.0
+    errors:
+    - {symerror: 0.2, label: stat}
+    - {symerror: 23.9, label: sys}
+  - value: 631.6
+    errors:
+    - {symerror: 0.2, label: stat}
+    - {symerror: 21.8, label: sys}
+  - value: 640.7
+    errors:
+    - {symerror: 0.2, label: stat}
+    - {symerror: 20.3, label: sys}
+  - value: 652.4
+    errors:
+    - {symerror: 0.2, label: stat}
+    - {symerror: 20.6, label: sys}
+  - value: 665.7
+    errors:
+    - {symerror: 0.2, label: stat}
+    - {symerror: 19.5, label: sys}
+  - value: 677.9
+    errors:
+    - {symerror: 0.2, label: stat}
+    - {symerror: 22.2, label: sys}
+  - value: 689.7
+    errors:
+    - {symerror: 0.2, label: stat}
+    - {symerror: 25.9, label: sys}
+  - value: 692.4
+    errors:
+    - {symerror: 0.3, label: stat}
+    - {symerror: 22.4, label: sys}
+  - value: 700.1
+    errors:
+    - {symerror: 0.4, label: stat}
+    - {symerror: 20.7, label: sys}
+  - value: 694.1
+    errors:
+    - {symerror: 0.3, label: stat}
+    - {symerror: 22.8, label: sys}
+  - value: 683.7
+    errors:
+    - {symerror: 0.3, label: stat}
+    - {symerror: 23.5, label: sys}
+  - value: 670.9
+    errors:
+    - {symerror: 0.3, label: stat}
+    - {symerror: 22.8, label: sys}
+  - value: 643.8
+    errors:
+    - {symerror: 0.3, label: stat}
+    - {symerror: 31.6, label: sys}
+dependent_variables:
+- header: {name: '$\mathrm{d}N_{\mathrm{ch}}/\mathrm{d}\eta$'}
+  qualifiers:
+  - {name: RE, value: PB PB --> CHARGED X}
+  - {name: SQRT(S), units: GEV, value: 5360}
+  - {name: CENTRALITY, units: '$\%$', value: 0 - 5}
+  values:
+  - value: 2095.4
+    errors:
+    - {symerror: 1.8, label: stat}
+    - {symerror: 79.0, label: sys}
+  - value: 2180.0
+    errors:
+    - {symerror: 1.9, label: stat}
+    - {symerror: 79.5, label: sys}
+  - value: 2226.4
+    errors:
+    - {symerror: 1.9, label: stat}
+    - {symerror: 76.5, label: sys}
+  - value: 2257.5
+    errors:
+    - {symerror: 2.5, label: stat}
+    - {symerror: 57.5, label: sys}
+  - value: 2270.0
+    errors:
+    - {symerror: 2.6, label: stat}
+    - {symerror: 90.3, label: sys}
+  - value: 2258.9
+    errors:
+    - {symerror: 2.2, label: stat}
+    - {symerror: 94.7, label: sys}
+  - value: 2251.2
+    errors:
+    - {symerror: 1.6, label: stat}
+    - {symerror: 97.0, label: sys}
+  - value: 2214.0
+    errors:
+    - {symerror: 1.5, label: stat}
+    - {symerror: 79.9, label: sys}
+  - value: 2176.9
+    errors:
+    - {symerror: 1.5, label: stat}
+    - {symerror: 66.7, label: sys}
+  - value: 2130.7
+    errors:
+    - {symerror: 1.5, label: stat}
+    - {symerror: 70.1, label: sys}
+  - value: 2093.2
+    errors:
+    - {symerror: 1.5, label: stat}
+    - {symerror: 70.7, label: sys}
+  - value: 2065.0
+    errors:
+    - {symerror: 1.5, label: stat}
+    - {symerror: 79.7, label: sys}
+  - value: 2031.8
+    errors:
+    - {symerror: 1.5, label: stat}
+    - {symerror: 91.1, label: sys}
+  - value: 2031.8
+    errors:
+    - {symerror: 1.5, label: stat}
+    - {symerror: 91.1, label: sys}
+  - value: 2065.0
+    errors:
+    - {symerror: 1.5, label: stat}
+    - {symerror: 79.7, label: sys}
+  - value: 2093.2
+    errors:
+    - {symerror: 1.5, label: stat}
+    - {symerror: 70.7, label: sys}
+  - value: 2130.7
+    errors:
+    - {symerror: 1.5, label: stat}
+    - {symerror: 70.1, label: sys}
+  - value: 2176.9
+    errors:
+    - {symerror: 1.5, label: stat}
+    - {symerror: 66.7, label: sys}
+  - value: 2214.0
+    errors:
+    - {symerror: 1.5, label: stat}
+    - {symerror: 79.9, label: sys}
+  - value: 2251.2
+    errors:
+    - {symerror: 1.6, label: stat}
+    - {symerror: 97.0, label: sys}
+  - value: 2258.9
+    errors:
+    - {symerror: 2.2, label: stat}
+    - {symerror: 94.7, label: sys}
+  - value: 2270.0
+    errors:
+    - {symerror: 2.6, label: stat}
+    - {symerror: 90.3, label: sys}
+  - value: 2257.5
+    errors:
+    - {symerror: 2.5, label: stat}
+    - {symerror: 57.5, label: sys}
+  - value: 2226.4
+    errors:
+    - {symerror: 1.9, label: stat}
+    - {symerror: 76.5, label: sys}
+  - value: 2180.0
+    errors:
+    - {symerror: 1.9, label: stat}
+    - {symerror: 79.5, label: sys}
+  - value: 2095.4
+    errors:
+    - {symerror: 1.8, label: stat}
+    - {symerror: 79.0, label: sys}
+dependent_variables:
+- header: {name: '$\mathrm{d}N_{\mathrm{ch}}/\mathrm{d}\eta$'}
+  qualifiers:
+  - {name: RE, value: PB PB --> CHARGED X}
+  - {name: SQRT(S), units: GEV, value: 5360}
+  - {name: CENTRALITY, units: '$\%$', value: 50 - 55}
+  values:
+  - value: 219.1
+    errors:
+    - {symerror: 0.6, label: stat}
+    - {symerror: 10.1, label: sys}
+  - value: 226.8
+    errors:
+    - {symerror: 0.6, label: stat}
+    - {symerror: 8.8, label: sys}
+  - value: 230.0
+    errors:
+    - {symerror: 0.6, label: stat}
+    - {symerror: 7.3, label: sys}
+  - value: 233.6
+    errors:
+    - {symerror: 0.8, label: stat}
+    - {symerror: 9.6, label: sys}
+  - value: 234.5
+    errors:
+    - {symerror: 0.9, label: stat}
+    - {symerror: 6.9, label: sys}
+  - value: 232.7
+    errors:
+    - {symerror: 0.7, label: stat}
+    - {symerror: 6.3, label: sys}
+  - value: 230.0
+    errors:
+    - {symerror: 0.5, label: stat}
+    - {symerror: 8.4, label: sys}
+  - value: 226.1
+    errors:
+    - {symerror: 0.5, label: stat}
+    - {symerror: 7.6, label: sys}
+  - value: 220.4
+    errors:
+    - {symerror: 0.5, label: stat}
+    - {symerror: 6.6, label: sys}
+  - value: 217.4
+    errors:
+    - {symerror: 0.5, label: stat}
+    - {symerror: 6.8, label: sys}
+  - value: 213.3
+    errors:
+    - {symerror: 0.5, label: stat}
+    - {symerror: 6.2, label: sys}
+  - value: 209.8
+    errors:
+    - {symerror: 0.5, label: stat}
+    - {symerror: 7.6, label: sys}
+  - value: 206.9
+    errors:
+    - {symerror: 0.5, label: stat}
+    - {symerror: 7.4, label: sys}
+  - value: 206.9
+    errors:
+    - {symerror: 0.5, label: stat}
+    - {symerror: 7.4, label: sys}
+  - value: 209.8
+    errors:
+    - {symerror: 0.5, label: stat}
+    - {symerror: 7.6, label: sys}
+  - value: 213.3
+    errors:
+    - {symerror: 0.5, label: stat}
+    - {symerror: 6.2, label: sys}
+  - value: 217.4
+    errors:
+    - {symerror: 0.5, label: stat}
+    - {symerror: 6.8, label: sys}
+  - value: 220.4
+    errors:
+    - {symerror: 0.5, label: stat}
+    - {symerror: 6.6, label: sys}
+  - value: 226.1
+    errors:
+    - {symerror: 0.5, label: stat}
+    - {symerror: 7.6, label: sys}
+  - value: 230.0
+    errors:
+    - {symerror: 0.5, label: stat}
+    - {symerror: 8.4, label: sys}
+  - value: 232.7
+    errors:
+    - {symerror: 0.7, label: stat}
+    - {symerror: 6.3, label: sys}
+  - value: 234.5
+    errors:
+    - {symerror: 0.9, label: stat}
+    - {symerror: 6.9, label: sys}
+  - value: 233.6
+    errors:
+    - {symerror: 0.8, label: stat}
+    - {symerror: 9.6, label: sys}
+  - value: 230.0
+    errors:
+    - {symerror: 0.6, label: stat}
+    - {symerror: 7.3, label: sys}
+  - value: 226.8
+    errors:
+    - {symerror: 0.6, label: stat}
+    - {symerror: 8.8, label: sys}
+  - value: 219.1
+    errors:
+    - {symerror: 0.6, label: stat}
+    - {symerror: 10.1, label: sys}
