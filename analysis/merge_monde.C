@@ -141,8 +141,8 @@ int macro(std::string input_corr,
   for(int i=0; i<itext.n(); i++)                                        \
     { xjjroot::drawtex(0.24, 0.79-i*0.033, itext.value[i][0].c_str(), 0.030, 13); } \
   xjjroot::drawtex(0.88, 0.82, tcent(tag).c_str(), 0.030, 31);          \
-  xjjroot::drawCMSleft("Internal", 0.05, -0.1);                         \
-  xjjroot::drawCMSright("PbPb (5.36 TeV)");                             \
+  xjjroot::drawCMSleft(xjjroot::CMS::internal, 0.05, -0.1);                     \
+  xjjroot::drawCMSright("OO (6.8 TeV)");                             \
   
   xjjroot::mypdf pdf("figspdf/avg/"+tag+".pdf", "c", 600, 600);
   // havg
@@ -155,7 +155,7 @@ int macro(std::string input_corr,
   }
   for(auto& h : h1WEfinal)
     h->Draw("p same");
-  havg->Draw("p same");
+  // havg->Draw("p same");
   legPIX->Draw();
   DRAWTEX;
   pdf.write("figs/avg/"+tag+".pdf");

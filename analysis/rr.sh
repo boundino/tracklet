@@ -3,48 +3,37 @@
 make reap_results || exit 1
 make merge_monde || exit 1
 
-maxdr2=0.25 ; tagdr="drlt0p5" ; tagver="v3" ; nominal="epos" ; corrtagver="v3"
+maxdr2=0.25 ; tagdr="drlt0p5" ; tagver="v0" ; nominal="hydjet" ; corrtagver="v0"
 
 TYPES=(12 13 14 23 24 34 56 57 67)
 # TYPES=(11 22 33 44 55 66 77)
-CENTS=(4 20)
+# CENTS=(4 20)
 # for i in {20..5} ; do CENTS+=($((i-1)) $i) ; done ; 
 # for i in {12..5} ; do CENTS+=($((i-1)) $i) ; done ; 
-# CENTS+=(0 20)
+CENTS=(0 20)
 
 
 ##
 INPUTS_MC=(
-    /eos/cms/store/cmst3/user/wangj/tracklet/tt_230724_pixel_230724_EposLHC_ReggeGribovParton_5360GeV_1255p1.root,epos,3
+    /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/private/tt_pixelsim_fullreco_100f.root,hydjet,4
+    # 2022
+    # /eos/cms/store/cmst3/user/wangj/tracklet/tt_230724_pixel_230724_EposLHC_ReggeGribovParton_5360GeV_1255p1.root,epos,3
     # /eos/cms/store/cmst3/user/wangj/tracklet/tt_230724_pixel_230724_Hydjet_Drum5F_5360GeV_HINPbPbAutumn22DR_shuf.root,hydjet,4
     # /eos/cms/store/cmst3/user/wangj/tracklet/tt_230724_pixel_230724_AMPT_NoStringMelting_5360GeV_HINPbPbAutumn22DR_v4_shuf.root,amptnm,5    
     # /eos/cms/store/cmst3/user/wangj/tracklet/tt_230724_pixel_230724_AMPT_StringMelting_5360GeV_HINPbPbAutumn22DR_v4_shuf.root,amptsm,6
     # /eos/cms/store/cmst3/user/wangj/tracklet/tt_230724_split_pixel_230724_EposLHC_ReggeGribovParton_5360GeV_1255p1.root,epos,3
-
-    # pre-approval
-    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230612_pixel_230512_EposLHC_ReggeGribovParton_PbPb_5360GeV_230322_GTv9Th4.root,epos
-    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230322_pixel_230129_EposLHC_ReggeGribovParton_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4.root,epos
-    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230322_pixel_230129_AMPT_StringMelting_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4.root,amptsm
-    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230322_pixel_230129_Hydjet_Drum5F_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4.root,hydjet
-    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230315_samelayer_pixel_230129_EposLHC_ReggeGribovParton_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4.root,epos
 )
 
 INPUTS_DATA=(
+    /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/private/tt_pixelsim_fullreco_100f.root,hydjetCLOSE
+    # 2022
     # /eos/cms/store/cmst3/user/wangj/tracklet/tt_230724_pixel_230724_HITestRaw0-6_HIRun2022A_MBPVfilTh4_362294.root,362294
     # /eos/cms/store/cmst3/user/wangj/tracklet/tt_230724_wclus_pixel_230724_HITestRaw0-5_HIRun2022A_MBPVfilTh4_362294.root,362294
-    /eos/cms/store/cmst3/user/wangj/tracklet/tt_230724_pixel_230724_HITestRaw0-1_HIRun2022A_MBPVfilTh4_362318.root,362318
+    # /eos/cms/store/cmst3/user/wangj/tracklet/tt_230724_pixel_230724_HITestRaw0-1_HIRun2022A_MBPVfilTh4_362318.root,362318
     # /eos/cms/store/cmst3/user/wangj/tracklet/tt_230724_pixel_230724_EposLHC_ReggeGribovParton_5360GeV_1255p1.root,eposCLOSE
     # /eos/cms/store/cmst3/user/wangj/tracklet/tt_230724_pixel_230724_Hydjet_Drum5F_5360GeV_HINPbPbAutumn22DR_shuf.root,hydjetCLOSE
     # /eos/cms/store/cmst3/user/wangj/tracklet/tt_230724_pixel_230724_AMPT_StringMelting_5360GeV_HINPbPbAutumn22DR_v4_shuf.root,amptsmCLOSE
     # /eos/cms/store/cmst3/user/wangj/tracklet/tt_230724_pixel_230724_AMPT_NoStringMelting_5360GeV_HINPbPbAutumn22DR_v4_shuf.root,amptnmCLOSE
-    
-    # pre-approval
-    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230322_pixel_230126_HITestRaw0-6_HIRun2022A_MBPVfilTh4_362294.root,362294
-    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230612_pixel_230126_HITestRaw1n3_HIRun2022A_MBPVfilTh4_362318.root,362318
-    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230315_samelayer_pixel_230126_HITestRaw0-6_HIRun2022A_MBPVfilTh4_362294.root,362294
-    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230322_pixel_230129_EposLHC_ReggeGribovParton_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4.root,eposCLOSE
-    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230322_pixel_230129_AMPT_StringMelting_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4.root,amptsmCLOSE
-    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230322_pixel_230129_Hydjet_Drum5F_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4.root,hydjetCLOSE
 )
 
 source tool.shinc 
@@ -181,8 +170,8 @@ do
                 truth="epos.m.v3.s."$cmin"."$cmax"&"${taglabel[epos]}"&2,hydjet.m.v3.s."$cmin"."$cmax"&"${taglabel[hydjet]}"&1,amptsm.m.v3.s."$cmin"."$cmax"&"${taglabel[amptsm]}"&4,amptnm.m.v3.s."$cmin"."$cmax"&"${taglabel[amptnm]}"&6"
                 [[ $TAG_DATA == *CLOSE* ]] && {
                     [[ $cmin -eq 0 && $cmax -eq 20 ]] &&
-                        { truth="incl."${TAG_DATA%%CLOSE}".m.v1&"${taglabel[${TAG_DATA%%CLOSE}]}"&1" ; }
-                            # { ${TAG_DATA%%CLOSE}".m.v1.s."$cmin"."$cmax"&"${taglabel[${TAG_DATA%%CLOSE}]}"&1" ; }
+                        { truth="incl."${TAG_DATA%%CLOSE}".m.v0&"${taglabel[${TAG_DATA%%CLOSE}]}"&1" ; }
+                            # { ${TAG_DATA%%CLOSE}".m.v0.s."$cmin"."$cmax"&"${taglabel[${TAG_DATA%%CLOSE}]}"&1" ; }
                 }
                 ./merge_monde $tagappl "${taglabel[${TAG_DATA%%CLOSE}]} corr. w. ${taglabel[$TAG_MC]}" $mergecomb "$truth"
             }

@@ -21,13 +21,9 @@
 #include "include/tracklet.h"
 #include "include/hf.h"
 
-#define NSAMPLES  5
+#define NSAMPLES  1
 static const float vzpar[NSAMPLES][2] = {
-   {0.932517, 3.79088},    /* private hydjet */
-   {0.307252, 4.62656},    /* hydjet */
-   {0.336693, 4.63967},    /* ampt, no melt */
-   {0.352702, 4.63594},    /* ampt, string melt */
-   {0.291463, 4.58802}     /* epos */
+   {0.2290316, 4.9068349},    /* private hydjet */
 };
 
 #define BKG_ARG(q)   , float add_bkg_l##q = 0
@@ -57,16 +53,27 @@ int transmute_trees(const char* input,
    if (t->GetEntries("run < 10") != 0) {
       printf("$ Monte Carlo analysis\n");
 
-      /* Realistic2022PbPbCollision */
-      vx = 0.1017599;
-      vy = -0.015602;
+      // /* Realistic2022PbPbCollision */
+      // // https://github.com/cms-sw/cmssw/blob/master/IOMC/EventVertexGenerators/python/VtxSmearedParameters_cfi.py#L1049
+      // vx = 0.1017599; // BS x0
+      // vy = -0.015602; // BS y0
+      // /* pixel barycentre */
+      // vz_shift = -0.355; // barycentre
+      // /* x: 0.0712278 */
+      // /* y: -0.167261 */
+      // /* z: -0.355162 */
 
-      vz_shift = -0.355;
-
+      /* Realistic2024PbPbCollision */
+      // https://github.com/cms-sw/cmssw/blob/master/IOMC/EventVertexGenerators/python/VtxSmearedParameters_cfi.py#L1088
+      vx = 0.0302546; // BS x0
+      vy = -0.0170382; // BS y0
       /* pixel barycentre */
+      // 
+      vz_shift = -0.355; // barycentre
       /* x: 0.0712278 */
       /* y: -0.167261 */
       /* z: -0.355162 */
+      
    } else {
       printf("$ data analysis\n");
 

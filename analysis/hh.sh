@@ -3,41 +3,34 @@
 make harvest_hists || exit 1
 make evaluate_effs || exit 1
 
-RUN_PIXEL_2D=1 ; TAG_PIXEL_COMPARE=362294a
-RUN_TRACKLET_2D=0 ; TAG_TRACKLET_COMPARE=362294a
+RUN_PIXEL_2D=0 ; TAG_PIXEL_COMPARE=362294a
+RUN_TRACKLET_2D=1 ; TAG_TRACKLET_COMPARE=362294a
 RUN_PIXEL_1D=0 ; TAG_PIXEL=362294a
-RUN_TRACKLET_1D=0 ; TAG_TRACKLET=362294a
-RUN_VTX_EFF=0 ; TAG_VERTEX=harvest
+RUN_TRACKLET_1D=1 ; TAG_TRACKLET=362294a
+RUN_VTX_EFF=1 ; TAG_VERTEX=harvest
 
 . tool.shinc 
 
 INPUTS_PIXEL=(
-    "/eos/cms/store/cmst3/user/wangj/tracklet/pixel_230724_HITestRaw0_HIRun2022A_MBPVfilTh4_362294.root,362294,362294a"
-    "/eos/cms/store/cmst3/user/wangj/tracklet/pixel_230724_EposLHC_ReggeGribovParton_5360GeV_1255p1.root,${taglabel[epos]},epos"
-    "/eos/cms/store/cmst3/user/wangj/tracklet/pixel_230724_Hydjet_Drum5F_5360GeV_HINPbPbAutumn22DR.root,${taglabel[hydjet]},hydjet"
-    "/eos/cms/store/cmst3/user/wangj/tracklet/pixel_230724_AMPT_StringMelting_5360GeV_HINPbPbAutumn22DR_v4.root,${taglabel[amptsm]},amptsm"
-    "/eos/cms/store/cmst3/user/wangj/tracklet/pixel_230724_AMPT_NoStringMelting_5360GeV_HINPbPbAutumn22DR_v4.root,${taglabel[amptnm]},amptnm"
+    "/eos/cms/store/group/phys_heavyions/wangj/tracklet2025/private/pixelsim_fullreco_100f.root,${taglabel[hydjet]},hydjet"
 
-    # # pre-approval
-    # "/eos/cms/store/group/phys_heavyions/wangj/tracklet2022/pixel_230126_HITestRaw0_HIRun2022A_MBPVfilTh4_362294.root,362294,362294a"
-    # "/eos/cms/store/group/phys_heavyions/wangj/tracklet2022/pixel_230129_EposLHC_ReggeGribovParton_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4.root,${taglabel[epos]},epos"
-    # "/eos/cms/store/group/phys_heavyions/wangj/tracklet2022/pixel_230129_Hydjet_Drum5F_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4.root,${taglabel[hydjet]},hydjet"
-    # "/eos/cms/store/group/phys_heavyions/wangj/tracklet2022/pixel_230129_AMPT_StringMelting_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4.root,${taglabel[amptsm]},amptsm"
-    # "/eos/cms/store/group/phys_heavyions/wangj/tracklet2022/vpresplit/pixelpre_221229_AMPT_NoStringMelting_PbPb_5360GeV_221224_GTv7priZ0_Th4.root,${taglabel[amptnm]},amptnm"
+    # 2022
+    # "/eos/cms/store/cmst3/user/wangj/tracklet/pixel_230724_HITestRaw0_HIRun2022A_MBPVfilTh4_362294.root,362294,362294a"
+    # "/eos/cms/store/cmst3/user/wangj/tracklet/pixel_230724_EposLHC_ReggeGribovParton_5360GeV_1255p1.root,${taglabel[epos]},epos"
+    # "/eos/cms/store/cmst3/user/wangj/tracklet/pixel_230724_Hydjet_Drum5F_5360GeV_HINPbPbAutumn22DR.root,${taglabel[hydjet]},hydjet"
+    # "/eos/cms/store/cmst3/user/wangj/tracklet/pixel_230724_AMPT_StringMelting_5360GeV_HINPbPbAutumn22DR_v4.root,${taglabel[amptsm]},amptsm"
+    # "/eos/cms/store/cmst3/user/wangj/tracklet/pixel_230724_AMPT_NoStringMelting_5360GeV_HINPbPbAutumn22DR_v4.root,${taglabel[amptnm]},amptnm"
 )
 
 INPUTS_TRACKLET=(
-    "/eos/cms/store/cmst3/user/wangj/tracklet/tt_230724_pixel_230724_HITestRaw0-6_HIRun2022A_MBPVfilTh4_362294.root,362294,362294a"
-    "/eos/cms/store/cmst3/user/wangj/tracklet/tt_230724_pixel_230724_EposLHC_ReggeGribovParton_5360GeV_1255p1.root,${taglabel[epos]},epos"
-    "/eos/cms/store/cmst3/user/wangj/tracklet/tt_230724_pixel_230724_Hydjet_Drum5F_5360GeV_HINPbPbAutumn22DR_shuf.root,${taglabel[hydjet]},hydjet"
-    "/eos/cms/store/cmst3/user/wangj/tracklet/tt_230724_pixel_230724_AMPT_StringMelting_5360GeV_HINPbPbAutumn22DR_v4_shuf.root,${taglabel[amptsm]},amptsm"
-    "/eos/cms/store/cmst3/user/wangj/tracklet/tt_230724_pixel_230724_AMPT_NoStringMelting_5360GeV_HINPbPbAutumn22DR_v4_shuf.root,${taglabel[amptnm]},amptnm"
-    # # pre-approval
-    # "/eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230322_pixel_230126_HITestRaw0-6_HIRun2022A_MBPVfilTh4_362294.root,362294,362294a"
-    # "/eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230612_pixel_230512_EposLHC_ReggeGribovParton_PbPb_5360GeV_230322_GTv9Th4.root,${taglabel[epos]},epos"
-    # "/eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230322_pixel_230129_Hydjet_Drum5F_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4.root,${taglabel[hydjet]},hydjet"
-    # "/eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230322_pixel_230129_AMPT_StringMelting_PbPb_5360GeV_230129_GTv8priZ0_GTv8Th4.root,${taglabel[amptsm]},amptsm"
-    # "/eos/cms/store/group/phys_heavyions/wangj/tracklet2022/vpresplit/tt_221229_vzshift_pixelpre_221229_AMPT_NoStringMelting_PbPb_5360GeV_221224_GTv7priZ0_Th4.root,${taglabel[amptnm]},amptnm"
+    "/eos/cms/store/group/phys_heavyions/wangj/tracklet2025/private/tt_pixelsim_fullreco_100f.root,${taglabel[hydjet]},hydjet"
+
+    # 2022
+    # "/eos/cms/store/cmst3/user/wangj/tracklet/tt_230724_pixel_230724_HITestRaw0-6_HIRun2022A_MBPVfilTh4_362294.root,362294,362294a"
+    # "/eos/cms/store/cmst3/user/wangj/tracklet/tt_230724_pixel_230724_EposLHC_ReggeGribovParton_5360GeV_1255p1.root,${taglabel[epos]},epos"
+    # "/eos/cms/store/cmst3/user/wangj/tracklet/tt_230724_pixel_230724_Hydjet_Drum5F_5360GeV_HINPbPbAutumn22DR_shuf.root,${taglabel[hydjet]},hydjet"
+    # "/eos/cms/store/cmst3/user/wangj/tracklet/tt_230724_pixel_230724_AMPT_StringMelting_5360GeV_HINPbPbAutumn22DR_v4_shuf.root,${taglabel[amptsm]},amptsm"
+    # "/eos/cms/store/cmst3/user/wangj/tracklet/tt_230724_pixel_230724_AMPT_NoStringMelting_5360GeV_HINPbPbAutumn22DR_v4_shuf.root,${taglabel[amptnm]},amptnm"
 )
 
 INPUTS_PIXEL_2D=()
@@ -47,7 +40,7 @@ do
     ARG_PIXEL_INPUT=${ARG_PIXEL_INPUT}" "${inputs[0]}
     ARG_PIXEL_LEG=${ARG_PIXEL_LEG}"${inputs[1]},"
 
-    [[ ${inputs[2]} == *hydjet* || ${inputs[2]} == *ampt* ]] && continue
+    # [[ ${inputs[2]} == *hydjet* || ${inputs[2]} == *ampt* ]] && continue
     # [[ ${inputs[2]} != *epos* ]] && continue
     
     INPUTS_PIXEL_2D+=("$i")
@@ -62,7 +55,7 @@ do
     ARG_TRACKLET_INPUT=${ARG_TRACKLET_INPUT}" "${inputs[0]}
     ARG_TRACKLET_LEG=${ARG_TRACKLET_LEG}"${inputs[1]},"
 
-    [[ ${inputs[2]} == *hydjet* || ${inputs[2]} == *ampt* ]] && continue
+    # [[ ${inputs[2]} == *hydjet* || ${inputs[2]} == *ampt* ]] && continue
     
     INPUTS_TRACKLET_2D+=("$i")
     ARG_TRACKLET_TAG_2D=${ARG_TRACKLET_TAG_2D}" "${inputs[2]}

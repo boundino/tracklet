@@ -4,7 +4,7 @@ make assess_acceps || exit 1
 
 recreate=1
 maxdr2=0.25
-tag="0p6" # 0p5
+tag="0p5" # 0p5
 
 TYPES=(12 13 14 23 24 34 56 57 67)
 
