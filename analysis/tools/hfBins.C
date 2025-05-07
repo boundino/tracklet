@@ -32,15 +32,14 @@ int macro(std::string inputname, std::string outputname, std::string var="pixel/
   
   std::vector<float> vhft, vhibins(1, 0);
   auto nentries = t->GetEntries();
-  for (int i=0; i<nentries; i+=division)
-    {
-      xjjc::progressslide(i, nentries, 100*division);
-      t->GetEntry(i);
-      if (!ismc && (nhfp <= 2 || nhfn <= 2 )) continue; // data
-      if (ismc && (process == 102 || process == 103 || process == 104)) continue; // MC
-      vhft.push_back(hft);
-      hhft->Fill(hft);
-    }
+  for (int i=0; i<nentries; i+=division) {
+    xjjc::progressslide(i, nentries, 100*division);
+    t->GetEntry(i);
+    if (!ismc && (nhfp <= 2 || nhfn <= 2 )) continue; // data
+    if (ismc && (process == 102 || process == 103 || process == 104)) continue; // MC
+    vhft.push_back(hft);
+    hhft->Fill(hft);
+  }
   xjjc::progressbar_summary(nentries);
 
   int n = vhft.size();
@@ -65,19 +64,18 @@ int macro(std::string inputname, std::string outputname, std::string var="pixel/
   for (int i=1; i<=NCENTBINS; i++) {
     out<<vhibins[i];
     if (i<NCENTBINS) out<<", ";
-    if (i%10==9) out<<std::endl;
+    if (i%10==9) out<<std::endl<<"  ";
   }
   out<<"};"<<std::endl;
 
   out<<std::endl;
   
   out<<"static const float hf[21] = { 0., ";
-  for (int i=1; i<=20; i++)
-    {
-      out<<vhibins[i*10];
-      if (i<20) out<<", ";
-      if (i%5==4) out<<std::endl;
-    }
+  for (int i=1; i<=20; i++) {
+    out<<vhibins[i*10];
+    if (i<20) out<<", ";
+    if (i%5==4) out<<std::endl<<"  ";
+  }
   out<<std::endl<<"};"<<std::endl;
 
   out<<std::endl;
