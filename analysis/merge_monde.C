@@ -139,10 +139,10 @@ int macro(std::string input_corr,
 
 #define DRAWTEX                                                         \
   for(int i=0; i<itext.n(); i++)                                        \
-    { xjjroot::drawtex(0.24, 0.79-i*0.033, itext.value[i][0].c_str(), 0.030, 13); } \
-  xjjroot::drawtex(0.88, 0.82, tcent(tag).c_str(), 0.030, 31);          \
+    { xjjroot::drawtex(0.23, 0.79-i*0.033, itext.value[i][0].c_str(), 0.038, 13); } \
+  xjjroot::drawtex(0.89, 0.81, tcent(tag).c_str(), 0.038, 31);          \
   xjjroot::drawCMSleft(xjjroot::CMS::internal, 0.05, -0.1);                     \
-  xjjroot::drawCMSright("OO (6.8 TeV)");                             \
+  xjjroot::drawCMSright("OO (5.36 TeV)");                             \
   
   xjjroot::mypdf pdf("figspdf/avg/"+tag+".pdf", "c", 600, 600);
   // havg
