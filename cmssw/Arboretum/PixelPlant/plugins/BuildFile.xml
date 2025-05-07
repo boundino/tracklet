@@ -17,5 +17,6 @@
 <use name="SimGeneral/HepPDTRecord"/>
 <use name="Alignment/CommonAlignment"/>
 <use name="Alignment/TrackerAlignment"/>
+<use name="CondFormats/Alignment"/>
 <use name="CLHEP"/>
 <flags EDM_PLUGIN="1"/>
