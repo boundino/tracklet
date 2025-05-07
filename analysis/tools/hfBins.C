@@ -9,15 +9,17 @@
 
 #include "include/xjjrootuti.h"
 #include "include/xjjcuti.h"
+#include "include/cfout.h"
 
-int macro(std::string inputname, std::string var="pixel/PixelTree::hft", int division=1)
+#define NCENTBINS 200
+
+int macro(std::string inputname, std::string outputname, std::string var="pixel/PixelTree::hft", int division=1)
 // int macro(std::string inputname, std::string var="TrackletTree12::hft")
 {
-  auto inputs = xjjc::str_divide(inputname, ",");
   auto vars = xjjc::str_divide(var, "::");
-  auto t = (TTree*)TFile::Open(inputs[0].c_str())->Get(vars[0].c_str());
+  auto t = (TTree*)TFile::Open(inputname.c_str())->Get(vars[0].c_str());
   auto isMC = t->GetEntries("npart!=0");
-  if(isMC) std::cout<<"MC"<<std::endl;
+  if (isMC) std::cout<<"MC"<<std::endl;
   else std::cout<<"data"<<std::endl;
 
   t->SetBranchStatus("*", 0);
@@ -30,12 +32,12 @@ int macro(std::string inputname, std::string var="pixel/PixelTree::hft", int div
   
   std::vector<float> vhft, vhibins(1, 0);
   auto nentries = t->GetEntries();
-  for(int i=0; i<nentries; i+=division)
+  for (int i=0; i<nentries; i+=division)
     {
       xjjc::progressslide(i, nentries, 100*division);
       t->GetEntry(i);
-      if(!isMC && (nhfp <= 2 || nhfn <= 2 )) continue; // data
-      if(isMC && (process == 102 || process == 103 || process == 104)) continue; // MC
+      if (!isMC && (nhfp <= 2 || nhfn <= 2 )) continue; // data
+      if (isMC && (process == 102 || process == 103 || process == 104)) continue; // MC
       vhft.push_back(hft);
       hhft->Fill(hft);
     }
@@ -45,35 +47,69 @@ int macro(std::string inputname, std::string var="pixel/PixelTree::hft", int div
   // std::sort(vhft.begin(), vhft.end(), std::greater<float>());
   std::sort(vhft.begin(), vhft.end());
 
-  for(int i=1; i<200; i++)
-    vhibins.push_back(vhft[std::ceil(i/200.*n)-1]);
+  for (int i=1; i<NCENTBINS; i++)
+    vhibins.push_back(vhft[std::ceil(i/(NCENTBINS*1.)*n)-1]);
   vhibins.push_back(2.e+4);
 
-  std::cout<<"const Double_t binTable[nBins+1] = {0";
-  for(int i=1; i<=200; i++)
-    std::cout<<", "<<vhibins[i];
-  std::cout<<"};"<<std::endl;
+  std::string outputh = Form("tools/cent/cent_%s.h", outputname.c_str());
+  std::ofstream ofs(outputh.c_str());
+  xjjc::cfout out(ofs, std::cout);
 
-  std::cout<<"static const float hf[21] = {"<<std::endl<<"0.00, ";
-  for(int i=1; i<=20; i++)
+  std::cout<<"\e[30;3m"<<std::endl;
+
+  out<<"// "<<inputname<<std::endl;
+  out<<std::endl;
+
+  out<<"const int nBins=200;"<<std::endl;
+  out<<"const double binTable[nBins+1] = { 0., ";
+  for (int i=1; i<=NCENTBINS; i++) {
+    out<<vhibins[i];
+    if (i<NCENTBINS) out<<", ";
+    if (i%10==9) out<<std::endl;
+  }
+  out<<"};"<<std::endl;
+
+  out<<std::endl;
+  
+  out<<"static const float hf[21] = { 0., ";
+  for (int i=1; i<=20; i++)
     {
-      std::cout<<vhibins[i*10];
-      if(i<20) std::cout<<", ";
-      if(i%5==4) std::cout<<std::endl;
+      out<<vhibins[i*10];
+      if (i<20) out<<", ";
+      if (i%5==4) out<<std::endl;
     }
-  std::cout<<std::endl<<"};"<<std::endl;
+  out<<std::endl<<"};"<<std::endl;
 
-  auto outf = new TFile(Form("rootfiles/%s.root", inputs[1].c_str()), "recreate");
+  out<<std::endl;
+  
+  out<<"int getHiBinFromhiHF(const double hiHF) { \n\
+  int binPos = -1; \n\
+  for (int i = 0; i < nBins; ++i) { \n\
+    if (hiHF >= binTable[i] && hiHF < binTable[i+1]) { \n\
+      binPos = i; \n\
+      break; \n\
+    } \n\
+  } \n\
+ \n\
+  binPos = nBins - 1 - binPos; \n\
+ \n\
+  return (int)(200*((double)binPos)/((double)nBins)); \n\
+}"<<std::endl;
+
+  std::cout<<"\e[0m"<<std::endl;
+
+  auto outf = new TFile(Form("data/cent-%s.root", outputname.c_str()), "recreate");
   outf->cd();
   xjjroot::writehist(hhft);
   outf->Close();
 
+  std::cout<<outputh<<std::endl;
+  
   return 0;
 }
 
 int main(int argc, char* argv[])
 {
-  if(argc==3) return macro(argv[1], argv[2]);
-  if(argc==2) return macro(argv[1]);
+  if (argc==3) return macro(argv[1], argv[2]);
   return 1;
 }
