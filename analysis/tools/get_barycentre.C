@@ -22,7 +22,8 @@
 #define NBINS 1000
 
 const Color_t cc[] = {kBlack, kRed, kBlue};
-float dxshift[] = {0, -0.0723367}, dyshift[] = {0, 0.167845}, dzshift[] = {0, 0.36}; // BS_MC = BS_data + dshift
+// float dxshift[] = {0, -0.0723367}, dyshift[] = {0, 0.167845}, dzshift[] = {0, 0.36}; // BS_MC = BS_data + dshift
+float dxshift[] = {0, 0}, dyshift[] = {0, 0}, dzshift[] = {0, 0}; // BS_MC = BS_data + dshift
 
 std::vector<std::string> legtags;
 std::string comment;
@@ -34,8 +35,8 @@ int mapvertex(std::vector<TTree*>& t, std::vector<std::array<float, 2>> bins, xj
 void drawbs(std::vector<std::array<float, 3>> bsxyz, std::string type);
 void drawtags();
 
-int macro(std::string input="/eos/cms/store/group/phys_heavyions/wangj/tracklet2022/pixelpre_221201_HITestRaw0_HIRun2022A_MBPVfilTh4_362294.root#Data,/eos/cms/store/group/phys_heavyions/wangj/tracklet2022/pixelpre_221207_MB_Hydjet_Run3_subehera_Th4.root#MC",
-          std::string tag="362294t-Hydjet")
+int macro(std::string input="/eos/cms/store/group/phys_heavyions/wangj/tracklet2025/private/AMPT_NoPU_100kEvents_OO_5360GeV_GenSim_032525.root#AMPT,/eos/cms/store/group/phys_heavyions/wangj/tracklet2025/private/Hijing_NoPU_100kEvents_OO_5360GeV_GenSim_030825.root#HIJING",
+          std::string tag="amptnm-hijing")
 {
   xjjc::sconfig conf(input);
   std::vector<TTree*> t(conf.n());
@@ -57,7 +58,7 @@ int macro(std::string input="/eos/cms/store/group/phys_heavyions/wangj/tracklet2
   maphits(t, "r@:r@/tan(2*atan(exp(-eta@))),z,r,z,r", {{-8, 8, 0, 5}, {-30, 30, 5, 10}, {-30, 30, 10, 15}, {-30, 30, 15, 20}}, pdf);
   maphits(t, "sqrt((r@*sin(phi@)-bsy)*(r@*sin(phi@)-bsy)+(r@*cos(phi@)-bsx)*(r@*cos(phi@)-bsx)):r@/tan(2*atan(exp(-eta@)))-bsz,zbsz,rbsr,z - z_{BS},|#vec{r}-#vec{r}_{BS}|", {{-30, 30, 0, 5}, {-30, 30, 5, 10}, {-30, 30, 10, 15}, {-30, 30, 15, 20}}, pdf);
 
-  mapvertex(t, {{0.14, 0.20}, {-0.20, -0.14}, {-15, 15}}, pdf);
+  mapvertex(t, {{0.00, 0.06}, {-0.05, 0.01}, {-15, 15}}, pdf);
 
   pdf->close();
 
@@ -105,11 +106,11 @@ int maphits(std::vector<TTree*>& t, std::string var, std::vector<std::array<floa
       for(int i=0; i<n; i++)                                            \
         {                                                               \
           t[i]->Draw(Form("%s>>h%s%s" #q "f%d", var##q.c_str(), vars[1].c_str(), vars[2].c_str(), i), \
-                     "(nhfp > 1 && nhfn > 1)", "goff", MAXEVT);         \
+                     "(nhfp > 1 && nhfn > 1)", "goff", MAXEVT);        \
         }                                                               \
       pdf->prepare();                                                   \
       for(int i=0; i<n; i++)                                            \
-        { hxy##q[i]->Draw(i?"same":""); }                               \
+        { hxy##q[i]->Draw(i?"scat same":"scat"); }                               \
       drawbs({{bsx[0],bsy[0],bsz[0]},{bsx[1],bsy[1],bsz[1]}}, Form("%s-%s", vars[1].c_str(), vars[2].c_str())); \
       drawtags();                                                       \
       pdf->write();                                                     \
@@ -125,7 +126,7 @@ void drawtags()
   for(int i=0; i<legtags.size(); i++)
     xjjroot::drawtex(0.90, y-dy*i, legtags[i].c_str(), 0.038, 33, 62, cc[i]);
   xjjroot::drawCMSleft();
-  xjjroot::drawCMSright("PbPb (5.36 TeV)");
+  xjjroot::drawCMSright("OO (5.36 TeV)");
   xjjroot::drawtex(0.25, y, "BPIX", 0.038, 13);
   xjjroot::drawcomment(comment);
 }
@@ -139,27 +140,24 @@ void drawbs(std::vector<std::array<float, 3>> bsxyz, std::string type)
 
   float xdata = -99, ydata = -99, xmc = -99, ymc = -99, xshiftto = -99, yshiftto = -99; 
   bool draw = false;
-  if(type=="x-y")
-    {
+  if(type=="x-y") {
       xdata = bsxdata; ydata = bsydata;
       xmc = bsxmc; ymc = bsymc;
       xshiftto = bsxshiftto; yshiftto = bsyshiftto;
       draw = true;
     }
-  if(type=="z-r")
-    {
+  if(type=="z-r") {
       xdata = bszdata; ydata = std::sqrt(bsxdata*bsxdata+bsydata*bsydata);
       xmc = bszmc; ymc = std::sqrt(bsxmc*bsxmc+bsymc*bsymc);
       xshiftto = bszshiftto; yshiftto = std::sqrt(bsxshiftto*bsxshiftto+bsyshiftto*bsyshiftto);
       draw = true;
     }
 
-  if(draw)
-    {
-      auto leg = new TLegend(0.22, 0.20, 0.32, 0.32);
-      leg->AddEntry(xjjroot::drawpoint(xdata, ydata, cc[0], 20, 1), "BS_{data}", "p");
-      leg->AddEntry(xjjroot::drawpoint(xshiftto, yshiftto, cc[2], 53, 1.2), "BS_{MC} (correct)", "p");
-      leg->AddEntry(xjjroot::drawpoint(xmc, ymc, cc[1], 20, 1), "BS_{MC} (sample)", "p");
+  if(draw) {
+      auto leg = new TLegend(0.22, 0.32-0.04*2, 0.32, 0.32);
+      leg->AddEntry(xjjroot::drawpoint(xdata, ydata, cc[0], 20, 1), Form("BS_{%s}", legtags[0].c_str()), "p");
+      // leg->AddEntry(xjjroot::drawpoint(xshiftto, yshiftto, cc[2], 53, 1.2), "BS_{MC} (correct)", "p");
+      leg->AddEntry(xjjroot::drawpoint(xmc, ymc, cc[1], 20, 1), Form("BS_{%s}", legtags[1].c_str()), "p");
       xjjroot::setlegndraw(leg, 0.03);
       // xjjroot::drawline(xdata, ydata, xshiftto, yshiftto, cc[2], 1, 2);
     }
@@ -222,7 +220,7 @@ int mapvertex(std::vector<TTree*>& t, std::vector<std::array<float, 2>> bins, xj
         }                                                       \
       pdf->prepare();                                           \
       for(int i=0; i<n; i++)                                    \
-        { hv##q[i]->Draw(i?"same":""); }                        \
+        { hv##q[i]->Draw(i?"scat same":"scat"); }                        \
       drawtags();                                               \
       pdf->write();                                             \
   

@@ -3,8 +3,9 @@
 make reap_results || exit 1
 make merge_monde || exit 1
 
-maxdr2=0.25 ; tagdr="drlt0p5" ; tagver="v0" ; nominal="hydjet" ; corrtagver="v0"
+maxdr2=0.25 ; tagdr="drlt0p5" ; tagver="v0" ; nominal="hijing" ; corrtagver="v0"
 
+# TYPES=(12)
 TYPES=(12 13 14 23 24 34 56 57 67)
 # TYPES=(11 22 33 44 55 66 77)
 # CENTS=(4 20)
@@ -15,7 +16,9 @@ CENTS=(0 20)
 
 ##
 INPUTS_MC=(
-    /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/private/tt_pixelsim_fullreco_100f.root,hydjet,4
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/private/tt_pixelsim_fullreco_100f.root,hydjet,4
+    /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/private/tt_Hijing_NoPU_100kEvents_OO_5360GeV_GenSim_030825.root,hijing,7
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/private/tt_AMPT_NoPU_100kEvents_OO_5360GeV_GenSim_032525.root,amptnm,5
     # 2022
     # /eos/cms/store/cmst3/user/wangj/tracklet/tt_230724_pixel_230724_EposLHC_ReggeGribovParton_5360GeV_1255p1.root,epos,3
     # /eos/cms/store/cmst3/user/wangj/tracklet/tt_230724_pixel_230724_Hydjet_Drum5F_5360GeV_HINPbPbAutumn22DR_shuf.root,hydjet,4
@@ -25,7 +28,9 @@ INPUTS_MC=(
 )
 
 INPUTS_DATA=(
-    /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/private/tt_pixelsim_fullreco_100f.root,hydjetCLOSE
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/private/tt_pixelsim_fullreco_100f.root,hydjetCLOSE
+    /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/private/tt_Hijing_NoPU_100kEvents_OO_5360GeV_GenSim_030825.root,hijingCLOSE
+    /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/private/tt_AMPT_NoPU_100kEvents_OO_5360GeV_GenSim_032525.root,amptnmCLOSE
     # 2022
     # /eos/cms/store/cmst3/user/wangj/tracklet/tt_230724_pixel_230724_HITestRaw0-6_HIRun2022A_MBPVfilTh4_362294.root,362294
     # /eos/cms/store/cmst3/user/wangj/tracklet/tt_230724_wclus_pixel_230724_HITestRaw0-5_HIRun2022A_MBPVfilTh4_362294.root,362294

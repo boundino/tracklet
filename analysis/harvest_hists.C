@@ -16,11 +16,11 @@
 
 #include "git/config/configurer.h"
 
-#include "include/cosmetics.h"
 #include "include/defines.h"
 #include "include/xjjmypdf.h"
 #include "include/xjjanauti.h"
 
+#include "include/cosmetics.h"
 #include "include/pixgeo.h"
 
 #define OPT(val)  options[opt].val
@@ -61,7 +61,7 @@ static const std::vector<varinfo_t> options_pixel_1d = {
       {600, 600}, 0x01, "(nhfp > 1 && nhfn > 1)", "", 2000
    }, {
       "nhits", {"number of pixel hits"}, {"nhits"},
-      {{100, 0, 20000}},
+      {{100, 0, 4000}},
       {600, 600}, 0x01, "(nhfp > 1 && nhfn > 1)", "", TTree::kMaxEntries
    }
 };
@@ -141,11 +141,11 @@ int compare_pixels(std::vector<varinfo_t> const& options,
    h##q[0]->SetLineColor(1);                                                  \
    h##q[0]->Draw("p e same");                                                 \
                                                                               \
-   TLegend* l##q = new TLegend(0.57, 0.725, 0.93, 0.875);                     \
+   TLegend* l##q = new TLegend(0.50, 0.875-0.05*nfiles, 0.80, 0.875);         \
    l##q->AddEntry(h##q[0], CS(legends[0]), "p");                              \
    for (std::size_t j = 1; j < nfiles; ++j)                                   \
       l##q->AddEntry(h##q[j], CS(legends[j]), "l");                           \
-   lstyle(l##q, 43, 16); l##q->Draw();                                        \
+   lstyle(l##q, 43, 22); l##q->Draw();                                        \
                                                                               \
    if (OPT(flags) & 0x10) {                                                   \
       pdf_DRAW_1D_PIXELS->getc()->cd(2);                                      \
@@ -156,7 +156,7 @@ int compare_pixels(std::vector<varinfo_t> const& options,
          hr##q[j]->Draw("p e same");                                          \
       }                                                                       \
    }                                                                          \
-                                                                              \
+   watermark();                                                         \
    pdf_DRAW_1D_PIXELS->write(Form("figs/pixel/pixel-%s-l" #q "-%s.png",    \
                                   OS(id), label));                            \
    // delete c##q;                                                              \
@@ -198,7 +198,7 @@ static const std::vector<varinfo_t> options_tracklet_1d = {
       {600, 600}, 0x110, "(1)", "", TTree::kMaxEntries
    }, {
       "ntracklet", {"number of tracklets"}, {"ntracklet"},
-      {{100, 0, 20000}},
+      {{100, 0, 4000}},
       {600, 600}, 0x01, "(1)", "", TTree::kMaxEntries
    }, {
      "dr-wide", {"#Deltar"}, {"sqrt(dr2)"},
@@ -284,11 +284,11 @@ int compare_tracklets(std::vector<varinfo_t> const& options,
    h##q##w[0]->SetLineColor(1);                                               \
    h##q##w[0]->Draw("p e same");                                              \
                                                                               \
-   TLegend* l##q##w = new TLegend(0.57, 0.725, 0.93, 0.875);                  \
+   TLegend* l##q##w = new TLegend(0.50, 0.875-0.05*nfiles, 0.80, 0.875);      \
    l##q##w->AddEntry(h##q##w[0], CS(legends[0]), "p");                        \
    for (std::size_t j = 1; j < nfiles; ++j)                                   \
       l##q##w->AddEntry(h##q##w[j], CS(legends[j]), "l");                     \
-   lstyle(l##q##w, 43, 16); l##q##w->Draw();                                  \
+   lstyle(l##q##w, 43, 22); l##q##w->Draw();                                  \
                                                                               \
    if (OPT(flags) & 0x10) {                                                   \
       pdf_DRAW_1D_TRACKLETS->getc()->cd(2);                                   \
@@ -311,6 +311,7 @@ int compare_tracklets(std::vector<varinfo_t> const& options,
       TLine* line1 = new TLine(OPT(bins[0][1]), 1, OPT(bins[0][2]), 1);       \
       line1->Draw();                                                          \
    }                                                                          \
+   watermark();                                                         \
                                                                               \
    pdf_DRAW_1D_TRACKLETS->write(Form("figs/tracklet/tracklet-%s-t" #q #w "-%s.png", \
                                      OS(id), label));                   \
@@ -424,6 +425,7 @@ int map_pixels(std::vector<varinfo_t> const& options,
    if (labelid)                                                         \
      geo.draw##q(OS(id));                                               \
                                                                         \
+   watermark();                                                         \
    pdf_DRAW_2D_PIXELS->write(Form("figs/pixel/pixel-%s-l" #q "-%s.png", \
                                   OS(id), label));                      \
 
@@ -444,6 +446,7 @@ int map_pixels(std::vector<varinfo_t> const& options,
       pdf_DRAW_2D_PIXELS->prepare();
       hall->Draw(OS(gopt));
 
+      watermark();
       pdf_DRAW_2D_PIXELS->write(Form("figs/pixel/pixel-%s-all-%s.png",
                                      OS(id), label));
       // delete call;
@@ -512,7 +515,7 @@ int compare_map_pixels(std::vector<varinfo_t> const& options,
     if (!j) continue;                                                   \
     pdf_DRAW_2D_PIXELS_COMPARE->prepare();                              \
     hr##q[j]->Draw("colz");                                             \
-                                                                        \
+    watermark();                                                        \
     pdf_DRAW_2D_PIXELS_COMPARE->write(Form("figs/ratio/ratio-%s-l" #q "-%s-%s.png", \
                                            OS(id), label, tags[j].data())); \
   }                                                                     \
@@ -571,6 +574,7 @@ int map_tracklets(std::vector<varinfo_t> const& options,
                                                                               \
    pdf_DRAW_2D_TRACKLETS->prepare();                                          \
    h##q##w->Draw(OS(gopt));                                                   \
+   watermark();                                                         \
                                                                               \
    pdf_DRAW_2D_TRACKLETS->write(Form("figs/tracklet/tracklet-%s-t" #q #w "-%s.png", \
                                      OS(id), label));                   \
@@ -631,6 +635,7 @@ int compare_map_tracklets(std::vector<varinfo_t> const& options,
     if (!j) continue;                                                   \
     pdf_DRAW_2D_TRACKLETS_COMPARE->prepare();                           \
     hr##q##w[j]->Draw("colz");                                          \
+    watermark();                                                        \
                                                                         \
     pdf_DRAW_2D_TRACKLETS_COMPARE->write(Form("figs/ratio/ratio-%s-t" #q #w "-%s-%s.png", \
                                               OS(id), label, tags[j].data())); \

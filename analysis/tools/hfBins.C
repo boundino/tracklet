@@ -12,15 +12,15 @@
 #include "include/cfout.h"
 
 #define NCENTBINS 200
+const float upper_limit = 2.e+4;
 
 int macro(std::string inputname, std::string outputname, std::string var="pixel/PixelTree::hft", int division=1)
 // int macro(std::string inputname, std::string var="TrackletTree12::hft")
 {
   auto vars = xjjc::str_divide(var, "::");
   auto t = (TTree*)TFile::Open(inputname.c_str())->Get(vars[0].c_str());
-  auto isMC = t->GetEntries("npart!=0");
-  if (isMC) std::cout<<"MC"<<std::endl;
-  else std::cout<<"data"<<std::endl;
+  auto ismc = t->GetEntries("npart!=0");
+  std::cout<<"  [ "<<(ismc?"MC":"data")<<" ]"<<std::endl;
 
   t->SetBranchStatus("*", 0);
   float hft; t->SetBranchStatus(vars[1].c_str(), 1); t->SetBranchAddress(vars[1].c_str(), &hft);
@@ -36,8 +36,8 @@ int macro(std::string inputname, std::string outputname, std::string var="pixel/
     {
       xjjc::progressslide(i, nentries, 100*division);
       t->GetEntry(i);
-      if (!isMC && (nhfp <= 2 || nhfn <= 2 )) continue; // data
-      if (isMC && (process == 102 || process == 103 || process == 104)) continue; // MC
+      if (!ismc && (nhfp <= 2 || nhfn <= 2 )) continue; // data
+      if (ismc && (process == 102 || process == 103 || process == 104)) continue; // MC
       vhft.push_back(hft);
       hhft->Fill(hft);
     }
@@ -49,10 +49,10 @@ int macro(std::string inputname, std::string outputname, std::string var="pixel/
 
   for (int i=1; i<NCENTBINS; i++)
     vhibins.push_back(vhft[std::ceil(i/(NCENTBINS*1.)*n)-1]);
-  vhibins.push_back(2.e+4);
+  vhibins.push_back(upper_limit);
 
-  std::string outputh = Form("tools/cent/cent_%s.h", outputname.c_str());
-  std::ofstream ofs(outputh.c_str());
+  auto outputh = Form("tools/cent/cent_%s.h", outputname.c_str());
+  std::ofstream ofs(outputh);
   xjjc::cfout out(ofs, std::cout);
 
   std::cout<<"\e[30;3m"<<std::endl;

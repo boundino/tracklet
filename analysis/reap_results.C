@@ -661,17 +661,17 @@ int reap_results(int type,
 
    /* analysis stages                                                         */
    TCanvas* cstage = new TCanvas("cstage", "", CANVASW, CANVASH);
-   // const int yrange[5][2] = {
-   //    {80, 8}, {240, 80}, {600, 1200}, {1600, 600}, {3200, 800}};
+   const int yrange[5][2] = {
+      {80, 40}, {240, 80}, {600, 1200}, {1600, 600}, {3200, 800}};
 
-   // int ymax = h1WEfinal->GetMaximum();
-   // for (int r=0; r<5; ++r) {
-   //    if (ymax < yrange[r][0]) {
-   //       ymax = ((ymax / yrange[r][1]) + 1) * yrange[r][1];
-   //       break;
-   //    }
-   // }
-   int ymax = 1100;
+   int ymax = h1WEfinal->GetMaximum();
+   for (int r=0; r<5; ++r) {
+      if (ymax < yrange[r][0]) {
+         ymax = ((ymax / yrange[r][1]) + 1) * yrange[r][1];
+         break;
+      }
+   }
+   // int ymax = 1100;
 
    TH1F* hframe = new TH1F("hframe", "", 1, etamin, etamax);
    hstyle(hframe, 21, 1); hrange(hframe, 0, ymax);

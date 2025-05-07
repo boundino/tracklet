@@ -3,16 +3,18 @@
 make harvest_hists || exit 1
 make evaluate_effs || exit 1
 
-RUN_PIXEL_2D=0 ; TAG_PIXEL_COMPARE=362294a
-RUN_TRACKLET_2D=1 ; TAG_TRACKLET_COMPARE=362294a
-RUN_PIXEL_1D=0 ; TAG_PIXEL=362294a
-RUN_TRACKLET_1D=1 ; TAG_TRACKLET=362294a
-RUN_VTX_EFF=1 ; TAG_VERTEX=harvest
+RUN_PIXEL_2D=0 ; TAG_PIXEL_COMPARE=amptnm
+RUN_TRACKLET_2D=0 ; TAG_TRACKLET_COMPARE=amptnm
+RUN_PIXEL_1D=0 ; TAG_PIXEL=$TAG_PIXEL_COMPARE
+RUN_TRACKLET_1D=0 ; TAG_TRACKLET=$TAG_TRACKLET_COMPARE
+RUN_VTX_EFF=1 ; TAG_VERTEX=$TAG_TRACKLET_COMPARE
 
 . tool.shinc 
 
 INPUTS_PIXEL=(
-    "/eos/cms/store/group/phys_heavyions/wangj/tracklet2025/private/pixelsim_fullreco_100f.root,${taglabel[hydjet]},hydjet"
+    # "/eos/cms/store/group/phys_heavyions/wangj/tracklet2025/private/pixelsim_fullreco_hijing_97.root,${taglabel[hijing]},hijing"
+    "/eos/cms/store/group/phys_heavyions/wangj/tracklet2025/private/AMPT_NoPU_100kEvents_OO_5360GeV_GenSim_032525.root,${taglabel[amptnm]},amptnm"
+    "/eos/cms/store/group/phys_heavyions/wangj/tracklet2025/private/Hijing_NoPU_100kEvents_OO_5360GeV_GenSim_030825.root,${taglabel[hijing]},hijing"
 
     # 2022
     # "/eos/cms/store/cmst3/user/wangj/tracklet/pixel_230724_HITestRaw0_HIRun2022A_MBPVfilTh4_362294.root,362294,362294a"
@@ -23,7 +25,9 @@ INPUTS_PIXEL=(
 )
 
 INPUTS_TRACKLET=(
-    "/eos/cms/store/group/phys_heavyions/wangj/tracklet2025/private/tt_pixelsim_fullreco_100f.root,${taglabel[hydjet]},hydjet"
+    # "/eos/cms/store/group/phys_heavyions/wangj/tracklet2025/private/tt_pixelsim_fullreco_hijing_97.root,${taglabel[hijing]},hijing"
+    "/eos/cms/store/group/phys_heavyions/wangj/tracklet2025/private/tt_AMPT_NoPU_100kEvents_OO_5360GeV_GenSim_032525.root,${taglabel[amptnm]},amptnm"
+    "/eos/cms/store/group/phys_heavyions/wangj/tracklet2025/private/tt_Hijing_NoPU_100kEvents_OO_5360GeV_GenSim_030825.root,${taglabel[hijing]},hijing"
 
     # 2022
     # "/eos/cms/store/cmst3/user/wangj/tracklet/tt_230724_pixel_230724_HITestRaw0-6_HIRun2022A_MBPVfilTh4_362294.root,362294,362294a"
