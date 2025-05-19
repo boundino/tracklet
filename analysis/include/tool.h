@@ -178,7 +178,9 @@ std::vector<TH1D*> combh1WEfinal(std::string filename,
 
 std::vector<TGraphErrors*> combgh1WGhadron(std::string filename,
                                            TLegend* legTRUTH = 0,
-                                           std::string input_truth="amptnm&A#scale[0.9]{MPT} #scale[0.9]{(no melting)},amptsm&A#scale[0.9]{MPT} #scale[0.9]{(string melting)},hydjet&H#scale[0.8]{YDJET},epos&E#scale[0.8]{POS} #scale[0.9]{LHC}") {
+                                           // std::string input_truth="amptnm&A#scale[0.9]{MPT} #scale[0.9]{(no melting)},amptsm&A#scale[0.9]{MPT} #scale[0.9]{(string melting)},hydjet&H#scale[0.8]{YDJET},epos&E#scale[0.8]{POS} #scale[0.9]{LHC}") {
+                                           std::string input_truth="amptnm&A#scale[0.9]{MPT} #scale[0.9]{(no melting)},hijing&H#scale[0.9]{IJING}") {
+                                           // std::string input_truth="amptnm&A#scale[0.9]{MPT} #scale[0.9]{(no melting)}") {
   xjjc::sconfig itruth(input_truth, ",", "&", "v");
   if(!legTRUTH) {
     legTRUTH = new TLegend(0.55, 0.47-0.031*itruth.n(), 0.55+0.2, 0.47);
@@ -187,6 +189,7 @@ std::vector<TGraphErrors*> combgh1WGhadron(std::string filename,
   std::vector<TGraphErrors*> gh1WGhadron;
   gStyle->SetLineStyleString(9,"40 20");
   for(int i=0; i<itruth.n(); i++) {
+    std::cout<<filename<<std::endl;
     auto gr = xjjroot::gethist<TGraphErrors>(filename + "::gh1WGhadron-"+itruth.value[i][0]);
     if(!gr) continue;
     if(xjjc::str_contains(itruth.value[i][0], "amptsm"))

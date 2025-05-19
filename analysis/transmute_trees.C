@@ -22,7 +22,7 @@
 #include "include/hf.h"
 
 #define NSAMPLES  1
-static const float vzpar[NSAMPLES][2] = {
+static const float vzpar[NSAMPLES][2] = { // for reweight
    {0.2290316, 4.9068349},    /* private hydjet */
 };
 
@@ -32,7 +32,7 @@ static const float vzpar[NSAMPLES][2] = {
 int transmute_trees(const char* input,
                     const char* output,
                     uint64_t start = 0,
-                    uint64_t end = 1000000000,
+                    int end = -1,
                     int sample = -1,
                     bool reweight = 0,
                     float pileup = 0.0f,
@@ -135,7 +135,7 @@ int transmute_trees(const char* input,
    PIXELS1P(PROJECT_BACKGROUND);
 
    uint64_t nentries = t->GetEntries();
-   if (end > nentries) end = nentries;
+   if (end > nentries || end < 0) end = nentries;
    printf(" # number of events: %lu\n", nentries);
    printf("................................................................\n");
 

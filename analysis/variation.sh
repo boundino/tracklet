@@ -11,9 +11,9 @@ asels=(
     "(vz[1]>0&&vz[1]<5),vz3"
     "(vz[1]>5&&vz[1]<10),vz4"
     # "(vz[1]>10&&vz[1]<15),vz5"
-    "(lumi>=1&&lumi<20),lumi0"
-    "(lumi>=20&&lumi<40),lumi1"
-    "(lumi>=40&&lumi<54),lumi2"
+    # "(lumi>=1&&lumi<20),lumi0"
+    # "(lumi>=20&&lumi<40),lumi1"
+    # "(lumi>=40&&lumi<54),lumi2"
 )
 maxdr2s=(
     "0.25 drlt0p5"
@@ -22,12 +22,12 @@ maxdr2s=(
 )
 multhandles=(
     "0,"
-    "1,nhit2"
+    # "1,nhit2"
 )
 ctableindexs=(
-    "0,"
-    "1,hfeffup"
-    "2,hfeffdown"
+    "5,"
+    # "1,hfeffup"
+    # "2,hfeffdown"
 )
 
 for vasels in "${asels[@]}" ; do
@@ -62,7 +62,7 @@ for vasels in "${asels[@]}" ; do
                 
                 [[ $(($defasel+$defdr2+$defmult+$defctable)) -eq 3 ]] || continue
                 
-                tagver="v3"
+                tagver="v0"
                 [[ $defasel -eq 1 ]] || tagver=$tagver"-"$tagasel    
                 [[ $defdr2 -eq 1 ]] || tagver=$tagver"-"${vmaxdr2[1]}
                 [[ $defmult -eq 1 ]] || tagver=$tagver"-"$tagmult    

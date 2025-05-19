@@ -9,10 +9,8 @@ maxdr2=0.25 ; tagdr="drlt0p5" ; tagver="v0" ; nominal="hijing" ; corrtagver="v0"
 TYPES=(12 13 14 23 24 34 56 57 67)
 # TYPES=(11 22 33 44 55 66 77)
 # CENTS=(4 20)
-# for i in {20..5} ; do CENTS+=($((i-1)) $i) ; done ; 
-# for i in {12..5} ; do CENTS+=($((i-1)) $i) ; done ; 
 CENTS=(0 20)
-
+for i in {20..5} ; do CENTS+=($((i-1)) $i) ; done ; 
 
 ##
 INPUTS_MC=(
@@ -29,8 +27,8 @@ INPUTS_MC=(
 
 INPUTS_DATA=(
     # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/private/tt_pixelsim_fullreco_100f.root,hydjetCLOSE
-    /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/private/tt_Hijing_NoPU_100kEvents_OO_5360GeV_GenSim_030825.root,hijingCLOSE
-    /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/private/tt_AMPT_NoPU_100kEvents_OO_5360GeV_GenSim_032525.root,amptnmCLOSE
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/private/tt_Hijing_NoPU_100kEvents_OO_5360GeV_GenSim_030825.root,hijingCLOSE,7
+    /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/private/tt_AMPT_NoPU_100kEvents_OO_5360GeV_GenSim_032525.root,amptnmCLOSE,5
     # 2022
     # /eos/cms/store/cmst3/user/wangj/tracklet/tt_230724_pixel_230724_HITestRaw0-6_HIRun2022A_MBPVfilTh4_362294.root,362294
     # /eos/cms/store/cmst3/user/wangj/tracklet/tt_230724_wclus_pixel_230724_HITestRaw0-5_HIRun2022A_MBPVfilTh4_362294.root,362294
@@ -100,7 +98,7 @@ do
         [[ $TAG_MC == *${nominal}* || ${2:-0} -eq 2 ]] && {
             # ==> tag name
             tages=$TAG_MC"."$tcgm"."$tagver".s."$cmin"."$cmax
-            [[ $cmin -eq 0 && $cmax -eq 20 ]] && tages="incl."$TAG_MC"."$tcgm"."$tagver
+            # [[ $cmin -eq 0 && $cmax -eq 20 ]] && tages="incl."$TAG_MC"."$tcgm"."$tagver
             echo $tages
             # <== tag name
             [[ ${2:-0} -gt 0 ]] && {
@@ -134,6 +132,7 @@ do
             IFS=',' ; VINPUTS_DATA=($dd) ; unset IFS ;
             INPUT_DATA=${VINPUTS_DATA[0]}
             TAG_DATA=${VINPUTS_DATA[1]}
+            CENT_DATA=${VINPUTS_DATA[2]}
 
             # echo " "$INPUT_DATA
             # echo " "$TAG_DATA
@@ -154,9 +153,9 @@ do
                     set -x
                     ./reap_results $t $INPUT_DATA $tagappl $cmin $cmax \
                                    $tagcorr ${cgm:0:1} ${cgm:1:1} ${cgm:2:1} $tages \
+                                   $multhandle $maxdr2 $tagdr "null" \
+                                   $CENT_DATA "(1)" &
                                    2>&1 | tee logs/$tagappl-$t.txt & # \
-                        # $multhandle $maxdr2 $tagdr "null" \
-                        # $ctable "(1)" &
                     set +x
                 done # for t in ${TYPES[@]}
                 wait
@@ -172,12 +171,13 @@ do
             done
             mergecomb=${mergecomb##,}
             [[ ${4:-0} -eq 1 ]] && {
-                truth="epos.m.v3.s."$cmin"."$cmax"&"${taglabel[epos]}"&2,hydjet.m.v3.s."$cmin"."$cmax"&"${taglabel[hydjet]}"&1,amptsm.m.v3.s."$cmin"."$cmax"&"${taglabel[amptsm]}"&4,amptnm.m.v3.s."$cmin"."$cmax"&"${taglabel[amptnm]}"&6"
-                [[ $TAG_DATA == *CLOSE* ]] && {
-                    [[ $cmin -eq 0 && $cmax -eq 20 ]] &&
-                        { truth="incl."${TAG_DATA%%CLOSE}".m.v0&"${taglabel[${TAG_DATA%%CLOSE}]}"&1" ; }
-                            # { ${TAG_DATA%%CLOSE}".m.v0.s."$cmin"."$cmax"&"${taglabel[${TAG_DATA%%CLOSE}]}"&1" ; }
-                }
+                # truth="epos.m.v3.s."$cmin"."$cmax"&"${taglabel[epos]}"&2,hydjet.m.v3.s."$cmin"."$cmax"&"${taglabel[hydjet]}"&1,amptsm.m.v3.s."$cmin"."$cmax"&"${taglabel[amptsm]}"&4,amptnm.m.v3.s."$cmin"."$cmax"&"${taglabel[amptnm]}"&6"
+                truth="hijing.m.v0.s."$cmin"."$cmax"&"${taglabel[hijing]}"&2,amptnm.m.v0.s."$cmin"."$cmax"&"${taglabel[amptnm]}"&6"
+                # [[ $TAG_DATA == *CLOSE* ]] && {
+                #     truth=${TAG_DATA%%CLOSE}".m."$tagver".s."$cmin"."$cmax"&"${taglabel[${TAG_DATA%%CLOSE}]}"&1" ; 
+                #     # [[ $cmin -eq 0 && $cmax -eq 20 ]] &&
+                #         # { truth="incl."${TAG_DATA%%CLOSE}".m.v0&"${taglabel[${TAG_DATA%%CLOSE}]}"&1" ; }
+                # }
                 ./merge_monde $tagappl "${taglabel[${TAG_DATA%%CLOSE}]} corr. w. ${taglabel[$TAG_MC]}" $mergecomb "$truth"
             }
             

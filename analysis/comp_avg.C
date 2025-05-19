@@ -57,8 +57,8 @@ int macro(std::string input_avg, std::string tag,
   for(int i=0; i<itext.n(); i++)                                        \
     { xjjroot::drawtex(0.24, 0.79-i*0.033, itext.value[i][0].c_str(), 0.030, 13); } \
   xjjroot::drawtex(0.88, 0.82, tcent(tag).c_str(), 0.030, 31);          \
-  xjjroot::drawCMSleft("Internal", 0.05, -0.1);                         \
-  xjjroot::drawCMSright("PbPb (5.36 TeV)");                             \
+  xjjroot::drawCMSleft(xjjroot::CMS::preliminary, 0.05, -0.1);          \
+  xjjroot::drawCMSright("OO (5.36 TeV)");                               \
   
   xjjroot::mypdf pdf("figspdf/comp/"+tag+".pdf", "c", 600, 600);
   // havg

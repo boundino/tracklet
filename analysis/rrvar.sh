@@ -11,15 +11,18 @@ multhandle=${7:-0}
 ctable=${8:-0}
 
 
-tagverdefault="v3"
+tagverdefault="v0"
+mcdefault=hijing
 #
 TYPES=(12 13 14 23 24 34 56 57 67)
-CENTS=(4 20)
+CENTS=(0 20)
 # for i in {20..5} ; do CENTS+=($((i-1)) $i) ; done ;
 
 ##
-INPUTS_MC=/eos/cms/store/cmst3/user/wangj/tracklet/tt_230724_pixel_230724_EposLHC_ReggeGribovParton_5360GeV_1255p1.root,epos
-INPUTS_DATA=/eos/cms/store/cmst3/user/wangj/tracklet/tt_230724_pixel_230724_HITestRaw0-6_HIRun2022A_MBPVfilTh4_362294.root,362294
+# INPUTS_MC=/eos/cms/store/cmst3/user/wangj/tracklet/tt_230724_pixel_230724_EposLHC_ReggeGribovParton_5360GeV_1255p1.root,epos
+# INPUTS_DATA=/eos/cms/store/cmst3/user/wangj/tracklet/tt_230724_pixel_230724_HITestRaw0-6_HIRun2022A_MBPVfilTh4_362294.root,362294
+INPUTS_MC=/eos/cms/store/group/phys_heavyions/wangj/tracklet2025/private/tt_Hijing_NoPU_100kEvents_OO_5360GeV_GenSim_030825.root,hijing,7
+INPUTS_DATA=/eos/cms/store/group/phys_heavyions/wangj/tracklet2025/private/tt_AMPT_NoPU_100kEvents_OO_5360GeV_GenSim_032525.root,amptnmCLOSE
 
 source tool.shinc 
 
@@ -28,6 +31,7 @@ source tool.shinc
 IFS=',' ; VINPUTS_MC=($INPUTS_MC) ; unset IFS ;
 INPUT_MC=${VINPUTS_MC[0]}
 TAG_MC=${VINPUTS_MC[1]}
+CENT_MC=${VINPUTS_MC[2]}
 
 IFS=',' ; VINPUTS_DATA=($INPUTS_DATA) ; unset IFS ;
 INPUT_DATA=${VINPUTS_DATA[0]}
@@ -51,7 +55,7 @@ echo '$tagcorr : '$tagcorr
         ./reap_results $t $INPUT_MC $tagcorr 0 20 \
                        0 ${cgm:0:1} ${cgm:1:1} ${cgm:2:1} "null" \
                        $multhandle $maxdr2 0 "null" \
-                       $ctable "$asel" \
+                       $CENT_MC "$asel" \
                        2>&1 | tee logs/$tagcorr-$t.txt & # \
             set +x
     done # for t in ${TYPES[@]}
@@ -70,8 +74,8 @@ while [ $c -lt $((${#CENTS[@]}-1)) ] ; do
 
     tcgm=m # correction, geometric, acceptance map
     cgm=$(getcgm $tcgm)
-    tages="epos.m."$tagverdefault".s."$cmin"."$cmax ;
-    [[ $TAG_MC == *epos* ]] && {
+    tages=$mcdefault".m."$tagverdefault".s."$cmin"."$cmax ;
+    [[ $TAG_MC == *"$mcdefault"* ]] && {
         # ==> tag name
         [[ ${label:1:1} -eq 1 ]] && tages=$TAG_MC"."$tcgm"."$tagver".s."$cmin"."$cmax
         echo '$tages : '$tages
@@ -101,7 +105,7 @@ while [ $c -lt $((${#CENTS[@]}-1)) ] ; do
     #      apply correction, w. centrality       #
     ##############################################
 
-    tcgm=cgm # correction, geometric, acceptance map
+    tcgm=cm # correction, geometric, acceptance map # !!!!! should be cgm
     cgm=$(getcgm $tcgm)
 
     # ==> tag name
@@ -131,7 +135,8 @@ while [ $c -lt $((${#CENTS[@]}-1)) ] ; do
 	    mergecomb=$mergecomb","$t
         done
         mergecomb=${mergecomb##,}
-        truth="epos.m.v3.s."$cmin"."$cmax"&"${taglabel[epos]}"&2,hydjet.m.v3.s."$cmin"."$cmax"&"${taglabel[hydjet]}"&1,amptsm.m.v3.s."$cmin"."$cmax"&"${taglabel[amptsm]}"&4,amptnm.m.v3.s."$cmin"."$cmax"&"${taglabel[amptnm]}"&6"
+        # truth="epos.m.v3.s."$cmin"."$cmax"&"${taglabel[epos]}"&2,hydjet.m.v3.s."$cmin"."$cmax"&"${taglabel[hydjet]}"&1,amptsm.m.v3.s."$cmin"."$cmax"&"${taglabel[amptsm]}"&4,amptnm.m.v3.s."$cmin"."$cmax"&"${taglabel[amptnm]}"&6"
+        truth="hijing.m.v0.s."$cmin"."$cmax"&"${taglabel[hijing]}"&2,amptnm.m.v0.s."$cmin"."$cmax"&"${taglabel[amptnm]}"&6"
         ./merge_monde $tagappl "${taglabel[${TAG_DATA%%CLOSE}]} corr. w. ${taglabel[$TAG_MC]}" $mergecomb "$truth"
     }
     
