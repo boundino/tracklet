@@ -14,16 +14,17 @@
 #define NCENTBINS 200
 const float upper_limit = 2.e+4;
 
-int macro(std::string inputname, std::string outputname, std::string var="pixel/PixelTree::hft", int division=1)
-// int macro(std::string inputname, std::string var="TrackletTree12::hft")
+int macro(std::string inputname, std::string outputname, std::string treevar="pixel/PixelTree::hft", int division=1)
+// int macro(std::string inputname, std::string treevar="TrackletTree12::hft")
 {
-  auto vars = xjjc::str_divide(var, "::");
+  auto vars = xjjc::str_divide(treevar, "::");
   auto t = (TTree*)TFile::Open(inputname.c_str())->Get(vars[0].c_str());
+  auto var = vars[1];
   auto ismc = t->GetEntries("npart!=0");
   std::cout<<"  [ "<<(ismc?"MC":"data")<<" ]"<<std::endl;
 
   t->SetBranchStatus("*", 0);
-  float hft; t->SetBranchStatus(vars[1].c_str(), 1); t->SetBranchAddress(vars[1].c_str(), &hft);
+  float hft; t->SetBranchStatus(var.c_str(), 1); t->SetBranchAddress(var.c_str(), &hft);
   int nhfp; t->SetBranchStatus("nhfp", 1); t->SetBranchAddress("nhfp", &nhfp);
   int nhfn; t->SetBranchStatus("nhfn", 1); t->SetBranchAddress("nhfn", &nhfn);
   int process; t->SetBranchStatus("process", 1); t->SetBranchAddress("process", &process);
@@ -50,13 +51,15 @@ int macro(std::string inputname, std::string outputname, std::string var="pixel/
     vhibins.push_back(vhft[std::ceil(i/(NCENTBINS*1.)*n)-1]);
   vhibins.push_back(upper_limit);
 
-  auto outputh = Form("tools/cent/cent_%s.h", outputname.c_str());
+  auto outputh = Form("cent/cent_%s.h", outputname.c_str());
   std::ofstream ofs(outputh);
   xjjc::cfout out(ofs, std::cout);
 
   std::cout<<"\e[30;3m"<<std::endl;
 
   out<<"// "<<inputname<<std::endl;
+  out<<"// "<<vars[0]<<std::endl;
+  out<<"// "<<var<<std::endl;
   out<<std::endl;
 
   out<<"const int nBins=200;"<<std::endl;
@@ -80,10 +83,10 @@ int macro(std::string inputname, std::string outputname, std::string var="pixel/
 
   out<<std::endl;
   
-  out<<"int getHiBinFromhiHF(const double hiHF) { \n\
+  out<<"int getHiBinFromhiHF(const double "<<var<<") { \n\
   int binPos = -1; \n\
   for (int i = 0; i < nBins; ++i) { \n\
-    if (hiHF >= binTable[i] && hiHF < binTable[i+1]) { \n\
+    if ("<<var<<" >= binTable[i] && "<<var<<" < binTable[i+1]) { \n\
       binPos = i; \n\
       break; \n\
     } \n\
@@ -96,7 +99,7 @@ int macro(std::string inputname, std::string outputname, std::string var="pixel/
 
   std::cout<<"\e[0m"<<std::endl;
 
-  auto outf = new TFile(Form("data/cent-%s.root", outputname.c_str()), "recreate");
+  auto outf = new TFile(Form("../data/cent-%s.root", outputname.c_str()), "recreate");
   outf->cd();
   xjjroot::writehist(hhft);
   outf->Close();
@@ -108,6 +111,7 @@ int macro(std::string inputname, std::string outputname, std::string var="pixel/
 
 int main(int argc, char* argv[])
 {
+  if (argc==4) return macro(argv[1], argv[2], argv[3]);
   if (argc==3) return macro(argv[1], argv[2]);
   return 1;
 }
