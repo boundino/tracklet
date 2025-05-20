@@ -69,23 +69,25 @@ int macro(std::string input_corr,
       xjjroot::setthgrstyle(h1WEfinal[j], cc[j], ms[j], 0.8, cc[j]);
     }
 
-  std::vector<TGraphErrors*> gh1WGhadron;
   TLegend* legTRUTH = 0;
-  if(input_truth != "null") {
-    xjjc::sconfig itruth(input_truth, ",", div, "v");
-    gh1WGhadron.resize(itruth.n());
-    for(int i=0; i<itruth.n(); i++) {
-      auto h = xjjroot::gethist<TH1D>("output/correction-"+itruth.value[i][0]+"-12.root::h1WGhadron");
-      gh1WGhadron[i] = xjjana::shifthistcenter(h, "gh1WGhadron-"+xjjc::str_erasestar(itruth.value[i][0], ".*"), 0);
-      xjjroot::setthgrstyle(gh1WGhadron[i], kBlack, 20, 0.8, kBlack, atoi(itruth.value[i][2].c_str()), 1);
-    }
-    legTRUTH = new TLegend(0.55, 0.47-0.031*gh1WGhadron.size(), 0.55+0.2, 0.47);
-    xjjroot::setleg(legTRUTH, 0.028);
-    for(int i=0; i<itruth.n(); i++)
-      legTRUTH->AddEntry(gh1WGhadron[i],
-                         Form("%s", itruth.value[i][1].c_str()),
-                         "l");
-  }
+  auto gh1WGhadron = combgh1WGhadron_multfiles(input_truth, legTRUTH, div);
+  // std::vector<TGraphErrors*> gh1WGhadron;
+  // if(input_truth != "null") {
+  //   xjjc::sconfig itruth(input_truth, ",", div, "v");
+  //   legTRUTH = new TLegend(0.55, 0.47-0.031*itruth.n(), 0.55+0.2, 0.47);
+  //   xjjroot::setleg(legTRUTH, 0.028);
+  //   for(int i=0; i<itruth.n(); i++) {
+  //     auto h = xjjroot::gethist<TH1D>("output/correction-"+itruth.value[i][0]+"-12.root::h1WGhadron");
+  //     if (!h) continue;
+  //     auto gh = xjjana::shifthistcenter(h, "gh1WGhadron-"+xjjc::str_erasestar(itruth.value[i][0], ".*"), 0);
+  //     xjjroot::setthgrstyle(gh, kBlack, 20, 0.8, kBlack, atoi(itruth.value[i][2].c_str()), 1);
+  //     // gh1WGhadron[i] = xjjana::shifthistcenter(h, "gh1WGhadron-"+xjjc::str_erasestar(itruth.value[i][0], ".*"), 0);
+  //     legTRUTH->AddEntry(gh,
+  //                        Form("%s", itruth.value[i][1].c_str()),
+  //                        "l");
+  //     gh1WGhadron.push_back(gh);
+  //   }
+  // }
   
   TH1F* havg = (TH1F*)h1WEfinal[0]->Clone("havg");
   for(int i=1; i<=havg->GetNbinsX(); i++)
@@ -93,7 +95,6 @@ int macro(std::string input_corr,
       float avg = 0; float avg_err = 0; int nsum = 0;
       for(int j=0; j<icomb.n(); j++)
         {
-          
           if(h1WEfinal[j]->GetBinContent(i) != 0)
             {
               avg += h1WEfinal[j]->GetBinContent(i);
@@ -158,7 +159,7 @@ int macro(std::string input_corr,
   // havg->Draw("p same");
   legPIX->Draw();
   DRAWTEX;
-  pdf.write("figs/avg/"+tag+".pdf");
+  pdf.write("figs/avg/"+tag+".png");
 
   // hsym
   pdf.prepare();
@@ -168,7 +169,7 @@ int macro(std::string input_corr,
   hsym->Draw("p same");
   legOUT->Draw();
   DRAWTEX;
-  pdf.write("figs/avg/"+tag+"-hsym.pdf");
+  pdf.write("figs/avg/"+tag+"-hsym.png");
 
   // hrelerr
   pdf.prepare();
