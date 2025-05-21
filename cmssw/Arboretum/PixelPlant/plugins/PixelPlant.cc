@@ -37,7 +37,6 @@
 #include "FWCore/ServiceRegistry/interface/Service.h"
 
 #include "Geometry/Records/interface/TrackerDigiGeometryRecord.h"
-// #include "Geometry/TrackerGeometryBuilder/interface/PixelGeomDetUnit.h"
 #include "Geometry/CommonDetUnit/interface/PixelGeomDetUnit.h"
 #include "Geometry/TrackerGeometryBuilder/interface/TrackerGeometry.h"
 
@@ -49,12 +48,10 @@
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
 #include <DataFormats/HeavyIonEvent/interface/ClusterCompatibility.h>
+#include "DataFormats/PatCandidates/interface/PackedCandidate.h"
 
 #include "SimDataFormats/GeneratorProducts/interface/HepMCProduct.h"
 #include "SimDataFormats/Vertex/interface/SimVertexContainer.h"
-
-#include "DataFormats/SiPixelDetId/interface/PXBDetId.h"
-#include "DataFormats/SiPixelDetId/interface/PXFDetId.h"
 
 #include "SimGeneral/HepPDTRecord/interface/ParticleDataTable.h"
 
@@ -173,6 +170,7 @@ class PixelPlant : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
       edm::EDGetTokenT<edm::SimVertexContainer> genvertex_;
       std::vector<edm::EDGetTokenT<reco::VertexCollection>> vertices_;
       edm::EDGetTokenT<CaloTowerCollection> towers_;
+      edm::EDGetTokenT<pat::PackedCandidateCollection> pfcands_;
       edm::EDGetTokenT<SiPixelRecHitCollection> pixels_;
       edm::EDGetTokenT<edm::HepMCProduct> generator_;
   edm::EDGetTokenT<reco::ClusterCompatibility> cluscomp_;
@@ -241,7 +239,8 @@ PixelPlant::PixelPlant(const edm::ParameterSet& iConfig) {
 
    fillhf_ = iConfig.getParameter<bool>("fillhf");
    if (fillhf_) {
-      towers_ = consumes<CaloTowerCollection>(iConfig.getParameter<edm::InputTag>("tower_tag"));
+      towers_ = consumes<CaloTowerCollection>(iConfig.getParameter<edm::InputTag>("hf_tag"));
+      pfcands_ = consumes<pat::PackedCandidateCollection>(iConfig.getParameter<edm::InputTag>("hf_tag"));
    }
 
    fillgen_ = iConfig.getParameter<bool>("fillgen");
@@ -324,7 +323,7 @@ void PixelPlant::fill_vertices(const edm::Event& iEvent) {
       reco::Vertex pv;
       std::size_t daughters = 0;
       for (const auto& v : *vertex) {
-         if (daughters < v.tracksSize()) {
+         if (daughters <= v.tracksSize()) {
             daughters = v.tracksSize();
             pv = v;
          }
@@ -353,29 +352,53 @@ void PixelPlant::fill_vertices(const edm::Event& iEvent) {
 }
 
 void PixelPlant::fill_hf(const edm::Event& iEvent) {
-   edm::Handle<CaloTowerCollection> ts;
-   iEvent.getByToken(towers_, ts);
-   const CaloTowerCollection* towers = ts.product();
 
-   int nhfn = 0;
-   int nhfp = 0;
+  int nhfn = 0;
+  int nhfp = 0;
+  
+  float hftp = 0;
+  float hftm = 0;
+  
+  edm::Handle<pat::PackedCandidateCollection> pfs;
+  iEvent.getByToken(pfcands_, pfs);
 
-   float hftp = 0;
-   float hftm = 0;
-
-   for (const auto& cal : *towers) {
-      if (cal.ietaAbs() < 30) { continue; }
-
-      // https://github.com/cms-sw/cmssw/blob/master/DataFormats/Candidate/interface/LeafCandidate.h#L124-L125
-      if (cal.zside() > 0) {
-         if (cal.energy() > 4.) { nhfp++; }
-         hftp += cal.pt();
-      } else {
-         if (cal.energy() > 4.) { nhfn++; }
-         hftm += cal.pt();
-      }
+   if (pfs.isValid()) {
+     for (const auto& pfcand : *pfs) {
+       if (pfcand.pdgId() == 1 || pfcand.pdgId() == 2) {
+         const bool eta_plus = (pfcand.eta() > 3.0) && (pfcand.eta() < 6.0);
+         const bool eta_minus = (pfcand.eta() < -3.0) && (pfcand.eta() > -6.0);
+         if (pfcand.et() < 0.0) continue;
+         if (eta_plus) {
+           if (pfcand.energy() > 4.) { nhfp++; }
+           hftp += pfcand.et();
+         }
+         if (eta_minus) {
+           if (pfcand.energy() > 4.) { nhfn++; }
+           hftm += pfcand.et();
+         }
+       }
+     }
+   }// if (pfs.isValid())
+   else {
+     edm::Handle<CaloTowerCollection> ts;
+     iEvent.getByToken(towers_, ts);
+     const CaloTowerCollection* towers = ts.product();
+     
+     if (ts.isValid()) {
+       for (const auto& cal : *towers) {
+         if (cal.ietaAbs() < 30) { continue; }
+         
+         // https://github.com/cms-sw/cmssw/blob/master/DataFormats/Candidate/interface/LeafCandidate.h#L124-L125
+         if (cal.zside() > 0) {
+           if (cal.energy() > 4.) { nhfp++; }
+           hftp += cal.pt();
+         } else {
+           if (cal.energy() > 4.) { nhfn++; }
+           hftm += cal.pt();
+         }
+       }
+     } // else if (ts.isValid())
    }
-
    pix_.nhfp = nhfp;
    pix_.nhfn = nhfn;
 
@@ -565,7 +588,7 @@ void PixelPlant::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
    fill_beamspot(iEvent);
    fill_vertices(iEvent);
    fill_pixels(iEvent);
-
+   
    if (fillhlt_) { fill_hlt(iEvent); } else { pix_.hlt = 1; }
    if (fillcluscomp_) { fill_cluscomp(iEvent); } else { pix_.cluscomp = 1; }
    if (fillhf_) { fill_hf(iEvent); } else {
@@ -645,7 +668,7 @@ void PixelPlant::fillDescriptions(edm::ConfigurationDescriptions& descriptions) 
                 true >> edm::ParameterDescription<edm::InputTag>("cluscomp_tag", edm::InputTag("hiClusterCompatibility"), true) or
                 false >> edm::EmptyGroupDescription());
    desc.ifValue(edm::ParameterDescription<bool>("fillhf", false, true),
-                true >> edm::ParameterDescription<edm::InputTag>("tower_tag", edm::InputTag("towerMaker"), true) or
+                true >> edm::ParameterDescription<edm::InputTag>("hf_tag", edm::InputTag("towerMaker"), true) or
                 false >> edm::EmptyGroupDescription());
    desc.ifValue(edm::ParameterDescription<bool>("fillgen", false, true),
       true >> (edm::ParameterDescription<edm::InputTag>("generator_tag", edm::InputTag("generatorSmeared"), true) and
