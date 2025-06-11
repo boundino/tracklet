@@ -1,7 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 
-from Configuration.Eras.Era_Run3_pp_on_PbPb_cff import Run3_pp_on_PbPb
-process = cms.Process("TEST", Run3_pp_on_PbPb)
+from Configuration.Eras.Era_Run3_2025_OXY_cff import Run3_2025_OXY
+process = cms.Process('PIXEL', Run3_2025_OXY)
 
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 
@@ -9,7 +9,8 @@ from Configuration.AlCa.GlobalTag import GlobalTag
 process.GlobalTag = GlobalTag(
     process.GlobalTag,
     # 'auto:phase1_2022_realistic_hi', # CMSSW_12_5_5_patch1 -> v8
-    '125X_mcRun3_2022_realistic_HI_v13',
+    '150X_mcRun3_2025_forOO_realistic_v1',
+    # '141X_mcRun3_2024_realistic_HI_v13',
     ''
 )
 
@@ -46,7 +47,7 @@ process.maxEvents = cms.untracked.PSet(
 )
 
 process.dump = cms.EDAnalyzer("PIXGeometry",
-		              outputFile = cms.untracked.string('pixelGeo.root'),
+		              outputFile = cms.untracked.string('tracklet/analysis/data/pixelGeo.root'),
 		              outputTreename = cms.untracked.string('alignTree')
 )
 

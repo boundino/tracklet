@@ -33,7 +33,7 @@ process.source = cms.Source("PoolSource",
 
 process.TFileService = cms.Service('TFileService',
                                    fileName = cms.string(
-                                       'file:pixelsim_pf.root'
+                                       'pixelsim_pf.root'
                                    )
 )
 

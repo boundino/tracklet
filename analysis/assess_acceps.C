@@ -32,6 +32,20 @@ void convert(TH2* h1) {
   delete hvz;
 }
 
+void print_acceps(int type, TH2D* hratio) {
+  std::cout<<"static const int a"<<type<<"[neta * nvz] = {"<<std::endl;
+  for (int j=hratio->GetYaxis()->GetNbins()-1; j>=0; j--) {
+    auto nxbins = hratio->GetXaxis()->GetNbins();
+    std::cout<<"   ";
+    for (int i=0; i<nxbins; i++) {
+      int onoroff = (fabs(hratio->GetBinContent(i+1, j+1)-1)<0.01?1:0);
+      std::cout<<" "<<onoroff<<",";
+    }
+    std::cout<<std::endl;
+  }
+  std::cout<<"};"<<std::endl;
+}
+
 int assess_acceps(bool recreate, int type, float maxdr2,
                   const char* data_list, const char* mc_list,
                   const char* path, const char* label) {
@@ -41,8 +55,9 @@ int assess_acceps(bool recreate, int type, float maxdr2,
   if (recreate) {
     tdata = (TTree*)TFile::Open(data_list)->Get(Form("TrackletTree%i", type));
     tmc = (TTree*)TFile::Open(mc_list)->Get(Form("TrackletTree%i", type));
-    xjjroot::mkdir(Form("%s/acceptance-%i.root", path, type));
-    fout = new TFile(Form("%s/acceptance-%i.root", path, type), "recreate");
+    auto outputname = Form("%s/acceptance-%i.root", path, type);
+    xjjroot::mkdir(outputname);
+    fout = new TFile(outputname, "recreate");
   }
   else
     fout = TFile::Open(Form("%s/acceptance-%i.root", path, type));
@@ -108,30 +123,43 @@ int assess_acceps(bool recreate, int type, float maxdr2,
     hmccoarse->Write();
   }
 
+  gStyle->SetPadTickX(1);
+  gStyle->SetPadTickY(1);
+
+  hratio->SetMinimum(0.5);
+  hratio->SetMaximum(1.6);
+  
   xjjroot::mypdf pdf(Form("figspdf/geometric/geometric-%s-%i.pdf", label, type), "c", 600, 600);
   pdf.prepare();
   hratio->Draw("colz");
   xjjana::drawhoutline(h2amapxev, kRed);
+  watermark();
   pdf.write(Form("figs/corrections/geometric-%s-%i.png", label, type));
 
   pdf.prepare();
   hdata->Draw("colz");
+  watermark();
   pdf.write(Form("figs/geometric/geometric-%s-%i-hdata.png", label, type));
 
   pdf.prepare();
   hdatacoarse->Draw("colz");
+  watermark();
   pdf.write(Form("figs/geometric/geometric-%s-%i-hdatacoarse.png", label, type));
 
   pdf.prepare();
   hmc->Draw("colz");
+  watermark(true);
   pdf.write(Form("figs/geometric/geometric-%s-%i-hmc.png", label, type));
 
   pdf.prepare();
   hmccoarse->Draw("colz");
+  watermark(true);
   pdf.write(Form("figs/geometric/geometric-%s-%i-hmccoarse.png", label, type));
 
   pdf.close();
-  
+
+  print_acceps(type, hratio);
+
   return 0;
 }
 
@@ -139,7 +167,7 @@ int main(int argc, char* argv[]) {
   if (argc == 8) {
     return assess_acceps(atoi(argv[1]), atoi(argv[2]), atof(argv[3]), argv[4], argv[5], argv[6], argv[7]);
   } else {
-    printf("usage: ./assess_acceps [type] [dr2] [data] [mc] [path] [label]\n");
+    printf("usage: ./assess_acceps [recreate] [type] [dr2] [data] [mc] [path] [label]\n");
     return 1;
   }
 }

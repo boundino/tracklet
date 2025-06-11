@@ -20,6 +20,7 @@ int macro(std::string input_avg, std::string tag,
           std::string div = "&")
 {
   xjjc::sconfig iavg(input_avg, ",", div), itext(text, ",", div);
+  bool ismc = xjjc::str_contains(tag, "CLOSE");
 
   std::vector<Color_t> cc = xjjroot::colorlist_light;
   std::vector<TH1D*> havg(iavg.n(), 0), hsym(iavg.n(), 0);
@@ -55,10 +56,9 @@ int macro(std::string input_avg, std::string tag,
 
 #define DRAWTEX                                                         \
   for(int i=0; i<itext.n(); i++)                                        \
-    { xjjroot::drawtex(0.24, 0.79-i*0.033, itext.value[i][0].c_str(), 0.030, 13); } \
-  xjjroot::drawtex(0.88, 0.82, tcent(tag).c_str(), 0.030, 31);          \
-  xjjroot::drawCMSleft(xjjroot::CMS::preliminary, 0.05, -0.1);          \
-  xjjroot::drawCMSright("OO (5.36 TeV)");                               \
+    { xjjroot::drawtex(0.23, 0.79-i*0.034, itext.value[i][0].c_str(), 0.038, 13); } \
+  xjjroot::drawtex(0.89, 0.81, tcent(tag).c_str(), 0.038, 31);          \
+  watermark_inner(ismc);                                                \
   
   xjjroot::mypdf pdf("figspdf/comp/"+tag+".pdf", "c", 600, 600);
   // havg

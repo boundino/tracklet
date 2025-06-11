@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [[ $# -ne 6 ]]; then
-    echo "usage: ./tt-tracklet-checkfile.sh [input file] [output dir] [output filename] [random] [split]"
+    echo "usage: ./tt-tracklet-checkfile.sh [input file] [output dir] [output filename] [random] [split] [drop]"
     exit 1
 fi
 

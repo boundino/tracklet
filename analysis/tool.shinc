@@ -17,8 +17,9 @@ declare -A taglabel
 taglabel[epos]="E#scale[0.8]{POS} #scale[0.9]{LHC}"
 taglabel[hydjet]="H#scale[0.8]{YDJET}"
 taglabel[hijing]="H#scale[0.8]{IJING}"
-taglabel[amptsm]="A#scale[0.9]{MPT} #scale[0.9]{(string melting)}"
-taglabel[amptnm]="A#scale[0.9]{MPT} #scale[0.9]{(no melting)}"
+taglabel[amptsm]="A#scale[0.9]{MPT}#scale[0.5]{ }#scale[0.9]{(string melting)}"
+taglabel[amptnm]="A#scale[0.9]{MPT}#scale[0.5]{ }#scale[0.9]{(no melting)}"
+taglabel[amptnm2]="A#scale[0.9]{MPT}#scale[0.5]{ }#scale[0.9]{(varied params)}"
 taglabel[362294]=362294
 taglabel[362318]=362318
 

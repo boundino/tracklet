@@ -13,25 +13,25 @@ process.load("Configuration.StandardSequences.Reconstruction_cff")
 process.load("Configuration.StandardSequences.Services_cff")
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(10)
+    input = cms.untracked.int32(-1)
 )
 
 process.source = cms.Source("PoolSource",
                             fileNames = cms.untracked.vstring(
-		                'file:digiraw_DIGI_L1_DIGI2RAW_HLT_317.root',
+		                '/store/user/wangj/MinBias_AMPT_StringMelting_b015_OO_5362GeV/DIGIRAW_250527_el8_gcc12_1506p1_141X/250527_152140/0000/digiraw_DIGI_L1_DIGI2RAW_HLT_274.root'
                             ),
 )
 
 process.TFileService = cms.Service('TFileService',
                                    fileName = cms.string(
-                                       'file:pixelsim.root'
+                                       'pixelsim.root'
                                    )
 )
 
 from Configuration.AlCa.GlobalTag import GlobalTag
 process.GlobalTag = GlobalTag(
     process.GlobalTag,
-    '141X_mcRun3_2024_realistic_HI_v13',
+    '150X_mcRun3_2025_forOO_realistic_v1',
     ''
 )
 
@@ -48,3 +48,4 @@ process.schedule = cms.Schedule(
 )
 
 
+process.MessageLogger.cerr.FwkReport.reportEvery = 10

@@ -38,19 +38,13 @@ void printnpart() {
   }
 }
 
-std::string cmsprel = "#scale[1.1]{#bf{CMS}} #scale[0.9]{#it{Preliminary}}";
+// std::string cmsprel = "#scale[1.1]{#bf{CMS}} #scale[0.9]{#it{Preliminary}}";
 // std::string cmsprel = "#scale[1.1]{#bf{CMS}}";
-std::string att_slash = "#kern[0.1]{#lower[0.15]{#scale[1.25]{/}}}";
-std::string att_dNdeta = "#scale[1.2]{#LT}d#it{N}_{ch}/d#kern[-0.08]{#it{#eta}}#scale[1.2]{#GT}";
-std::string att_eta0p5 = "#lower[0.05]{#scale[1.5]{#kern[-0.6]{#cbar}}}#lower[0.6]{#scale[0.6]{#kern[0.15]{#cbar}#it{#eta}#kern[-0.4]{#cbar}#scale[0.5]{ }#kern[0.2]{<}#kern[0.2]{0.5}}}";
-std::string att_2a = "#lower[-0.05]{(}1/#kern[0.05]{2#it{A}}#lower[-0.05]{)}";
-std::string att_1npart = "#lower[-0.05]{(}1/#kern[0.1]{#scale[1.2]{#LT}}#lower[0.1]{#it{N}}#lower[0.5]{#scale[0.6]{#kern[-0.08]{part}}}#scale[1.2]{#GT}#lower[-0.05]{)}";
-std::string att_npart = "#scale[1.2]{#LT}#it{N}#lower[0.4]{#scale[0.7]{#kern[-0.05]{part}}}#scale[1.2]{#GT}";
-std::string att_hep_dNdeta = "\\mathrm{d}N_{\\mathrm{ch}}/\\mathrm{d}\\eta";
   
 void drawdNdeta(xjjroot::mypdf& pdf, std::string tag);
 int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
   auto label = tag;
+  bool ismc = xjjc::str_contains(tag, "CLOSE");
 
   constexpr int ntotal = NCENT - OFFSET;
 
@@ -151,7 +145,7 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
   TH1F* gframe = new TH1F("gframe", "", 1, 0, 100);
   xjjroot::sethempty(gframe, 0, 0);
   gframe->SetLabelOffset(999, "X"); gframe->SetTickLength(0, "X");
-  htitle(gframe, ";Centrality (%);" + att_dNdeta + " " + att_eta0p5);
+  htitle(gframe, ";Centrality (%);" + _t_dNdeta + " " + _t_eta0p5);
   hrange(gframe, 1.5, 4000);
 
   pdf.prepare();
@@ -170,15 +164,16 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
   g->Draw("3 same"); g->Draw("pX same");
 
   float heightperline = 0.0375;
-  
-  xjjroot::drawCMSleft(cmsprel.c_str(), 0.05, -0.1); // Preliminary
-  xjjroot::drawCMSright("OO (5.36 TeV)");
+
+  watermark_inner(ismc);  
+  // xjjroot::drawCMSleft(cmsprel.c_str(), 0.05, -0.1); // Preliminary
+  // xjjroot::drawCMSright("OO (5.36 TeV)");
 
   TLegend* l2 = new TLegend(0.55, 0.55-heightperline*5, 0.85, 0.55);
   TLegendEntry* h23cms = l2->AddEntry((TObject*)0, "CMS", "");
   h23cms->SetTextFont(63); h23cms->SetTextSize(20);
   l2->AddEntry(gnorm, "OO 5.36 TeV", "p");
-  l2->AddEntry((TObject*)0, "(H#scale[0.9]{IJING})", NULL);
+  l2->AddEntry((TObject*)0, "(A#scale[0.9]{MPT})", NULL);
   l2->AddEntry(gcms_pbpb_2p76, "PbPb 2.76 TeV", "p");
   l2->AddEntry(gcms_xexe_5p44, "XeXe 5.44 TeV", "p");
   lstyle(l2, 43, 20); l2->Draw();
@@ -205,7 +200,7 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
   std::ofstream outf_Table_2a("hepdatas/Table_2a.yaml");
   xjjroot::hepdata hep_Table_2a(h_g, 0,
                                 {"CENTRALITY", "'$\\%$'", ""},
-                                {"'$"+att_hep_dNdeta+"$'", "", ""},
+                                {"'$"+_t_hep_dNdeta+"$'", "", ""},
                                 { {"RE", "", "PB PB --> CHARGED X"},
                                   {"SQRT(S)", "GEV", "5360"},
                                   {"'$|\\eta|$'", "", "< 0.5"} }
@@ -233,7 +228,7 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
   TH1F* g2aframe = new TH1F("g2aframe", "", 1, 0, 100);
   xjjroot::sethempty(g2aframe, 0, 0);
   g2aframe->SetLabelOffset(999, "X"); g2aframe->SetTickLength(0, "X");
-  htitle(g2aframe, ";Centrality (%);" + att_2a + "#kern[-0.1]{ }" + att_dNdeta + " " + att_eta0p5);
+  htitle(g2aframe, ";Centrality (%);" + _t_2a + "#kern[-0.1]{ }" + _t_dNdeta + " " + _t_eta0p5);
   g2aframe->SetTitleOffset(1.3, "Y");
   hrange(g2aframe, 1.e-5, 5.5); g2aframe->Draw();
   TGaxis* axis2 = new TGaxis(100, 0, 0, 0, 0, 100, 510, "-");
@@ -251,13 +246,14 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
   gphobos_auau_0p2_n2a->Draw("pX same"); gphobos_cucu_0p2_n2a->Draw("pX same");
   g2a->Draw("pX same");
 
-  xjjroot::drawCMSleft(cmsprel.c_str(), 0.05, -0.1); // Preliminary
-  xjjroot::drawCMSright("OO (5.36 TeV)");
+  watermark_inner(ismc);
+  // xjjroot::drawCMSleft(cmsprel.c_str(), 0.05, -0.1); // Preliminary
+  // xjjroot::drawCMSright("OO (5.36 TeV)");
   TLegend* l7 = new TLegend(0.23, 0.77-heightperline*5, 0.53, 0.77);
   TLegendEntry* h3cms = l7->AddEntry((TObject*)0, "CMS", "");
   h3cms->SetTextFont(63); h3cms->SetTextSize(20);
   l7->AddEntry(gnorm, "OO 5.36 TeV", "p");
-  l7->AddEntry((TObject*)0, "(H#scale[0.9]{IJING})", NULL);
+  l7->AddEntry((TObject*)0, "(A#scale[0.9]{MPT})", NULL);
   l7->AddEntry(gcms_pbpb_2p76_n2a, "PbPb 2.76 TeV", "p");
   l7->AddEntry(gcms_xexe_5p44_n2a, "XeXe 5.44 TeV", "p");
   lstyle(l7, 43, 20); l7->Draw();
@@ -289,7 +285,7 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
   std::ofstream outf_Table_2b("hepdatas/Table_2b.yaml");
   xjjroot::hepdata hep_Table_2b(h_g2a, 0,
                                 {"CENTRALITY", "'$\\%$'", ""},
-                                {"'$"+att_hep_dNdeta+"/2A$'", "", ""},
+                                {"'$"+_t_hep_dNdeta+"/2A$'", "", ""},
                                 { {"RE", "", "PB PB --> CHARGED X"},
                                   {"SQRT(S)", "GEV", "5360"},
                                   {"'$|\\eta|$'", "", "< 0.5"} }
@@ -320,7 +316,7 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
   TH1F* gnframe = new TH1F("gnframe", "", 1, -20, 420);
   xjjroot::sethempty(gnframe, 0, 0);
   // htitle(gnframe, ";N_{part};#frac{dN}{d#eta}#lbar_{#eta=0}/#LTN_{part}#GT");
-  htitle(gnframe, ";" + att_npart + ";" + att_1npart + "#kern[-0.1]{ }" + att_dNdeta + " " + att_eta0p5);
+  htitle(gnframe, ";" + _t_npart + ";" + _t_1npart + "#kern[-0.1]{ }" + _t_dNdeta + " " + _t_eta0p5);
   gnframe->SetTitleOffset(1.3, "Y");
   hrange(gnframe, 0, 6); gnframe->Draw();
 
@@ -337,17 +333,18 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
   gphobos_auau_0p2_nnpart_x_npart->Draw("pX same"); gphobos_cucu_0p2_nnpart_x_npart->Draw("pX same");
   gnorm->Draw("pX same");
 
-  xjjroot::drawCMSleft(cmsprel.c_str(), 0.05, -0.1); // Preliminary
-  xjjroot::drawCMSright("OO (5.36 TeV)");
+  watermark_inner(ismc);
+  // xjjroot::drawCMSleft(cmsprel.c_str(), 0.05, -0.1); // Preliminary
+  // xjjroot::drawCMSright("OO (5.36 TeV)");
   TLegend* l3 = new TLegend(0.6, 0.59-heightperline*5, 0.9, 0.59);
   TLegendEntry* h2cms = l3->AddEntry((TObject*)0, "CMS", "");
   h2cms->SetTextFont(63); h2cms->SetTextSize(20);
   l3->AddEntry(gnorm, "OO 5.36 TeV", "p");
-  l3->AddEntry((TObject*)0, "(H#scale[0.9]{IJING})", NULL);
+  l3->AddEntry((TObject*)0, "(A#scale[0.9]{MPT})", NULL);
   l3->AddEntry(gcms_pbpb_2p76_nnpart_x_npart, "PbPb 2.76 TeV", "p");
   l3->AddEntry(gcms_xexe_5p44_nnpart_x_npart, "XeXe 5.44 TeV", "p");
   lstyle(l3, 43, 20); l3->Draw();
-  // xjjroot::drawtex(0.61, 0.58-heightperline*2, "(H#scale[0.9]{IJING})", 0.035, 31);
+  // xjjroot::drawtex(0.61, 0.58-heightperline*2, "(A#scale[0.9]{MPT})", 0.035, 31);
   
   TLegend* l6 = new TLegend(0.6, 0.34-heightperline*4, 0.9, 0.34);
   TLegendEntry* h2alice = l6->AddEntry((TObject*)0, "ALICE", "");
@@ -381,7 +378,7 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
   std::ofstream outf_Table_3a("hepdatas/Table_3a.yaml");
   xjjroot::hepdata hep_Table_3a(gnorm, 0,
                                 {"'$N_{part}$'", "", ""},
-                                {"'$"+att_hep_dNdeta+"/N_{part}$'", "", ""},
+                                {"'$"+_t_hep_dNdeta+"/N_{part}$'", "", ""},
                                 { {"RE", "", "PB PB --> CHARGED X"},
                                   {"SQRT(S)", "GEV", "5360"},
                                   {"'$|\\eta|$'", "", "< 0.5"} }
@@ -396,8 +393,9 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
   xjjana::drawgroutline(gnorm, COLOUR0, 2, 1);
   gnorm->Draw("pX same");
 
-  xjjroot::drawCMSleft(cmsprel.c_str(), 0.05, -0.1); // Preliminary
-  xjjroot::drawCMSright("OO (5.36 TeV)");
+  watermark_inner(ismc);
+  // xjjroot::drawCMSleft(cmsprel.c_str(), 0.05, -0.1); // Preliminary
+  // xjjroot::drawCMSright("OO (5.36 TeV)");
   l3->Draw();
   l5->Draw();
   pdf.write(Form("figs/results/merged-%s-midynorm-int1-conf1.pdf", label.c_str()), "Q");
@@ -423,7 +421,7 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
   pdf.prepare();
   TH1F* gn2aframe = new TH1F("gn2aframe", "", 1, -0.02, 1);
   xjjroot::sethempty(gn2aframe, 0, 0);
-  htitle(gn2aframe, ";" + att_npart + "" + att_slash + "2#it{A};" + att_1npart + "#kern[-0.1]{ }" + att_dNdeta + " " + att_eta0p5);
+  htitle(gn2aframe, ";" + _t_npart + "" + _t_slash + "2#it{A};" + _t_1npart + "#kern[-0.1]{ }" + _t_dNdeta + " " + _t_eta0p5);
   gn2aframe->SetTitleOffset(1.3, "Y");
   hrange(gn2aframe, 0, 6); gn2aframe->Draw();
 
@@ -440,13 +438,14 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
   gphobos_auau_0p2_nnpart_x_npart2a->Draw("pX same"); gphobos_cucu_0p2_nnpart_x_npart2a->Draw("pX same");
   gnorm2a->Draw("pX same");
 
-  xjjroot::drawCMSleft(cmsprel.c_str(), 0.05, -0.1); // Preliminary
-  xjjroot::drawCMSright("OO (5.36 TeV)");
+  watermark_inner(ismc);
+  // xjjroot::drawCMSleft(cmsprel.c_str(), 0.05, -0.1); // Preliminary
+  // xjjroot::drawCMSright("OO (5.36 TeV)");
   TLegend* l10 = new TLegend(0.6, 0.59-heightperline*5, 0.9, 0.59);
   TLegendEntry* h4cms = l10->AddEntry((TObject*)0, "CMS", "");
   h4cms->SetTextFont(63); h4cms->SetTextSize(20);
   l10->AddEntry(gnorm2a, "OO 5.36 TeV", "p");
-  l10->AddEntry((TObject*)0, "(H#scale[0.9]{IJING})", NULL);
+  l10->AddEntry((TObject*)0, "(A#scale[0.9]{MPT})", NULL);
   l10->AddEntry(gcms_pbpb_2p76_nnpart_x_npart2a, "PbPb 2.76 TeV", "p");
   l10->AddEntry(gcms_xexe_5p44_nnpart_x_npart2a, "XeXe 5.44 TeV", "p");
   lstyle(l10, 43, 20); l10->Draw();
@@ -480,7 +479,7 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
   std::ofstream outf_Table_3b("hepdatas/Table_3b.yaml");
   xjjroot::hepdata hep_Table_3b(gnorm2a, 0,
                                 {"'$N_{part}/2A$'", "", ""},
-                                {"'$"+att_hep_dNdeta+"/N_{part}$'", "", ""},
+                                {"'$"+_t_hep_dNdeta+"/N_{part}$'", "", ""},
                                 { {"RE", "", "PB PB --> CHARGED X"},
                                   {"SQRT(S)", "GEV", "5360"},
                                   {"'$|\\eta|$'", "", "< 0.5"} }
@@ -509,7 +508,7 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
   pdf.prepare();
   TH1F* gn2a2aframe = new TH1F("gn2a2aframe", "", 1, -0.02, 1);
   xjjroot::sethempty(gn2a2aframe, 0, 0);
-  htitle(gn2a2aframe, ";" + att_npart + "" + att_slash + "2#it{A};" + att_2a + "#kern[-0.1]{ }" + att_dNdeta + " " + att_eta0p5);
+  htitle(gn2a2aframe, ";" + _t_npart + "" + _t_slash + "2#it{A};" + _t_2a + "#kern[-0.1]{ }" + _t_dNdeta + " " + _t_eta0p5);
   gn2a2aframe->SetTitleOffset(1.3, "Y");
   hrange(gn2a2aframe, 0, 6); gn2a2aframe->Draw();
 
@@ -524,13 +523,14 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
   gphobos_auau_0p2_n2a_x_npart2a->Draw("pX same"); gphobos_cucu_0p2_n2a_x_npart2a->Draw("pX same");
   gnorm2a2a->Draw("pX same");
 
-  xjjroot::drawCMSleft(cmsprel.c_str(), 0.05, -0.1); // Preliminary
-  xjjroot::drawCMSright("OO (5.36 TeV)");
+  watermark_inner(ismc);
+  // xjjroot::drawCMSleft(cmsprel.c_str(), 0.05, -0.1); // Preliminary
+  // xjjroot::drawCMSright("OO (5.36 TeV)");
   TLegend* l13 = new TLegend(0.22, 0.77-heightperline*5, 0.52, 0.77);
   TLegendEntry* h5cms = l13->AddEntry((TObject*)0, "CMS", "");
   h5cms->SetTextFont(63); h5cms->SetTextSize(20);
   l13->AddEntry(gnorm2a2a, "OO 5.36 TeV", "p");
-  l13->AddEntry((TObject*)0, "(H#scale[0.9]{IJING})", NULL);
+  l13->AddEntry((TObject*)0, "(A#scale[0.9]{MPT})", NULL);
   l13->AddEntry(gcms_pbpb_2p76_n2a_x_npart2a, "PbPb 2.76 TeV", "p");
   l13->AddEntry(gcms_xexe_5p44_n2a_x_npart2a, "XeXe 5.44 TeV", "p");
   lstyle(l13, 43, 20); l13->Draw();
@@ -616,7 +616,7 @@ spectrum::spectrum(std::string filename, std::string title, float xleg, float yl
   xjjroot::setleg(leg, 0.038);
   leg->AddEntry((TObject*)0, Form("#bf{%s}", title.c_str()), NULL);
   leg->AddEntry(gsyst, "Data", "pf");
-  gh1WGhadron = combgh1WGhadron(filename, leg);
+  gh1WGhadron = combgh1WGhadron(filename, leg, "hijing&H#scale[0.9]{IJING},amptnm&A#scale[0.9]{MPT},amptnm2&A#scale[0.9]{MPT} #scale[0.9]{(varied params)},hydjet&H#scale[0.8]{YDJET}");
 
   gsyst_ratio = (TGraphErrors*)gsyst->Clone("gsyst_ratio");
   for (int i=0; i<gsyst->GetN(); i++) {
@@ -680,6 +680,7 @@ void drawNormtext() {
 }
 
 void drawdNdeta(xjjroot::mypdf& pdf, std::string tag) {
+  bool ismc = xjjc::str_contains(tag, "CLOSE");
   spectrum sp_0_20(Form("results/results-%s.s.%i.%i.root", tag.c_str(), 0, 20), "Cent. 0 - 100\%", 0.55, 0.45),
     sp_19_20(Form("results/results-%s.s.%i.%i.root", tag.c_str(), 19, 20), "Cent. 0 - 5\%", 0.23, 0.62),
     sp_9_10(Form("results/results-%s.s.%i.%i.root", tag.c_str(), 9, 10), "Cent. 50 - 55\%", 0.59, 0.62);
@@ -687,19 +688,19 @@ void drawdNdeta(xjjroot::mypdf& pdf, std::string tag) {
   sp_19_20.style(COLOUR1, 21);
   sp_9_10.style(COLOUR5, 21);
 
-  auto hempty = makehempty(sp_0_20.hsym, ";#it{#eta};" + att_dNdeta + "", 1.5);
-  hempty->SetAxisRange(-2.6, 2.6, "X");
-  auto hemptyp1 = makehempty(sp_0_20.hsym, ";#it{#eta};" + att_dNdeta + "", 1.5);
-  hemptyp1->SetAxisRange(-2.6, 2.6, "X");
-  hemptyp1->SetMinimum(1);
+  auto hempty = makehempty(sp_0_20.hsym, ";#it{#eta};" + _t_dNdeta + "", 1.7);
+  hempty->SetAxisRange(-3.4, 3.5, "X");
+  auto hemptyp1 = makehempty(sp_0_20.hsym, ";#it{#eta};" + _t_dNdeta + "", 1.7);
+  hemptyp1->SetAxisRange(-3.4, 3.5, "X");
+  hemptyp1->SetMinimum(0.1);
   auto hempty_ratio = (TH1F*)hemptyp1->Clone("hempty_ratio");
   hempty_ratio->GetYaxis()->SetTitle("MC / data");
   hempty_ratio->SetMinimum(0.7); hempty_ratio->SetMaximum(1.3);
-  // hempty_ratio->SetAxisRange(-2.6, 2.6, "X");
-  auto hempty2 = makehempty(sp_19_20.hsym, ";#it{#eta};" + att_dNdeta + "", 3, 0.04);
-  hempty2->SetAxisRange(-2.6, 2.6, "X");
-  auto hempty2p1 = makehempty(sp_19_20.hsym, ";#it{#eta};" + att_dNdeta + "", 3, 0.04);
-  hempty2p1->SetAxisRange(-2.6, 2.6, "X");
+  // hempty_ratio->SetAxisRange(-3.4, 3.5, "X");
+  auto hempty2 = makehempty(sp_19_20.hsym, ";#it{#eta};" + _t_dNdeta + "", 3, 0.1);
+  hempty2->SetAxisRange(-3.4, 3.5, "X");
+  auto hempty2p1 = makehempty(sp_19_20.hsym, ";#it{#eta};" + _t_dNdeta + "", 3, 0.1);
+  hempty2p1->SetAxisRange(-3.4, 3.5, "X");
   
   
   xjjroot::setgstyle(1);
@@ -708,8 +709,9 @@ void drawdNdeta(xjjroot::mypdf& pdf, std::string tag) {
 #define DRAWTEX                                                         \
   for(int i=0; i<itext.n(); i++)                                        \
     { xjjroot::drawtex(0.24, 0.79-i*0.033, itext.value[i][0].c_str(), 0.030, 13); } \
-  xjjroot::drawCMSleft(cmsprel.c_str(), 0.05, -0.1); /*Preliminary*/    \
-  xjjroot::drawCMSright("OO (5.36 TeV)");                               \
+  watermark_inner(ismc);                                                \
+  // xjjroot::drawCMSleft(cmsprel.c_str(), 0.05, -0.1); /*Preliminary*/    \
+  // xjjroot::drawCMSright("OO (5.36 TeV)");                               \
   // xjjroot::drawtex(0.88, 0.82, tcent(tag).c_str(), 0.030, 31);       \
   
   pdf.prepare();
@@ -736,8 +738,9 @@ void drawdNdeta(xjjroot::mypdf& pdf, std::string tag) {
   sp_0_20.gsyst->Draw("2 same");
   sp_0_20.hsym->Draw("p same");
   sp_0_20.leg->Draw();
-  xjjroot::drawCMSleft(cmsprel.c_str(), 0.05, -0.15, 0.065); /*Preliminary*/
-  xjjroot::drawCMSright("OO (5.36 TeV)", 0, 0, 0.055);
+  watermark_inner_2p(ismc);
+  // xjjroot::drawCMSleft(cmsprel.c_str(), 0.05, -0.15, 0.065); /*Preliminary*/
+  // xjjroot::drawCMSright("OO (5.36 TeV)", 0, 0, 0.055);
   p2->cd();
   drawNormtext();
   sp_0_20.gsyst_ratio->Draw("p2 same");
@@ -883,8 +886,9 @@ void drawdNdeta(xjjroot::mypdf& pdf, std::string tag) {
   sp_9_10.gsyst->Draw("2 same");
   sp_9_10.hsym->Draw("p same");
   sp_9_10.leg->Draw();
-  xjjroot::drawCMSleft(cmsprel.c_str(), 0.05, -0.15, 0.065); /*Preliminary*/
-  xjjroot::drawCMSright("OO (5.36 TeV)", 0, 0, 0.055);
+  watermark_inner_2p(ismc);
+  // xjjroot::drawCMSleft(cmsprel.c_str(), 0.05, -0.15, 0.065); /*Preliminary*/
+  // xjjroot::drawCMSright("OO (5.36 TeV)", 0, 0, 0.055);
   p22->cd();
   sp_19_20.gsyst_ratio->Draw("p2 same");
   sp_9_10.gsyst_ratio->Draw("p2 same");
@@ -902,28 +906,28 @@ void drawdNdeta(xjjroot::mypdf& pdf, std::string tag) {
   std::ofstream outf_Table_1("hepdatas/Table_1.yaml");
   xjjroot::hepdata hep_0_20(sp_0_20.hsym, sp_0_20.gsyst,
                             {"'$\\eta$'", "", ""},
-                            {"'$"+att_hep_dNdeta+"$'", "", ""},
+                            {"'$"+_t_hep_dNdeta+"$'", "", ""},
                             { {"RE", "", "PB PB --> CHARGED X"},
                               {"SQRT(S)", "GEV", "5360"},
                               {"CENTRALITY", "'$\\%$'", "0 - 80"} }
                             );
-  hep_0_20.print(outf_Table_1, 1, 1, -2.6, 2.6);
+  hep_0_20.print(outf_Table_1, 1, 1, -3.4, 3.4);
   xjjroot::hepdata hep_19_20(sp_19_20.hsym, sp_19_20.gsyst,
                              {"'$\\eta$'", "", ""},
-                             {"'$"+att_hep_dNdeta+"$'", "", ""},
+                             {"'$"+_t_hep_dNdeta+"$'", "", ""},
                              { {"RE", "", "PB PB --> CHARGED X"},
                                {"SQRT(S)", "GEV", "5360"},
                                {"CENTRALITY", "'$\\%$'", "0 - 5"} }
                              );
-  hep_19_20.print(outf_Table_1, 1, 1, -2.6, 2.6, true);
+  hep_19_20.print(outf_Table_1, 1, 1, -3.4, 3.4, true);
   xjjroot::hepdata hep_9_10(sp_9_10.hsym, sp_9_10.gsyst,
                             {"'$\\eta$'", "", ""},
-                            {"'$"+att_hep_dNdeta+"$'", "", ""},
+                            {"'$"+_t_hep_dNdeta+"$'", "", ""},
                             { {"RE", "", "PB PB --> CHARGED X"},
                               {"SQRT(S)", "GEV", "5360"},
                               {"CENTRALITY", "'$\\%$'", "50 - 55"} }
                             );
-  hep_9_10.print(outf_Table_1, 1, 1, -2.6, 2.6, true);
+  hep_9_10.print(outf_Table_1, 1, 1, -3.4, 3.4, true);
 
 
   printnpart();

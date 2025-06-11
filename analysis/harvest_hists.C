@@ -54,15 +54,18 @@ typedef struct varinfo_t {
    Long64_t                            maxnevt;
 } varinfo_t;
 
+std::string sel_ = "(1)";
+// std::string sel_ = "(nhfp > 1 && nhfn > 1)";
+
 static const std::vector<varinfo_t> options_pixel_1d = {
    {
       "cs", {"cluster size"}, {"cs"},
       {{50, 0, 50}},
-      {600, 600}, 0x01, "(nhfp > 1 && nhfn > 1)", "", 2000
+      {600, 600}, 0x01, sel_, "", 2000
    }, {
       "nhits", {"number of pixel hits"}, {"nhits"},
       {{100, 0, 4000}},
-      {600, 600}, 0x01, "(nhfp > 1 && nhfn > 1)", "", TTree::kMaxEntries
+      {600, 600}, 0x01, sel_, "", TTree::kMaxEntries
    }
 };
 
@@ -155,10 +158,11 @@ int compare_pixels(std::vector<varinfo_t> const& options,
          rformat(hr##q[j], 0.5, 1.5);                                         \
          hr##q[j]->Draw("p e same");                                          \
       }                                                                       \
+      pdf_DRAW_1D_PIXELS->getc()->cd(1);                                      \
    }                                                                          \
    watermark();                                                         \
    pdf_DRAW_1D_PIXELS->write(Form("figs/pixel/pixel-%s-l" #q "-%s.png",    \
-                                  OS(id), label));                            \
+                                  OS(id), label), "Q");                 \
    // delete c##q;                                                              \
 
    PIXELS1P(DRAW_1D_PIXELS)
@@ -191,15 +195,15 @@ static const std::vector<varinfo_t> options_tracklet_1d = {
    }, {
       "vz", {"v_{z}"}, {"vz[1]"},
       {{100, -15, 15}},
-      {600, 600}, 0x10, "(1)", "", TTree::kMaxEntries
+      {600, 600}, 0x10, sel_, "", TTree::kMaxEntries
    }, {
       "vz-unw", {"v_{z}"}, {"vz[1]"},
       {{100, -15, 15}},
-      {600, 600}, 0x110, "(1)", "", TTree::kMaxEntries
+      {600, 600}, 0x110, sel_, "", TTree::kMaxEntries
    }, {
       "ntracklet", {"number of tracklets"}, {"ntracklet"},
       {{100, 0, 4000}},
-      {600, 600}, 0x01, "(1)", "", TTree::kMaxEntries
+      {600, 600}, 0x01, sel_, "", TTree::kMaxEntries
    }, {
      "dr-wide", {"#Deltar"}, {"sqrt(dr2)"},
      {{100, 0, 2.0}},
@@ -218,7 +222,7 @@ int compare_tracklets(std::vector<varinfo_t> const& options,
    if (!nfiles) { printf("error: no files provided!\n"); exit(1); }
 
    TCut fsel = OS(sel);
-   fsel = fsel && "abs(vz[1])<15 && hlt && nhfp > 1 && nhfn > 1";
+   fsel = fsel && Form("abs(vz[1])<15 && %s", sel_.c_str());
    if (!(OPT(flags) & 0x100)) { fsel *= "weight"; }
 
    const char* idstr = OS(id);
@@ -310,11 +314,12 @@ int compare_tracklets(std::vector<varinfo_t> const& options,
                                                                               \
       TLine* line1 = new TLine(OPT(bins[0][1]), 1, OPT(bins[0][2]), 1);       \
       line1->Draw();                                                          \
+      pdf_DRAW_1D_TRACKLETS->getc()->cd(1);                             \
    }                                                                          \
    watermark();                                                         \
                                                                               \
    pdf_DRAW_1D_TRACKLETS->write(Form("figs/tracklet/tracklet-%s-t" #q #w "-%s.png", \
-                                     OS(id), label));                   \
+                                     OS(id), label), "Q");              \
    // delete c##q##w; \
 
    TRKLTS2P(DRAW_1D_TRACKLETS)
@@ -335,47 +340,47 @@ static const std::vector<varinfo_t> options_pixel_2d = {
       "eta-phi", {"#eta", "#phi"},
       {"eta@", "phi@"},
       {{1000, -4, 4}, {1000, -4, 4}},
-      {600, 600}, 0x03, "(nhfp > 1 && nhfn > 1)", "colz", 1000
+      {600, 600}, 0x03, sel_, "colz", 10000
    }, {
       "eta-r", {"#eta", "r"},
       {"eta@", "r@"},
       {{1000, -4, 4}, {1000, 0, 20}},
-      {600, 600}, 0x33, "(nhfp > 1 && nhfn > 1)", "colz", 1000
+      {600, 600}, 0x33, sel_, "colz", 10000
    }, {
       "eta-cs", {"#eta", "cluster size"},
       {"eta@", "cs@"},
       {{200, -4, 4}, {40, 0, 40}},
-      {600, 600}, 0x03, "(nhfp > 1 && nhfn > 1)", "colz", 1000
+      {600, 600}, 0x03, sel_, "colz", 10000
    }, {
       "x-y", {"x", "y"},
       {"r@*cos(phi@)", "r@*sin(phi@)"},
       {{1000, -20, 20}, {1000, -20, 20}},
-      {600, 600}, 0x11, "(nhfp > 1 && nhfn > 1)", "colz", 1000
+      {600, 600}, 0x11, sel_, "colz", 10000
    }, {
       "z-phi", {"z", "#phi"},
       {"r@/tan(2*atan(exp(-eta@)))", "phi@"},
       {{1000, -30, 30}, {1000, -4, 4}},
-      {600, 2400}, 0x01, "(nhfp > 1 && nhfn > 1)", "colz", 1000
+      {600, 2400}, 0x01, sel_, "colz", 10000
    }, {
       "z-r", {"z", "r"},
       {"r@/tan(2*atan(exp(-eta@)))", "r@"},
       {{1000, -60, 60}, {1000, 0, 20}},
-      {1200, 600}, 0x33, "(nhfp > 1 && nhfn > 1)", "colz", 1000
+      {1200, 600}, 0x33, sel_, "colz", 10000
    }, {
       "fpix-x-y-plus", {"x", "y"},
       {"r@*cos(phi@)", "r@*sin(phi@)"},
       {{1000, -20, 20}, {1000, -20, 20}},
-      {600, 600}, 0x02, "(eta@>0)", "colz", 1000
+      {600, 600}, 0x02, "(eta@>0)", "colz", 10000
    }, {
       "fpix-x-y-minus", {"x", "y"},
       {"r@*cos(phi@)", "r@*sin(phi@)"},
       {{1000, -20, 20}, {1000, -20, 20}},
-      {600, 600}, 0x02, "(eta@<0)", "colz", 1000
+      {600, 600}, 0x02, "(eta@<0)", "colz", 10000
    }, {
       "fpix-z-phi", {"z", "#phi"},
       {"r@/tan(2*atan(exp(-eta@)))", "phi@"},
       {{1000, -60, 60}, {1000, -4, 4}},
-      {1200, 600}, 0x22, "(nhfp > 1 && nhfn > 1)", "colz", 1000
+      {1200, 600}, 0x22, sel_, "colz", 10000
    }
 };
 
@@ -467,17 +472,17 @@ static const std::vector<varinfo_t> options_compare_pixel_2d = {
     "z-phi", {"z", "#phi"},
     {"r@/tan(2*atan(exp(-eta@)))", "phi@"},
     {{1000, -30, 30}, {1000, -4, 4}},
-    {600, 2400}, 0x01, "(nhfp > 1 && nhfn > 1)", "colz", 1000
+    {600, 2400}, 0x01, sel_, "colz", 10000
   }, {
     "fpix-x-y-plus", {"x", "y"},
     {"r@*cos(phi@)", "r@*sin(phi@)"},
     {{1000, -20, 20}, {1000, -20, 20}},
-    {600, 600}, 0x02, "(eta@>0)", "colz", 1000
+    {600, 600}, 0x02, Form("(%s && eta@>0)", sel_.c_str()), "colz", 10000
   }, {
     "fpix-x-y-minus", {"x", "y"},
     {"r@*cos(phi@)", "r@*sin(phi@)"},
     {{1000, -20, 20}, {1000, -20, 20}},
-    {600, 600}, 0x02, "(eta@<0)", "colz", 1000
+    {600, 600}, 0x02, Form("(%s && eta@<0)", sel_.c_str()), "colz", 10000
   }
 };
 
@@ -533,19 +538,19 @@ static const std::vector<varinfo_t> options_tracklet_2d = {
       "eta-phi", {"#eta", "#phi"},
       {"eta1", "phi1"},
       {{1000, -4, 4}, {1000, -4, 4}},
-      {600, 600}, 0, "(1)", "colz", 1000
+      {600, 600}, 0, sel_, "colz", 10000
    }, {
       "eta-vz", {"#eta", "v_{z}"},
       {"eta1", "vz[1]"},
       {{200, -4, 4}, {200, -20, 20}},
-      {600, 600}, 0, "(1)", "colz", 1000
+      {600, 600}, 0, sel_, "colz", 10000
    }
 };
 
 int map_tracklets(std::vector<varinfo_t> const& options,
       const char* input, const char* label, int opt) {
    TCut fsel = OS(sel);
-   fsel = fsel && "abs(vz[1])<15 && hlt && nhfp > 1 && nhfn > 1";
+   fsel = fsel && Form("abs(vz[1])<15 && %s", sel_.c_str());
    fsel *= "weight";
 
    const char* l0str = OS(label[0]);
@@ -597,7 +602,7 @@ static const std::vector<varinfo_t> options_compare_tracklet_2d = {
       "eta-phi", {"#eta", "#phi"},
       {"eta1", "phi1"},
       {{1000, -4, 4}, {1000, -4, 4}},
-      {600, 600}, 0, "(1)", "colz", 1000
+      {600, 600}, 0, sel_, "colz", 10000
    }
 };
 

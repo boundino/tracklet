@@ -49,34 +49,28 @@ int transmute_trees(const char* input,
 
    float vz_shift = 0;
    float vx = 0, vy = 0, vz, recovx = -99, recovy = -99;
-
+   
    if (t->GetEntries("run < 10") != 0) {
       printf("$ Monte Carlo analysis\n");
 
-      // /* Realistic2022PbPbCollision */
-      // // https://github.com/cms-sw/cmssw/blob/master/IOMC/EventVertexGenerators/python/VtxSmearedParameters_cfi.py#L1049
-      // vx = 0.1017599; // BS x0
-      // vy = -0.015602; // BS y0
-      // /* pixel barycentre */
-      // vz_shift = -0.355; // barycentre
-      // /* x: 0.0712278 */
-      // /* y: -0.167261 */
-      // /* z: -0.355162 */
-
       /* Realistic2024PbPbCollision */
       // https://github.com/cms-sw/cmssw/blob/master/IOMC/EventVertexGenerators/python/VtxSmearedParameters_cfi.py#L1088
-      vx = 0.0302546; // BS x0
-      vy = -0.0170382; // BS y0
+      // vx = 0.0302546; // BS x0
+      // vy = -0.0170382; // BS y0
+      // /* pixel barycentre */
+      // vz_shift = -0.355; // barycentre, no flip 
+
+      /* Nominal2025OOCollision */
+      // https://github.com/cms-sw/cmssw/blob/master/IOMC/EventVertexGenerators/python/VtxSmearedParameters_cfi.py#L1088
+      vx = 0.0184194; // BS x0
+      vy = -0.0141852; // BS y0
       /* pixel barycentre */
-      // 
-      vz_shift = -0.355; // barycentre
-      /* x: 0.0712278 */
-      /* y: -0.167261 */
-      /* z: -0.355162 */
+      vz_shift = -0.367294; // barycentre, 391856 (May 9)
       
    } else {
       printf("$ data analysis\n");
 
+      /* Data */
       vx = 0.1729877;
       vy = -0.182863;
 

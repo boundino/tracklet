@@ -6,7 +6,17 @@
 #include "sconfig.h"
 #include "cosmetics.h"
 
-static const int goodrange[] = { 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0 };
+std::string _t_slash = "#kern[0.1]{#lower[0.15]{#scale[1.25]{/}}}";
+std::string _t_dNdeta = "#scale[1.2]{#LT}d#it{N}_{ch}/d#kern[-0.08]{#it{#eta}}#scale[1.2]{#GT}";
+std::string _t_eta0p5 = "#lower[0.05]{#scale[1.5]{#kern[-0.6]{#cbar}}}#lower[0.6]{#scale[0.6]{#kern[0.15]{#cbar}#it{#eta}#kern[-0.4]{#cbar}#scale[0.5]{ }#kern[0.2]{<}#kern[0.2]{0.5}}}";
+std::string _t_2a = "#lower[-0.05]{(}1/#kern[0.05]{2#it{A}}#lower[-0.05]{)}";
+std::string _t_1npart = "#lower[-0.05]{(}1/#kern[0.1]{#scale[1.2]{#LT}}#lower[0.1]{#it{N}}#lower[0.5]{#scale[0.6]{#kern[-0.08]{part}}}#scale[1.2]{#GT}#lower[-0.05]{)}";
+std::string _t_npart = "#scale[1.2]{#LT}#it{N}#lower[0.4]{#scale[0.7]{#kern[-0.05]{part}}}#scale[1.2]{#GT}";
+std::string _t_hep_dNdeta = "\\mathrm{d}N_{\\mathrm{ch}}/\\mathrm{d}\\eta";
+
+std::string _t_dNdetatitle = ";#it{#eta};d#it{N}_{ch}/d#kern[-0.08]{#it{#eta}}";
+
+static const int goodrange[] = { 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0 };
 void goodresult(TH1* h, const int* goodbin = goodrange) {
   for(int i=0; i<h->GetXaxis()->GetNbins(); i++) {
     if(goodbin[i] == 0) {
@@ -18,13 +28,12 @@ void goodresult(TH1* h, const int* goodbin = goodrange) {
 
 std::string tcomb(std::string comb) {
   std::string r(comb);
-  r.insert(1, " #otimes ");
+  r.insert(1, "#scale[0.5]{ }#otimes ");
   r = Form("%s#scale[0.8]{PIX} %s", (atoi(comb.c_str())>50?"F":"B"), r.c_str());
   return r;
 }
 
 std::string tcent(std::string tag) {
-  
   if(!xjjc::str_contains(tag, ".s.")) return "";
   tag = xjjc::str_erasestar(tag, "*.s.");
   auto v = xjjc::str_divide(tag, ".");
@@ -124,7 +133,7 @@ TH1F* gethlow(std::vector<TH1D*> h1WEfinal)
 
 TH1F* getherr(TH1* havg, TH1F* hhigh, TH1F* hlow) {
   TH1F* herr = (TH1F*)havg->Clone("herr");
-  herr->SetTitle(";#it{#eta};d#it{N}_{ch}/d#kern[-0.08]{#it{#eta}}");
+  herr->SetTitle(_t_dNdetatitle.c_str());
   for(int i=1; i<=havg->GetNbinsX(); i++) {
     float err = std::max(fabs(hhigh->GetBinContent(i)-havg->GetBinContent(i)),
                          fabs(havg->GetBinContent(i)-hlow->GetBinContent(i)));
@@ -146,13 +155,17 @@ TH1F* gethrelerr(TH1* havg, TH1F* hhigh, TH1F* hlow) {
 }
 
 template<class T>
-T* makehempty(T* horg, std::string title=";#it{#eta};d#it{N}_{ch}/d#kern[-0.08]{#it{#eta}}", float ymax=1.5, float ymin=0) {
+T* makehempty(T* horg, std::string title=_t_dNdetatitle.c_str(), float ymax=1.5, float ymin=0, int hmaxdiv = 0) {
   auto hempty = (T*)horg->Clone(Form("hempty-%s", xjjc::currenttime().c_str()));
   xjjroot::sethempty(hempty);
   if(title != "")
     hempty->SetTitle(title.c_str());
   hempty->SetMinimum(xjjana::gethnonzerominimum(horg)*ymin);
-  hempty->SetMaximum(xjjana::gethmaximum(horg)*ymax);
+  float maxy = xjjana::gethmaximum(horg)*ymax;
+  if (hmaxdiv > 0) {
+    maxy = std::ceil(maxy/hmaxdiv) * hmaxdiv;
+  }
+  hempty->SetMaximum(maxy);
   // hempty->SetAxisRange(-3.2, 3.2, "X");
   return hempty;
 }
@@ -178,9 +191,7 @@ std::vector<TH1D*> combh1WEfinal(std::string filename,
 
 std::vector<TGraphErrors*> combgh1WGhadron(std::string filename,
                                            TLegend* legTRUTH = 0,
-                                           // std::string input_truth="amptnm&A#scale[0.9]{MPT} #scale[0.9]{(no melting)},amptsm&A#scale[0.9]{MPT} #scale[0.9]{(string melting)},hydjet&H#scale[0.8]{YDJET},epos&E#scale[0.8]{POS} #scale[0.9]{LHC}") {
-                                           std::string input_truth="amptnm&A#scale[0.9]{MPT} #scale[0.9]{(no melting)},hijing&H#scale[0.9]{IJING}") {
-  // std::string input_truth="amptnm&A#scale[0.9]{MPT} #scale[0.9]{(no melting)}") {
+                                           std::string input_truth="") {
   xjjc::sconfig itruth(input_truth, ",", "&", "v");
   if(!legTRUTH) {
     legTRUTH = new TLegend(0.55, 0.47-0.031*itruth.n(), 0.55+0.2, 0.47);
@@ -200,28 +211,130 @@ std::vector<TGraphErrors*> combgh1WGhadron(std::string filename,
   return gh1WGhadron;
 }
 
-std::vector<TGraphErrors*> combgh1WGhadron_multfiles(std::string input_truth,
-                                                     TLegend* &legTRUTH,
-                                                     std::string div = "&") {
-  std::vector<TGraphErrors*> gh1WGhadron;
-  if(input_truth != "null") {
-    xjjc::sconfig itruth(input_truth, ",", div, "v");
-    if(!legTRUTH) {
-      legTRUTH = new TLegend(0.55, 0.47-0.031*itruth.n(), 0.55+0.2, 0.47);
-      xjjroot::setleg(legTRUTH, 0.028);
-    }
-    for(int i=0; i<itruth.n(); i++) {
-      auto h = xjjroot::gethist<TH1D>("output/correction-"+itruth.value[i][0]+"-12.root::h1WGhadron");
-      if (!h) continue;
-      auto gh = xjjana::shifthistcenter(h, "gh1WGhadron-"+xjjc::str_erasestar(itruth.value[i][0], ".*"), 0);
-      xjjroot::setthgrstyle(gh, kBlack, 20, 0.8, kBlack, atoi(itruth.value[i][2].c_str()), 1);
-      legTRUTH->AddEntry(gh,
-                         Form("%s", itruth.value[i][1].c_str()),
-                         "l");
-      gh1WGhadron.push_back(gh);
+class combgh1WGhadron_multfiles {
+public:
+  std::vector<std::pair<std::string, TGraphErrors*>> gh1() { return gh1_; }
+  std::vector<std::pair<std::string, TH1D*>> h1() { return h1_; }
+  bool valid() { return gh1_.size()>0; }
+  combgh1WGhadron_multfiles(std::string input_truth,
+                            std::string div = "&") : leg_(0) {
+    if(input_truth != "null") {
+      xjjc::sconfig itruth(input_truth, ",", div, "v");
+      n_ = 0;
+      for(int i=0; i<itruth.n(); i++) {
+        auto key = itruth.value[i][0];
+        auto h = xjjroot::gethist<TH1D>("output/correction-"+key+"-12.root::h1WGhadron");
+        if (!h) continue;
+        h1_.push_back({key, h});
+        auto gh = xjjana::shifthistcenter(h, "gh1WGhadron-"+xjjc::str_erasestar(key, ".*"), 0x10);
+        xjjroot::setthgrstyle(gh, kBlack, 20, 0.8, kBlack, atoi(itruth.value[i][2].c_str()), 1);
+        gh1_.push_back({key, gh});
+        latex_[key] = itruth.value[i][1];
+
+        n_++;
+      }
+      remakeleg();
     }
   }
-  return gh1WGhadron;
-}
+
+  void remakeleg(float xleg = -1, float yleg = -1, float tleg = 0.028) {
+    if (xleg < 0) xleg = 0.55;
+    if (yleg < 0) yleg = 0.47;
+    if (leg_) delete leg_;
+    leg_ = new TLegend(xleg, yleg-tleg*1.1*n_, xleg+0.2, yleg);
+    xjjroot::setleg(leg_, tleg);
+    for (auto& g : gh1_) {
+      leg_->AddEntry(g.second,
+                     Form("%s", latex_[g.first].c_str()),
+                     "l");
+    }
+  }
+  
+  void draw() {
+    if (valid()) {
+      for(auto& g : gh1_)
+        g.second->Draw("cX same");
+      leg_->Draw();
+    }
+  }
+
+  bool goodkey(std::string tag) {
+    for (auto& g : gh1_) {
+      if (xjjc::str_contains(g.first, tag) ||
+          xjjc::str_contains(tag, g.first)) return true;
+    }
+    std::cout<<"\e[31merror\e[0m ("<<__PRETTY_FUNCTION__<<"): bad tag "<<tag<<std::endl;
+    return false;
+  }
+  
+  TH1D* geth(std::string tag) {
+    TH1D* h = 0;
+    if (goodkey(tag)) {
+      for (auto& hh : h1_) {
+        if (xjjc::str_contains(hh.first, tag) ||
+            xjjc::str_contains(tag, hh.first))
+          h = hh.second;
+      }
+    }
+    return h;
+  }
+
+  TH1D* gethmax() {
+    float ymax = 0;
+    TH1D* hmax = 0;
+    for (auto& hh : h1_) {
+      if (hh.second->GetMaximum() > ymax) { 
+        ymax = hh.second->GetMaximum();
+        hmax = hh.second;
+      }
+    }
+    return hmax;
+  }
+
+  template<class T>
+  T* closeratio(T* h1WEfinal, std::string tag) {
+    auto hratio = (T*)h1WEfinal->Clone(Form("%s_ratio", h1WEfinal->GetName()));
+    auto htruth = geth(tag);
+    if (htruth) {
+      hratio->Divide(htruth);
+    } else {
+      delete hratio;
+      hratio = 0;
+    }
+    return hratio;
+  }
+  
+private:
+  std::vector<std::pair<std::string, TGraphErrors*>> gh1_; 
+  std::vector<std::pair<std::string, TH1D*>> h1_;
+  std::map<std::string, std::string> latex_;
+  TLegend* leg_;
+  int n_;
+};
+
+// std::vector<TGraphErrors*> combgh1WGhadron_multfiles::combgh1WGhadron_multfiles(std::string input_truth,
+//                                                                                 TLegend* &legTRUTH,
+//                                                                                 std::string div = "&") {
+//   std::vector<TGraphErrors*> gh1WGhadron;
+//   if(input_truth != "null") {
+//     xjjc::sconfig itruth(input_truth, ",", div, "v");
+//     if(!legTRUTH) {
+//       legTRUTH = new TLegend(0.55, 0.47-0.031*itruth.n(), 0.55+0.2, 0.47);
+//       xjjroot::setleg(legTRUTH, 0.028);
+//     }
+//     for(int i=0; i<itruth.n(); i++) {
+//       auto h = xjjroot::gethist<TH1D>("output/correction-"+itruth.value[i][0]+"-12.root::h1WGhadron");
+//       if (!h) continue;
+//       auto gh = xjjana::shifthistcenter(h, "gh1WGhadron-"+xjjc::str_erasestar(itruth.value[i][0], ".*"), 0x10);
+//       xjjroot::setthgrstyle(gh, kBlack, 20, 0.8, kBlack, atoi(itruth.value[i][2].c_str()), 1);
+//       legTRUTH->AddEntry(gh,
+//                          Form("%s", itruth.value[i][1].c_str()),
+//                          "l");
+//       gh1WGhadron.push_back(gh);
+//     }
+//   }
+//   return gh1WGhadron;
+// }
+
 
 #endif

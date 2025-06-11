@@ -20,6 +20,7 @@ int macro(std::string input_avg, std::string tag,
   std::string div = "&";
   xjjroot::silence();
   xjjc::sconfig iavg(input_avg, ",", div), itext(text, ",", div);
+  bool ismc = xjjc::str_contains(tag, "CLOSE");
 
   std::vector<Color_t> cc = xjjroot::colorlist_light;
   TH1F* hsym = xjjroot::gethist<TH1F>(iavg.value[0][0]+".root::hsym");
@@ -28,7 +29,7 @@ int macro(std::string input_avg, std::string tag,
   auto h1WEfinal = combh1WEfinal(iavg.value[0][0]+".root", legPIX);
   auto legTRUTH = new TLegend(0.55, 0.45-0.030*5, 0.55+0.2, 0.45-0.030);
   xjjroot::setleg(legTRUTH, 0.028);
-  auto gh1WGhadron = combgh1WGhadron(iavg.value[0][0]+".root", legTRUTH);
+  auto gh1WGhadron = combgh1WGhadron(iavg.value[0][0]+".root", legTRUTH, "hijing&H#scale[0.9]{IJING},amptnm&A#scale[0.9]{MPT},amptnm2&A#scale[0.9]{MPT} #scale[0.9]{(varied params)},hydjet&H#scale[0.8]{YDJET}");
 
   std::vector<float> relerr2(hsym->GetNbinsX(), 0);
   std::vector<TH1F*> hrelerr(iavg.n(), 0);
@@ -73,10 +74,9 @@ int macro(std::string input_avg, std::string tag,
 
 #define DRAWTEX                                                         \
   for(int i=0; i<itext.n(); i++)                                        \
-    { xjjroot::drawtex(0.24, 0.79-i*0.033, itext.value[i][0].c_str(), 0.030, 13); } \
-  xjjroot::drawtex(0.88, 0.82, tcent(tag).c_str(), 0.030, 31);          \
-  xjjroot::drawCMSleft(xjjroot::CMS::preliminary, 0.05, -0.1);                     \
-  xjjroot::drawCMSright("OO #sqrt{s_{NN}} = 5.36 TeV");                             \
+    { xjjroot::drawtex(0.23, 0.79-i*0.034, itext.value[i][0].c_str(), 0.038, 13); } \
+  xjjroot::drawtex(0.89, 0.81, tcent(tag).c_str(), 0.038, 31);          \
+  watermark_inner(ismc);                                                \
   
   xjjroot::mypdf pdf("figspdf/comp/syst-"+tag+".pdf", "c", 600, 600);
 
@@ -89,20 +89,6 @@ int macro(std::string input_avg, std::string tag,
   legERR->Draw();
   pdf.write("figs/comp/syst-"+tag+"-hrelerrtotal.pdf");
   
-  // havg
-  pdf.prepare();
-  hempty->Draw("axis");
-  for(auto& hh : gh1WGhadron)
-    hh->Draw("c same");
-  for(auto& hh : h1WEfinal)
-    hh->Draw("p same");
-  hsym->Draw("p same");
-  legPIX->Draw();
-  legTRUTH->Draw();
-  legDATA->Draw();
-  DRAWTEX;
-  pdf.write("figs/comp/syst-"+tag+"-hcomb.pdf");
-
   // havg
   pdf.prepare();
   hempty->Draw("axis");

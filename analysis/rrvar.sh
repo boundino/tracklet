@@ -15,14 +15,15 @@ tagverdefault="v0"
 mcdefault=hijing
 #
 TYPES=(12 13 14 23 24 34 56 57 67)
-CENTS=(0 20)
-# for i in {20..5} ; do CENTS+=($((i-1)) $i) ; done ;
+# CENTS=(0 20)
+CENTS=()
+for i in {20..5} ; do CENTS+=($((i-1)) $i) ; done ;
 
 ##
 # INPUTS_MC=/eos/cms/store/cmst3/user/wangj/tracklet/tt_230724_pixel_230724_EposLHC_ReggeGribovParton_5360GeV_1255p1.root,epos
 # INPUTS_DATA=/eos/cms/store/cmst3/user/wangj/tracklet/tt_230724_pixel_230724_HITestRaw0-6_HIRun2022A_MBPVfilTh4_362294.root,362294
-INPUTS_MC=/eos/cms/store/group/phys_heavyions/wangj/tracklet2025/private/tt_Hijing_NoPU_100kEvents_OO_5360GeV_GenSim_030825.root,hijing,7
-INPUTS_DATA=/eos/cms/store/group/phys_heavyions/wangj/tracklet2025/private/tt_AMPT_NoPU_100kEvents_OO_5360GeV_GenSim_032525.root,amptnmCLOSE
+INPUTS_MC=/eos/cms/store/group/phys_heavyions/wangj/tracklet2025/private/tt_250528_pixel_250528_Hijing_OO_5360GeV_0527_v2.root,hijing,7
+INPUTS_DATA=/eos/cms/store/group/phys_heavyions/wangj/tracklet2025/private/tt_250528_pixel_250528_AMPT_NoStringMeltingp0_OO_5360GeV_0527_v2.root,amptnm2CLOSE
 
 source tool.shinc 
 
@@ -136,7 +137,8 @@ while [ $c -lt $((${#CENTS[@]}-1)) ] ; do
         done
         mergecomb=${mergecomb##,}
         # truth="epos.m.v3.s."$cmin"."$cmax"&"${taglabel[epos]}"&2,hydjet.m.v3.s."$cmin"."$cmax"&"${taglabel[hydjet]}"&1,amptsm.m.v3.s."$cmin"."$cmax"&"${taglabel[amptsm]}"&4,amptnm.m.v3.s."$cmin"."$cmax"&"${taglabel[amptnm]}"&6"
-        truth="hijing.m.v0.s."$cmin"."$cmax"&"${taglabel[hijing]}"&2,amptnm.m.v0.s."$cmin"."$cmax"&"${taglabel[amptnm]}"&6"
+        truth="hijing.m.v0.s."$cmin"."$cmax"&"${taglabel[hijing]}"&2","amptnm.m.v0.s."$cmin"."$cmax"&"${taglabel[amptnm]}"&6","amptnm2.m.v0.s."$cmin"."$cmax"&"${taglabel[amptnm2]}"&4","hydjet.m.v0.s."$cmin"."$cmax"&"${taglabel[hydjet]}"&1"
+        # truth="hijing.m.v0.s."$cmin"."$cmax"&"${taglabel[hijing]}"&2,amptnm.m.v0.s."$cmin"."$cmax"&"${taglabel[amptnm]}"&6"
         ./merge_monde $tagappl "${taglabel[${TAG_DATA%%CLOSE}]} corr. w. ${taglabel[$TAG_MC]}" $mergecomb "$truth"
     }
     

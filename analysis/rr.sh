@@ -3,19 +3,27 @@
 make reap_results || exit 1
 make merge_monde || exit 1
 
-maxdr2=0.25 ; tagdr="drlt0p5" ; tagver="v0" ; nominal="hijing" ; corrtagver="v0"
+maxdr2=0.25 ; tagdr="drlt0p5" 
+tagver="v0" ; nominal="hijing" ; corrtagver="v0"
 
-# TYPES=(12)
 TYPES=(12 13 14 23 24 34 56 57 67)
-# TYPES=(11 22 33 44 55 66 77)
-# CENTS=(4 20)
-CENTS=(0 20)
+# TYPES=(11 22 33 44 55 66 77) ; tagver=$tagver"-clus" ; corrtagver=$corrtagver"-clus" ;
+CENTS=(0 20) # (4 20)
 for i in {20..5} ; do CENTS+=($((i-1)) $i) ; done ; 
 
 ##
 INPUTS_MC=(
-    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/private/tt_pixelsim_fullreco_100f.root,hydjet,4
-    /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/private/tt_Hijing_NoPU_100kEvents_OO_5360GeV_GenSim_030825.root,hijing,7
+    /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/private/tt_250528_pixel_250528_Hijing_OO_5360GeV_0527_v2.root,hijing,7
+    /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/private/tt_250528_pixel_250528_AMPT_NoStringMelting_OO_5360GeV_0527_v2.root,amptnm,5
+    /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/private/tt_250528_pixel_250528_AMPT_NoStringMeltingp0_OO_5360GeV_0527_v2.root,amptnm2,8 # !
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/private/tt_250528_pixel_250528_AMPT_StringMelting_OO_5360GeV_0527_v2.root,amptsm,6
+    /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/private/tt_250528_pixel_250528_Hydjet_Drum5F_OO_5360GeV_0527_v2.root,hydjet,4
+
+    # clus
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/private/tt_250528_pixel_250528_Hijing_OO_5360GeV_0527_v2_clus.root,hijing,7
+    
+    # small
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/private/tt_Hijing_NoPU_100kEvents_OO_5360GeV_GenSim_030825.root,hijing,7
     # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/private/tt_AMPT_NoPU_100kEvents_OO_5360GeV_GenSim_032525.root,amptnm,5
     # 2022
     # /eos/cms/store/cmst3/user/wangj/tracklet/tt_230724_pixel_230724_EposLHC_ReggeGribovParton_5360GeV_1255p1.root,epos,3
@@ -26,9 +34,16 @@ INPUTS_MC=(
 )
 
 INPUTS_DATA=(
-    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/private/tt_pixelsim_fullreco_100f.root,hydjetCLOSE
-    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/private/tt_Hijing_NoPU_100kEvents_OO_5360GeV_GenSim_030825.root,hijingCLOSE,7
-    /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/private/tt_AMPT_NoPU_100kEvents_OO_5360GeV_GenSim_032525.root,amptnmCLOSE,5
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/private/tt_250528_pixel_250528_Hijing_OO_5360GeV_0527_v2.root,hijingCLOSE,7
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/private/tt_250528_pixel_250528_AMPT_NoStringMelting_OO_5360GeV_0527_v2.root,amptnmCLOSE,5
+    /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/private/tt_250528_pixel_250528_AMPT_NoStringMeltingp0_OO_5360GeV_0527_v2.root,amptnm2CLOSE,8 # ! 
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/private/tt_250528_pixel_250528_AMPT_StringMelting_OO_5360GeV_0527_v2.root,amptsmCLOSE,6 
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/private/tt_250528_pixel_250528_Hydjet_Drum5F_OO_5360GeV_0527_v2.root,hydjet,4
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/private/tt_AMPT_NoPU_100kEvents_OO_5360GeV_GenSim_032525.root,amptnmCLOSE,5
+
+    # clus
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/private/tt_250528_pixel_250528_AMPT_NoStringMelting_OO_5360GeV_0527_v2_clus.root,amptnmCLOSE,5
+    
     # 2022
     # /eos/cms/store/cmst3/user/wangj/tracklet/tt_230724_pixel_230724_HITestRaw0-6_HIRun2022A_MBPVfilTh4_362294.root,362294
     # /eos/cms/store/cmst3/user/wangj/tracklet/tt_230724_wclus_pixel_230724_HITestRaw0-5_HIRun2022A_MBPVfilTh4_362294.root,362294
@@ -138,7 +153,8 @@ do
             # echo " "$TAG_DATA
             
             tcgm=cgm # correction, geometric, acceptance map
-            [[ $TAG_DATA == *CLOSE ]] && { tcgm=cm ; tages="incl."${TAG_DATA%%CLOSE}".m."$tagver ; }
+            # [[ $TAG_DATA == *CLOSE ]] && { tcgm=cm ; tages="incl."${TAG_DATA%%CLOSE}".m."$tagver ; }
+            [[ $TAG_DATA == *CLOSE ]] && { tcgm=cm ; tages=${TAG_DATA%%CLOSE}".m."$tagver".s."$cmin"."$cmax ; }
             [[ "12 13 14 23 24 34 56 57 67" =~ "${TYPES[0]}" ]] || tcgm=cm
             cgm=$(getcgm $tcgm)
 
@@ -154,9 +170,9 @@ do
                     ./reap_results $t $INPUT_DATA $tagappl $cmin $cmax \
                                    $tagcorr ${cgm:0:1} ${cgm:1:1} ${cgm:2:1} $tages \
                                    $multhandle $maxdr2 $tagdr "null" \
-                                   $CENT_DATA "(1)" &
+                                   $CENT_DATA "(1)" \
                                    2>&1 | tee logs/$tagappl-$t.txt & # \
-                    set +x
+                        set +x
                 done # for t in ${TYPES[@]}
                 wait
             }
@@ -172,9 +188,9 @@ do
             mergecomb=${mergecomb##,}
             [[ ${4:-0} -eq 1 ]] && {
                 # truth="epos.m.v3.s."$cmin"."$cmax"&"${taglabel[epos]}"&2,hydjet.m.v3.s."$cmin"."$cmax"&"${taglabel[hydjet]}"&1,amptsm.m.v3.s."$cmin"."$cmax"&"${taglabel[amptsm]}"&4,amptnm.m.v3.s."$cmin"."$cmax"&"${taglabel[amptnm]}"&6"
-                truth="hijing.m.v0.s."$cmin"."$cmax"&"${taglabel[hijing]}"&2,amptnm.m.v0.s."$cmin"."$cmax"&"${taglabel[amptnm]}"&6"
+                truth="hijing.m.v0.s."$cmin"."$cmax"&"${taglabel[hijing]}"&2","amptnm.m.v0.s."$cmin"."$cmax"&"${taglabel[amptnm]}"&6","amptnm2.m.v0.s."$cmin"."$cmax"&"${taglabel[amptnm2]}"&4","hydjet.m.v0.s."$cmin"."$cmax"&"${taglabel[hydjet]}"&1"
                 # [[ $TAG_DATA == *CLOSE* ]] && {
-                #     truth=${TAG_DATA%%CLOSE}".m."$tagver".s."$cmin"."$cmax"&"${taglabel[${TAG_DATA%%CLOSE}]}"&1" ; 
+                #     truth=${TAG_DATA%%CLOSE}".m."$tagver".s."$cmin"."$cmax"&"${taglabel[${TAG_DATA%%CLOSE}]}"&2" ; 
                 #     # [[ $cmin -eq 0 && $cmax -eq 20 ]] &&
                 #         # { truth="incl."${TAG_DATA%%CLOSE}".m.v0&"${taglabel[${TAG_DATA%%CLOSE}]}"&1" ; }
                 # }
@@ -188,4 +204,3 @@ do
     done # while [ $c -lt $((${#CENTS[@]}-1)) ]
 
 done # for mm in ${INPUTS_MC[@]}
-

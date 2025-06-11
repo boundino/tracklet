@@ -5,7 +5,6 @@
 
 #define COLOUR0   TColor::GetColor("#515151") // gray
 #define COLOUR1   TColor::GetColor("#f2777a") // red
-// #define COLOUR2   TColor::GetColor("#f99157") // orange
 #define COLOUR2   TColor::GetColor("#e99960") // orange
 #define COLOUR3   TColor::GetColor("#ffcc66") // yellow
 #define COLOUR4   TColor::GetColor("#99cc99") // green
@@ -13,7 +12,6 @@
 #define COLOUR6   TColor::GetColor("#9999cc") // purple
 #define COLOUR7   TColor::GetColor("#db2d20") // sat red
 #define COLOUR8   TColor::GetColor("#01a252") // sat green
-// #define COLOUR9   TColor::GetColor("#01a0e4") // sat blue
 #define COLOUR9   TColor::GetColor("#5C76DA") // sat blue
 
 static const std::vector<int> colours = {
@@ -29,6 +27,9 @@ static const std::vector<int> markers = {
    48, 49, 43
 };
 
+
+const char* _t_collision = "OO (5.36 TeV)";
+
 #include "TLatex.h"
 #include "TH1.h"
 #include "TGraph.h"
@@ -39,25 +40,18 @@ static const std::vector<int> markers = {
 
 #include "xjjrootuti.h"
 
-void watermark() {
-  xjjroot::drawCMS(xjjroot::CMS::internal, "OO (5.36 TeV)");
-   // TLatex* lcms = new TLatex();
-   // lcms->SetTextFont(62);
-   // lcms->SetTextSize(0.052);
-   // lcms->SetTextAlign(13);
-   // lcms->DrawLatexNDC(0.135, 0.875, "CMS");
+void watermark(bool ismc = false, float xshift=0, float yshift=0, float tsize=0.04) {
+  auto t_left = ismc ? xjjroot::CMS::simulation : xjjroot::CMS::preliminary;
+  xjjroot::drawCMSleft(t_left, xshift, yshift, tsize);
+  xjjroot::drawCMSright(_t_collision, 0, 0, tsize);
+}
 
-   // TLatex* lprelim = new TLatex();
-   // lprelim->SetTextFont(52);
-   // lprelim->SetTextSize(0.032);
-   // lprelim->SetTextAlign(13);
-   // lprelim->DrawLatexNDC(0.135, 0.83, "Internal");
+void watermark_inner(bool ismc = false) {
+  watermark(ismc, 0.05, -0.1);
+}
 
-   // TLatex* linfo = new TLatex();
-   // linfo->SetTextFont(42);
-   // linfo->SetTextSize(0.032);
-   // linfo->SetTextAlign(31);
-   // linfo->DrawLatexNDC(0.89, 0.92, "PbPb #sqrt{s_{NN}} = 5.36 TeV");
+void watermark_inner_2p(bool ismc = false) {
+  watermark(ismc, 0.05, -0.15, 0.065);
 }
 
 template<typename T>

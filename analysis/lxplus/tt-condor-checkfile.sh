@@ -3,7 +3,7 @@
 # https://batchdocs.web.cern.ch/local/submit.html
 
 if [[ $# -ne 7 ]]; then
-    echo "usage: ./tt-condor-checkfile.sh [input dir] [output dir] [max jobs] [log dir] [random] [split]"
+    echo "usage: ./tt-condor-checkfile.sh [input dir] [output dir] [max jobs] [log dir] [random] [split] [drop]"
     exit 1
 fi
 

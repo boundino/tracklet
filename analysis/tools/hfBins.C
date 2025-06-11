@@ -73,7 +73,8 @@ int macro(std::string inputname, std::string outputname, std::string treevar="pi
 
   out<<std::endl;
   
-  out<<"static const float hf[21] = { 0., ";
+  out<<"static const float hf[21] = {"<<std::endl;
+  out<<"  0., ";
   for (int i=1; i<=20; i++) {
     out<<vhibins[i*10];
     if (i<20) out<<", ";

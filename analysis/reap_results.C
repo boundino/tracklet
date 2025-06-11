@@ -46,7 +46,8 @@ int reap_results(int type,
    TTree* ttruth = (TTree*)finput->Get("truth");
    tinput->AddFriend(ttruth);
 
-   if (ttruth->GetEntries("npart!=0")) {
+   bool ismc = ttruth->GetEntries("npart!=0")>0;
+   if (ismc) {
       printf("$ monte carlo analysis\n"); }
    else { printf("$ data analysis\n"); }
 
@@ -144,7 +145,7 @@ int reap_results(int type,
    for (int i=0; i<neta; i++) {
       for (int j=0; j<nvz; j++) {
          h1alpha[i][j] = new TH1F(Form("alpha_%i_%i", i, j), "", nmult, multb);
-         falpha[i][j] = new TF1(Form("falpha_%i_%i", i, j), "[0]+[1]/(x+[2])+[3]/(x*x)", 1, 30000);
+         falpha[i][j] = new TF1(Form("falpha_%i_%i", i, j), "[0]+[1]/(x+[2])+[3]/(x*x)", 1, 5000);
       }
    }
 
@@ -184,7 +185,9 @@ int reap_results(int type,
    gStyle->SetOptStat(0);
    gStyle->SetOptFit(101);
    gStyle->SetPadLeftMargin(0.15);
-
+   gStyle->SetPadTickX(1);
+   gStyle->SetPadTickY(1);
+      
    /* scratch canvas                                                          */
    TCanvas* c1 = new TCanvas("c1", "scratch", 400, 400);
    c1->Clear();
@@ -229,6 +232,7 @@ int reap_results(int type,
    TCanvas* caccepin = new TCanvas("caccepin", "", CANVASW, CANVASH);
    htitle(h2amapxev, ";#eta;v_{z}");
    h2amapxev->Draw("colz");
+   watermark(true);
    xjjroot::saveas(caccepin, Form("figs/acceptance/accep-input-%s-%i.png", label, type));
 
    /* vertex distribution                                                     */
@@ -338,6 +342,7 @@ int reap_results(int type,
       hstyle(h1teff, 38, COLOUR4); hrange(h1teff, 0, 1.2);
       htitle(h1teff, ";number of tracklets;trigger efficiency");
       h1teff->Draw();
+      watermark(ismc);
       xjjroot::saveas(ctrigger, Form("figs/corrections/trigger-%s-%i.png", label, type));
 
       /* draw single-diffractive fraction                                     */
@@ -346,6 +351,7 @@ int reap_results(int type,
       hstyle(h1sdf, 40, COLOUR5); hrange(h1sdf, -0.05, 0.2);
       htitle(h1sdf, ";number of tracklets;single-diffractive event fraction");
       h1sdf->Draw("e0");
+      watermark(ismc);
       xjjroot::saveas(csdf, Form("figs/corrections/sdfrac-%s-%i.png", label, type));
 
       /* draw alpha fits                                                      */
@@ -357,14 +363,18 @@ int reap_results(int type,
       t1->SetTextAlign(23);
 
       gStyle->SetLineScalePS(1);
-      xjjroot::mypdf pdf_alphavz(Form("figspdf/fits/alphafit-%s-%i-vz.pdf", label, type), "cfalphavz", 2400, 2000);
-      // TCanvas* cfalphavz = new TCanvas("cfalphavz", "", 2400, 2000);
+      // xjjroot::mypdf pdf_alphavz(Form("figspdf/fits/alphafit-%s-%i-vz.pdf", label, type), "cfalphavz", 2400, 2000);
+      std::string dirfits = Form("figs/fits/%s-%d/alphafit", label, type);
+      xjjroot::mkdir(dirfits);
+      TCanvas* cfalphavz = new TCanvas("cfalphavz", "", 2400, 2000);
+      cfalphavz->Divide(6, 5);
       for (int x=1; x<=neta; x++) {
-        pdf_alphavz.prepare();
-        pdf_alphavz.getc()->Divide(6, 5);
-         // pdf_alphavz.getc()->Clear("d");
+        // pdf_alphavz.prepare();
+        // pdf_alphavz.getc()->Divide(6, 5);
+        cfalphavz->Clear("d");
          for (int z=1; z<=nvz; z++) {
-            pdf_alphavz.getc()->cd(z);
+            // pdf_alphavz.getc()->cd(z);
+            cfalphavz->cd(z);
             gPad->SetLogx();
 
             halphaframe->Draw();
@@ -372,22 +382,21 @@ int reap_results(int type,
 
             t1->DrawLatexNDC(0.5, 1.0, Form("%.1f < v_{z} < %.1f", vzb[z-1], vzb[z]));
          }
-
-         pdf_alphavz.write();
-         // cfalphavz->SaveAs(Form("figs/fits/alphafit-%s-%i-eta-%i.png", label, type, x));
+         // pdf_alphavz.write();
+         cfalphavz->SaveAs(Form("%s-eta-%i.png", dirfits.c_str(), x));
       }
-      pdf_alphavz.close();
+      // pdf_alphavz.close();
 
-      xjjroot::mypdf pdf_alphaeta(Form("figspdf/fits/alphafit-%s-%i-eta.pdf", label, type), "cfalphaeta", 2400, 2400);
-      // TCanvas* cfalphaeta = new TCanvas("cfalphaeta", "", 2400, 2400);
-      // cfalphaeta->Divide(6, 6);
-
+      // xjjroot::mypdf pdf_alphaeta(Form("figspdf/fits/alphafit-%s-%i-eta.pdf", label, type), "cfalphaeta", 2400, 2400);
+      TCanvas* cfalphaeta = new TCanvas("cfalphaeta", "", 2400, 2400);
+      cfalphaeta->Divide(6, 6);
       for (int z=1; z<=nvz; z++) {
-        pdf_alphaeta.prepare();
-        pdf_alphaeta.getc()->Divide(6, 6);
-         // cfalphaeta->Clear("d");
+        // pdf_alphaeta.prepare();
+        // pdf_alphaeta.getc()->Divide(6, 6);
+         cfalphaeta->Clear("d");
          for (int x=1; x<=neta; x++) {
-            pdf_alphaeta.getc()->cd(x);
+            // pdf_alphaeta.getc()->cd(x);
+           cfalphaeta->cd(x);
             gPad->SetLogx();
 
             halphaframe->Draw();
@@ -395,18 +404,17 @@ int reap_results(int type,
 
             t1->DrawLatexNDC(0.5, 1.0, Form("%.1f < #eta < %.1f", etab[x-1], etab[x]));
          }
-
-         pdf_alphaeta.write();
-         // cfalphaeta->SaveAs(Form("figs/fits/alphafit-%s-%i-vz-%i.png", label, type, z));
+         // pdf_alphaeta.write();
+         cfalphaeta->SaveAs(Form("%s-vz-%i.png", dirfits.c_str(), z));
       }
-      pdf_alphaeta.close();
+      // pdf_alphaeta.close();
       gStyle->SetLineScalePS();
    }
 
    /* external single-diffractive fraction                                    */
    if (fes) {
       delete h1sdf; h1sdf = (TH1F*)fes->Get("h1sdf")->Clone();
-      // delete h1teff; h1teff = (TH1F*)fes->Get("h1teff")->Clone();
+      delete h1teff; h1teff = (TH1F*)fes->Get("h1teff")->Clone();
       delete h1empty; h1empty = (TH1F*)fes->Get("h1empty")->Clone();
    }
 
@@ -510,12 +518,14 @@ int reap_results(int type,
    /* draw acceptance                                                         */
    TCanvas* caccep = new TCanvas("caccep", "", CANVASW, CANVASH);
    h2amapxev->Draw("colz");
+   watermark(ismc);
    xjjroot::saveas(caccep, Form("figs/acceptance/accep-%s-%i.png", label, type));
 
    /* draw geometric acceptance                                               */
    if (faccep) {
       TCanvas* cga = new TCanvas("cga", "", CANVASW, CANVASH);
       hgaccep->Draw("colz");
+      watermark(ismc);
       xjjroot::saveas(cga, Form("figs/acceptance/ga-%s-%i.png", label, type));
    }
 
@@ -527,6 +537,7 @@ int reap_results(int type,
    h2alphafinal->SetMaximum(1.3);
    h2alphafinal->SetMinimum(0);
    h2alphafinal->Draw("colz");
+   watermark(ismc);
    xjjroot::saveas(calpha, Form("figs/corrections/alpha-%s-%i.png", label, type));
 
    /* project 1d acceptance                                                   */
@@ -647,6 +658,7 @@ int reap_results(int type,
       hstyle(h1empty, 36, COLOUR6); hrange(h1empty, 0.8, 1.2);
       htitle(h1empty, ";#eta;empty event correction");
       h1empty->Draw();
+      watermark(ismc);
       xjjroot::saveas(cempty, Form("figs/corrections/empty-%s-%i.png", label, type));
    }
 
@@ -664,7 +676,8 @@ int reap_results(int type,
    const int yrange[5][2] = {
       {80, 40}, {240, 80}, {600, 1200}, {1600, 600}, {3200, 800}};
 
-   int ymax = h1WEfinal->GetMaximum();
+   // int ymax = h1WEfinal->GetMaximum();
+   int ymax = h1WEraw->GetMaximum();
    for (int r=0; r<5; ++r) {
       if (ymax < yrange[r][0]) {
          ymax = ((ymax / yrange[r][1]) + 1) * yrange[r][1];
@@ -702,6 +715,7 @@ int reap_results(int type,
 
    cstage->Draw();
    xjjroot::mkdir("figs/stages/");
+   watermark(ismc);
    xjjroot::saveas(cstage, Form("figs/stages/stage-%s-%i.png", label, type));
 
    for (int i=0; i<neta; i++)

@@ -31,16 +31,27 @@ void setzero(TH1D* h, std::string comb);
 #define INCLUDE_ETA_RANGE
 #include "include/bins.h"
 
+// static const int good[NTRKLT2P][neta] = {
+//                                          { 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
+//                                          { 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+//                                          { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+//                                          { 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+//                                          { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+//                                          { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+//                                          { 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0 },
+//                                          { 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0 },
+//                                          { 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0 }
+// };
 static const int good[NTRKLT2P][neta] = {
-  { 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
-  { 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-  { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-  { 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-  { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-  { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-  { 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0 },
-  { 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0 },
-  { 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0 }
+                                         { 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+                                         { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+                                         { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+                                         { 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+                                         { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+                                         { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+                                         { 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
+                                         { 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1 },
+                                         { 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1 }
 };
 std::map<std::string, int> idx = {{"12", 0}, {"13", 1}, {"14", 2},
                                   {"23", 3}, {"24", 4}, {"34", 5},
@@ -51,15 +62,18 @@ int macro(std::string input_corr,
           std::string input_truth = "null",
           std::string div = "&")
 {
-  xjjroot::silence();
+  // xjjroot::silence();
   
-  std::string tag = input_corr;
+  auto tag = input_corr;
   xjjc::sconfig icomb(input_comb), itext(text, ",", div);
+  auto tsample = xjjc::str_eraseall(xjjc::str_erasestar(tag, ".*"), "CLOSE");
+  auto gtruth = new combgh1WGhadron_multfiles(input_truth, div);
+  auto isclose = xjjc::str_contains(tag, "CLOSE") && gtruth->goodkey(tsample);
 
   auto cc = colours;
   auto ms = xjjroot::markerlist_open;
 
-  std::vector<TH1D*> h1WEfinal(icomb.n(), 0);
+  std::vector<TH1D*> h1WEfinal(icomb.n(), 0), h1WEratio(icomb.n(), 0);
   for(int j=0; j<icomb.n(); j++)
     {
       h1WEfinal[j] = xjjroot::gethist<TH1D>("output/correction-"+input_corr+"-"+icomb.value[j][0]+".root::h1WEfinal");
@@ -67,29 +81,13 @@ int macro(std::string input_corr,
       setzero(h1WEfinal[j], icomb.value[j][0]);
       goodresult(h1WEfinal[j]);
       xjjroot::setthgrstyle(h1WEfinal[j], cc[j], ms[j], 0.8, cc[j]);
+
+      if (isclose) {
+        h1WEratio[j] = gtruth->closeratio(h1WEfinal[j], tsample);
+      }
     }
 
-  TLegend* legTRUTH = 0;
-  auto gh1WGhadron = combgh1WGhadron_multfiles(input_truth, legTRUTH, div);
-  // std::vector<TGraphErrors*> gh1WGhadron;
-  // if(input_truth != "null") {
-  //   xjjc::sconfig itruth(input_truth, ",", div, "v");
-  //   legTRUTH = new TLegend(0.55, 0.47-0.031*itruth.n(), 0.55+0.2, 0.47);
-  //   xjjroot::setleg(legTRUTH, 0.028);
-  //   for(int i=0; i<itruth.n(); i++) {
-  //     auto h = xjjroot::gethist<TH1D>("output/correction-"+itruth.value[i][0]+"-12.root::h1WGhadron");
-  //     if (!h) continue;
-  //     auto gh = xjjana::shifthistcenter(h, "gh1WGhadron-"+xjjc::str_erasestar(itruth.value[i][0], ".*"), 0);
-  //     xjjroot::setthgrstyle(gh, kBlack, 20, 0.8, kBlack, atoi(itruth.value[i][2].c_str()), 1);
-  //     // gh1WGhadron[i] = xjjana::shifthistcenter(h, "gh1WGhadron-"+xjjc::str_erasestar(itruth.value[i][0], ".*"), 0);
-  //     legTRUTH->AddEntry(gh,
-  //                        Form("%s", itruth.value[i][1].c_str()),
-  //                        "l");
-  //     gh1WGhadron.push_back(gh);
-  //   }
-  // }
-  
-  TH1F* havg = (TH1F*)h1WEfinal[0]->Clone("havg");
+  auto havg = (TH1F*)h1WEfinal[0]->Clone("havg");
   for(int i=1; i<=havg->GetNbinsX(); i++)
     {
       float avg = 0; float avg_err = 0; int nsum = 0;
@@ -107,60 +105,107 @@ int macro(std::string input_corr,
       havg->SetBinError(i, avg_err);
     }
   xjjroot::setthgrstyle(havg, kBlack, 21, 0.8, kBlack, 1, 1,
-                        -1, -1, -1, 0.7, 0.7);
-
-  TH1F* hsym = gethsym(havg);
-  xjjroot::setthgrstyle(hsym, kBlack, 21, 0.8, kBlack);
-  TH1F *hhigh = gethhigh(h1WEfinal),
-    *hlow = gethlow(h1WEfinal);
-  TH1F *hsymhigh = gethsymhigh(hhigh),
-    *hsymlow = gethsymlow(hlow);
-  TH1F *herr = getherr(hsym, hsymhigh, hsymlow),
-    *hrelerr = gethrelerr(hsym, hsymhigh, hsymlow);
-
-  auto hempty = makehempty(havg, ";#it{#eta};d#it{N}_{ch}/d#kern[-0.08]{#it{#eta}}", 1.7);
-  hempty->SetAxisRange(-3.2, 3.2, "X");
-  auto hemptyerr = makehempty(hrelerr, ";#it{#eta};relative error");
-  hemptyerr->SetAxisRange(-3.2, 3.2, "X");
+                        -1, -1, -1, 0.5, 0.5);
   
-  float xleg = 0.55, yleg = 0.47;
-  auto legPIX = new TLegend(0.3, yleg-0.031*h1WEfinal.size(), 0.3+0.2, yleg);
-  xjjroot::setleg(legPIX, 0.028);
-  for(int j=0; j<icomb.n(); j++)
-    {
-      auto tleg = Form("%s", tcomb(icomb.value[j][0]).c_str());
-      legPIX->AddEntry(h1WEfinal[j], tleg, "p");
-      if(std::string(tleg).size() > 20)
-        { xleg = 0.31; yleg = 0.47-0.033*h1WEfinal.size(); }
-    }
+  TH1F* havgratio = 0;
+  if (isclose) {
+    havgratio = gtruth->closeratio(havg, tsample);
+  }
+
+  auto hsym = gethsym(havg);
+  xjjroot::setthgrstyle(hsym, kBlack, 21, 0.8, kBlack);
+  auto hhigh = gethhigh(h1WEfinal),
+    hlow = gethlow(h1WEfinal);
+  auto hsymhigh = gethsymhigh(hhigh),
+    hsymlow = gethsymlow(hlow);
+  auto herr = getherr(hsym, hsymhigh, hsymlow),
+    hrelerr = gethrelerr(hsym, hsymhigh, hsymlow);
+
+  auto hempty = makehempty(gtruth->gethmax(), _t_dNdetatitle.c_str(), 1.3, 0, 10);
+  hempty->SetAxisRange(-3.2, 3.2, "X");
+  auto hemptyerr = makehempty(hrelerr, ";#it{#eta};Relative error", 1.3);
+  hemptyerr->SetAxisRange(-3.2, 3.2, "X");
+  auto hemptyratio = (TH1F*)hempty->Clone("hemptyratio");
+  hemptyratio->SetTitle(";#it{#eta};Ratio");
+  hemptyratio->SetAxisRange(-3.2, 3.2, "X");
+  hemptyratio->SetAxisRange(0.9, 1.099, "Y");
+  
+  float xleg = 0.55, yleg = isclose?0.4:0.47, txtleg = 0.028*(isclose?1.25:1.);
+  auto legPIX = new TLegend(0.3, yleg-txtleg*1.1*h1WEfinal.size(), 0.3+0.2, yleg);
+  xjjroot::setleg(legPIX, txtleg);
+  gtruth->remakeleg(-1, yleg, txtleg);
+  for(int j=0; j<icomb.n(); j++) {
+    auto tleg = tcomb(icomb.value[j][0]);
+    legPIX->AddEntry(h1WEfinal[j], tleg.c_str(), "p");
+    if(std::string(tleg).size() > 20)
+      { xleg = 0.31; yleg = 0.47-0.034*h1WEfinal.size(); }
+  }
+  auto legAVG = new TLegend(xleg, yleg-txtleg*1.1*5, xleg+0.2, yleg-txtleg*1.1*4);
+  xjjroot::setleg(legAVG, txtleg);
+  legAVG->AddEntry(havg, "Averaged", "p");
   auto legOUT = new TLegend(0.5, 0.47-0.031, 0.5+0.2, 0.47);
   xjjroot::setleg(legOUT, 0.028);
   legOUT->AddEntry(hsymhigh, "Combination deviation", "l");
   xjjroot::setgstyle(1);
+  
 
 #define DRAWTEX                                                         \
   for(int i=0; i<itext.n(); i++)                                        \
-    { xjjroot::drawtex(0.23, 0.79-i*0.033, itext.value[i][0].c_str(), 0.038, 13); } \
+    { xjjroot::drawtex(0.23, 0.79-i*0.034, itext.value[i][0].c_str(), 0.038, 13); } \
   xjjroot::drawtex(0.89, 0.81, tcent(tag).c_str(), 0.038, 31);          \
-  xjjroot::drawCMSleft(xjjroot::CMS::internal, 0.05, -0.1);                     \
-  xjjroot::drawCMSright("OO (5.36 TeV)");                             \
-  
+  watermark_inner(isclose);                                             \
+
+  TPad *p1 = 0, *p2 = 0;
   xjjroot::mypdf pdf("figspdf/avg/"+tag+".pdf", "c", 600, 600);
-  // havg
+  // h1WEfinal
   pdf.prepare();
-  hempty->Draw("axis");
-  if(input_truth != "null") {
-    for(auto& g : gh1WGhadron)
-      g->Draw("c same");
-    legTRUTH->Draw();
+  if (isclose) {
+    xjjroot::twopads(pdf.getc(), p1, p2, hempty, hemptyratio, 0.7);
+    p1->cd();
+  } else {
+    hempty->Draw("axis");
   }
+  gtruth->draw();
   for(auto& h : h1WEfinal)
     h->Draw("p same");
-  // havg->Draw("p same");
   legPIX->Draw();
   DRAWTEX;
-  pdf.write("figs/avg/"+tag+".png");
+  if (isclose) {
+    p2->cd();
+    xjjroot::drawline(-3.2, 1, 3.2, 1, kBlack, 6, 1);
+    for(auto& h : h1WEratio) {
+      h->Draw("p same");
+    }
+    pdf.getc()->cd();
+  }
+  pdf.write("figs/avg/"+tag+"-h1WEfinal.png");
 
+  // havg
+  pdf.prepare();
+  if (isclose) {
+    xjjroot::twopads(pdf.getc(), p1, p2, hempty, hemptyratio, 0.7);
+    p1->cd();
+  } else {
+    hempty->Draw("axis");
+  }
+  gtruth->draw();
+  for(auto& h : h1WEfinal)
+    h->Draw("p same");
+  havg->Draw("p same");
+  legPIX->Draw();
+  legAVG->Draw();
+  DRAWTEX;
+  if (isclose) {
+    p2->cd();
+    xjjroot::drawline(-3.2, 1, 3.2, 1, kBlack, 6, 1);
+    for(auto& h : h1WEratio) {
+      h->Draw("p same");
+    }
+    havgratio->Draw("p same");
+    pdf.getc()->cd();
+  }
+  pdf.write("figs/avg/"+tag+".png");  
+  
   // hsym
   pdf.prepare();
   hempty->Draw("axis");
@@ -175,7 +220,7 @@ int macro(std::string input_corr,
   pdf.prepare();
   hemptyerr->Draw("axis");
   hrelerr->Draw("pe same");
-  xjjroot::drawtex(0.88, 0.82-0.033, "deviation from average", 0.030, 31);
+  xjjroot::drawtex(0.23, 0.79-itext.n()*0.034, "Deviation from average", 0.038, 13);
   DRAWTEX;  
   pdf.write("figs/avg/"+tag+"-hrelerr.png");
 
@@ -192,8 +237,8 @@ int macro(std::string input_corr,
   xjjroot::writehist(hrelerr);
   for(auto& h : h1WEfinal)
     xjjroot::writehist(h);
-  for(auto& g : gh1WGhadron)
-    g->Write();
+  for(auto& g : gtruth->gh1())
+    g.second->Write();
   outf->Close();
 
   return 0;
