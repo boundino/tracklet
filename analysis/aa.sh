@@ -2,10 +2,13 @@
 
 make assess_acceps || exit 1
 
+. tool.shinc 
+
 recreate=0
 maxdr2=0.25
 tag="0p5" # 0p5
 
+# TYPES=(12 13 14 23 24 34 56 57 67 11 22 33 44 55 66 77)
 TYPES=(12 13 14 23 24 34 56 57 67)
 
 # apply
@@ -19,7 +22,7 @@ INPUTS_MC=(
 )
 
 INPUTS_DATA=(
-    /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/private/tt_250528_randomvz_pixel_250528_AMPT_NoStringMelting_OO_5360GeV_0527_v2.root,amptnm
+    /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/private/tt_250528_randomvz_pixel_250528_AMPT_NoStringMeltingp0_OO_5360GeV_0527_v2.root,amptnm2    
     # /eos/cms/store/cmst3/user/wangj/tracklet/tt_230724_randomvz_pixel_230724_HITestRaw0-6_HIRun2022A_MBPVfilTh4_362294.root,362294a
     # pre-approval
     # /eos/cms/store/group/phys_heavyions/wangj/tracklet2022/tt_230130_vzrandom_pixel_230126_HITestRaw0-6_HIRun2022A_MBPVfilTh4_362294.root,362294a
@@ -45,7 +48,7 @@ do
 
         for t in ${TYPES[@]}
         do
-            ./assess_acceps $recreate $t $maxdr2 $INPUT_DATA $INPUT_MC "output/acceptances/drlt${tag}" ${tag} &
+            ./assess_acceps $recreate $t $maxdr2 $INPUT_DATA $INPUT_MC "output/acceptances/drlt${tag}" ${tag} $taglabel[$TAG_DATA] $taglabel[$TAG_MC] &
             # ./assess_acceps $recreate $t $maxdr2 $INPUT_DATA $INPUT_MC "output/acceptances/drlt${TAG_DATA}-${TAG_MC}_${tag}" ${TAG_DATA}-${TAG_MC}_${tag} &
         done
         wait

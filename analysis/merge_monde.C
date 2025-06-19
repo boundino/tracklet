@@ -49,9 +49,9 @@ static const int good[NTRKLT2P][neta] = {
                                          { 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
                                          { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
                                          { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-                                         { 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
-                                         { 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1 },
-                                         { 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1 }
+                                         { 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0 },
+                                         { 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0 },
+                                         { 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0 }
 };
 std::map<std::string, int> idx = {{"12", 0}, {"13", 1}, {"14", 2},
                                   {"23", 3}, {"24", 4}, {"34", 5},
@@ -123,6 +123,9 @@ int macro(std::string input_corr,
 
   auto hempty = makehempty(gtruth->gethmax(), _t_dNdetatitle.c_str(), 1.3, 0, 10);
   hempty->SetAxisRange(-3.2, 3.2, "X");
+  if (isclose) {
+    hempty->SetMinimum(0.01);
+  }
   auto hemptyerr = makehempty(hrelerr, ";#it{#eta};Relative error", 1.3);
   hemptyerr->SetAxisRange(-3.2, 3.2, "X");
   auto hemptyratio = (TH1F*)hempty->Clone("hemptyratio");
@@ -178,7 +181,7 @@ int macro(std::string input_corr,
     }
     pdf.getc()->cd();
   }
-  pdf.write("figs/avg/"+tag+"-h1WEfinal.png");
+  pdf.write("figs/avg/"+tag+"-h1WEfinal.pdf");
 
   // havg
   pdf.prepare();
@@ -204,7 +207,7 @@ int macro(std::string input_corr,
     havgratio->Draw("p same");
     pdf.getc()->cd();
   }
-  pdf.write("figs/avg/"+tag+".png");  
+  pdf.write("figs/avg/"+tag+".pdf");  
   
   // hsym
   pdf.prepare();
@@ -214,7 +217,7 @@ int macro(std::string input_corr,
   hsym->Draw("p same");
   legOUT->Draw();
   DRAWTEX;
-  pdf.write("figs/avg/"+tag+"-hsym.png");
+  pdf.write("figs/avg/"+tag+"-hsym.pdf");
 
   // hrelerr
   pdf.prepare();
@@ -222,7 +225,7 @@ int macro(std::string input_corr,
   hrelerr->Draw("pe same");
   xjjroot::drawtex(0.23, 0.79-itext.n()*0.034, "Deviation from average", 0.038, 13);
   DRAWTEX;  
-  pdf.write("figs/avg/"+tag+"-hrelerr.png");
+  pdf.write("figs/avg/"+tag+"-hrelerr.pdf");
 
   pdf.close();
 

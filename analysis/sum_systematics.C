@@ -29,7 +29,7 @@ int macro(std::string input_avg, std::string tag,
   auto h1WEfinal = combh1WEfinal(iavg.value[0][0]+".root", legPIX);
   auto legTRUTH = new TLegend(0.55, 0.45-0.030*5, 0.55+0.2, 0.45-0.030);
   xjjroot::setleg(legTRUTH, 0.028);
-  auto gh1WGhadron = combgh1WGhadron(iavg.value[0][0]+".root", legTRUTH, "hijing&H#scale[0.9]{IJING},amptnm&A#scale[0.9]{MPT},amptnm2&A#scale[0.9]{MPT} #scale[0.9]{(varied params)},hydjet&H#scale[0.8]{YDJET}");
+  auto gh1WGhadron = combgh1WGhadron(iavg.value[0][0]+".root", legTRUTH, _t_truth);
 
   std::vector<float> relerr2(hsym->GetNbinsX(), 0);
   std::vector<TH1F*> hrelerr(iavg.n(), 0);

@@ -22,7 +22,7 @@ maxdr2s=(
 )
 multhandles=(
     "0,"
-    # "1,nhit2"
+    "1,nhit2"
 )
 ctableindexs=(
     "8,"

@@ -18,8 +18,11 @@ taglabel[epos]="E#scale[0.8]{POS} #scale[0.9]{LHC}"
 taglabel[hydjet]="H#scale[0.8]{YDJET}"
 taglabel[hijing]="H#scale[0.8]{IJING}"
 taglabel[amptsm]="A#scale[0.9]{MPT}#scale[0.5]{ }#scale[0.9]{(string melting)}"
-taglabel[amptnm]="A#scale[0.9]{MPT}#scale[0.5]{ }#scale[0.9]{(no melting)}"
+taglabel[amptnm]="A#scale[0.9]{MPT}"
 taglabel[amptnm2]="A#scale[0.9]{MPT}#scale[0.5]{ }#scale[0.9]{(varied params)}"
+taglabel[angantyr]="P#scale[0.9]{YTHIA}#scale[0.5]{ }#scale[0.9]{Angantyr}"
+taglabel[hijings]="H#scale[0.8]{IJING} (14_1_X)"
+taglabel[amptnm2s]="A#scale[0.9]{MPT}#scale[0.5]{ }#scale[0.9]{(varied params 14_1_X)}"
 taglabel[362294]=362294
 taglabel[362318]=362318
 

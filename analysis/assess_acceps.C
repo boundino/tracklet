@@ -4,7 +4,6 @@
 #include "TH2.h"
 #include "TH1.h"
 #include "TMath.h"
-#include "TCanvas.h"
 #include "TLegend.h"
 
 #include <string>
@@ -48,7 +47,8 @@ void print_acceps(int type, TH2D* hratio) {
 
 int assess_acceps(bool recreate, int type, float maxdr2,
                   const char* data_list, const char* mc_list,
-                  const char* path, const char* label) {
+                  const char* path, const char* label,
+                  const char* data_tag = "", const char* mc_tag = "") {
 
   TTree *tdata = 0, *tmc = 0;
   TFile* fout = 0;
@@ -123,6 +123,7 @@ int assess_acceps(bool recreate, int type, float maxdr2,
     hmccoarse->Write();
   }
 
+  gStyle->SetPadLeftMargin(0.15);
   gStyle->SetPadTickX(1);
   gStyle->SetPadTickY(1);
 
@@ -132,27 +133,32 @@ int assess_acceps(bool recreate, int type, float maxdr2,
   xjjroot::mypdf pdf(Form("figspdf/geometric/geometric-%s-%i.pdf", label, type), "c", 600, 600);
   pdf.prepare();
   hratio->Draw("colz");
+  xjjroot::drawtex(0.5, 0.8, Form("#frac{%s (MC)}{%s (data)}", mc_tag, data_tag), 0.038, 23);
   xjjana::drawhoutline(h2amapxev, kRed);
   watermark();
   pdf.write(Form("figs/corrections/geometric-%s-%i.png", label, type));
 
   pdf.prepare();
   hdata->Draw("colz");
+  xjjroot::drawtex(0.5, 0.8, Form("%s (data)", data_tag), 0.038, 23);
   watermark();
   pdf.write(Form("figs/geometric/geometric-%s-%i-hdata.png", label, type));
 
   pdf.prepare();
   hdatacoarse->Draw("colz");
+  xjjroot::drawtex(0.5, 0.8, Form("%s (data)", data_tag), 0.038, 23);
   watermark();
   pdf.write(Form("figs/geometric/geometric-%s-%i-hdatacoarse.png", label, type));
 
   pdf.prepare();
   hmc->Draw("colz");
+  xjjroot::drawtex(0.5, 0.8, Form("%s (MC)", mc_tag), 0.038, 23);
   watermark(true);
   pdf.write(Form("figs/geometric/geometric-%s-%i-hmc.png", label, type));
 
   pdf.prepare();
   hmccoarse->Draw("colz");
+  xjjroot::drawtex(0.5, 0.8, Form("%s (MC)", mc_tag), 0.038, 23);
   watermark(true);
   pdf.write(Form("figs/geometric/geometric-%s-%i-hmccoarse.png", label, type));
 
@@ -164,10 +170,12 @@ int assess_acceps(bool recreate, int type, float maxdr2,
 }
 
 int main(int argc, char* argv[]) {
+  if (argc == 10) {
+    return assess_acceps(atoi(argv[1]), atoi(argv[2]), atof(argv[3]), argv[4], argv[5], argv[6], argv[7], argv[8], argv[9]);
+  }
   if (argc == 8) {
     return assess_acceps(atoi(argv[1]), atoi(argv[2]), atof(argv[3]), argv[4], argv[5], argv[6], argv[7]);
-  } else {
-    printf("usage: ./assess_acceps [recreate] [type] [dr2] [data] [mc] [path] [label]\n");
-    return 1;
   }
+  printf("usage: ./assess_acceps [recreate] [type] [dr2] [data] [mc] [path] [label] ([data tag] [mc tag]) \n");
+  return 1;
 }

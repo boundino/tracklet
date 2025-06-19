@@ -15,9 +15,8 @@ tagverdefault="v0"
 mcdefault=hijing
 #
 TYPES=(12 13 14 23 24 34 56 57 67)
-# CENTS=(0 20)
-CENTS=()
-for i in {20..5} ; do CENTS+=($((i-1)) $i) ; done ;
+CENTS=(0 20)
+for i in {20..1} ; do CENTS+=($((i-1)) $i) ; done ;
 
 ##
 # INPUTS_MC=/eos/cms/store/cmst3/user/wangj/tracklet/tt_230724_pixel_230724_EposLHC_ReggeGribovParton_5360GeV_1255p1.root,epos
@@ -75,30 +74,36 @@ while [ $c -lt $((${#CENTS[@]}-1)) ] ; do
 
     tcgm=m # correction, geometric, acceptance map
     cgm=$(getcgm $tcgm)
-    tages=$mcdefault".m."$tagverdefault".s."$cmin"."$cmax ;
-    [[ $TAG_MC == *"$mcdefault"* ]] && {
-        # ==> tag name
-        [[ ${label:1:1} -eq 1 ]] && tages=$TAG_MC"."$tcgm"."$tagver".s."$cmin"."$cmax
-        echo '$tages : '$tages
-        # <== tag name
-        [[ ${execu:1:1} -eq 1 ]] && {
-            for t in ${TYPES[@]} ; do
-                set -x
-                ./reap_results $t $INPUT_MC $tages $cmin $cmax \
-                               0 ${cgm:0:1} ${cgm:1:1} ${cgm:2:1} "null" \
-                               $multhandle $maxdr2 0 "null" \
-                               3 "$asel" \
-                               2>&1 | tee logs/$tages-$t.txt & # \
-                    set +x
-            done # for t in ${TYPES[@]}
-            wait
-            trash figs/corrections/alpha-$tages-*.png
-            [[ $cmin -eq 0 && $cmax -eq 20 ]] || {
-                trash figs/corrections/sdfrac-$tages-*.png \
-                      figs/corrections/trigger-$tages-*.png \
-                      figs/acceptance/accep-$tages-*.png \
-                      figspdf/fits/alphafit-$tages-*.pdf
-            }
+    tagveres=$tagverdefault
+    [[ ${label:1:1} -eq 1 ]] && { tagveres=$tagver ; }
+    tages=$mcdefault".m."$tagveres".s."$cmin"."$cmax ;
+    input_cent_corr=$INPUT_MC
+    input_cent=$ctable
+    [[ $TAG_DATA == *CLOSE ]] && {
+        tages=${TAG_DATA/CLOSE/}"."$tcgm"."$tagveres".s."$cmin"."$cmax            
+        input_cent_corr=$INPUT_DATA
+        input_cent=$ctable
+    }
+    echo '$tages : '$tages
+    # <== tag name
+    [[ ${execu:1:1} -eq 1 ]] && {
+        
+        for t in ${TYPES[@]} ; do
+            set -x
+            ./reap_results $t $input_cent_corr $tages $cmin $cmax \
+                           0 ${cgm:0:1} ${cgm:1:1} ${cgm:2:1} "null" \
+                           $multhandle $maxdr2 0 "null" \
+                           $input_cent "$asel" \
+                           2>&1 | tee logs/$tages-$t.txt & # \
+                set +x
+        done # for t in ${TYPES[@]}
+        wait
+        trash figs/corrections/alpha-$tages-*.png
+        [[ $cmin -eq 0 && $cmax -eq 20 ]] || {
+            trash figs/corrections/sdfrac-$tages-*.png \
+                  figs/corrections/trigger-$tages-*.png \
+                  figs/acceptance/accep-$tages-*.png \
+                  figspdf/fits/alphafit-$tages-*.pdf
         }
     }
 
@@ -137,7 +142,7 @@ while [ $c -lt $((${#CENTS[@]}-1)) ] ; do
         done
         mergecomb=${mergecomb##,}
         # truth="epos.m.v3.s."$cmin"."$cmax"&"${taglabel[epos]}"&2,hydjet.m.v3.s."$cmin"."$cmax"&"${taglabel[hydjet]}"&1,amptsm.m.v3.s."$cmin"."$cmax"&"${taglabel[amptsm]}"&4,amptnm.m.v3.s."$cmin"."$cmax"&"${taglabel[amptnm]}"&6"
-        truth="hijing.m.v0.s."$cmin"."$cmax"&"${taglabel[hijing]}"&2","amptnm.m.v0.s."$cmin"."$cmax"&"${taglabel[amptnm]}"&6","amptnm2.m.v0.s."$cmin"."$cmax"&"${taglabel[amptnm2]}"&4","hydjet.m.v0.s."$cmin"."$cmax"&"${taglabel[hydjet]}"&1"
+        truth="hijing.m.v0.s."$cmin"."$cmax"&"${taglabel[hijing]}"&2","amptnm.m.v0.s."$cmin"."$cmax"&"${taglabel[amptnm]}"&6","amptnm2.m.v0.s."$cmin"."$cmax"&"${taglabel[amptnm2]}"&4","hydjet.m.v0.s."$cmin"."$cmax"&"${taglabel[hydjet]}"&9"
         # truth="hijing.m.v0.s."$cmin"."$cmax"&"${taglabel[hijing]}"&2,amptnm.m.v0.s."$cmin"."$cmax"&"${taglabel[amptnm]}"&6"
         ./merge_monde $tagappl "${taglabel[${TAG_DATA%%CLOSE}]} corr. w. ${taglabel[$TAG_MC]}" $mergecomb "$truth"
     }

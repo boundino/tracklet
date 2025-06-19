@@ -521,7 +521,7 @@ int compare_map_pixels(std::vector<varinfo_t> const& options,
     pdf_DRAW_2D_PIXELS_COMPARE->prepare();                              \
     hr##q[j]->Draw("colz");                                             \
     watermark();                                                        \
-    pdf_DRAW_2D_PIXELS_COMPARE->write(Form("figs/ratio/ratio-%s-l" #q "-%s-%s.png", \
+    pdf_DRAW_2D_PIXELS_COMPARE->write(Form("figs/pixel/ratio-%s-l" #q "-%s-%s.png", \
                                            OS(id), label, tags[j].data())); \
   }                                                                     \
 
@@ -642,7 +642,7 @@ int compare_map_tracklets(std::vector<varinfo_t> const& options,
     hr##q##w[j]->Draw("colz");                                          \
     watermark();                                                        \
                                                                         \
-    pdf_DRAW_2D_TRACKLETS_COMPARE->write(Form("figs/ratio/ratio-%s-t" #q #w "-%s-%s.png", \
+    pdf_DRAW_2D_TRACKLETS_COMPARE->write(Form("figs/tracklet/ratio-%s-t" #q #w "-%s-%s.png", \
                                               OS(id), label, tags[j].data())); \
   }                                                                     \
   

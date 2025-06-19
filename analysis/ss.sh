@@ -9,9 +9,8 @@ group="amptnm2CLOSE.cm.hijing.m.v0"
 group_default="amptnm2CLOSE.cm.hijing.m.v0"
 mcdefault=hijing
 
-# CENTS=(4 20)
 CENTS=(0 20)
-for i in {20..5} ; do CENTS+=($((i-1)) $i) ; done ;
+for i in {20..1} ; do CENTS+=($((i-1)) $i) ; done ;
 
 ##
 c=0
@@ -20,18 +19,18 @@ while [ $c -lt $((${#CENTS[@]}-1)) ] ; do
     cmax=${CENTS[c+1]}
 
     CONFIGS=(
-        "${group}.s.$cmin.$cmax&#Deltar < 0.5","${group}-drlt0p4.s.$cmin.$cmax&#Deltar < 0.4","${group}-drlt0p6.s.$cmin.$cmax&#Deltar < 0.6%dr-${group}.s.$cmin.$cmax%${taglabel[amptnm2]} corr. w. ${taglabel[$mcdefault]}%1%tracklet #Deltar selection"
-        "${group}.s.$cmin.$cmax&-15 < v_{z} < 15","${group}-vz1.s.$cmin.$cmax&-10 < v_{z} < -5","${group}-vz2.s.$cmin.$cmax&-5 < v_{z} < 0","${group}-vz3.s.$cmin.$cmax&0 < v_{z} < 5","${group}-vz4.s.$cmin.$cmax&5 < v_{z} < 10%vz-${group}.s.$cmin.$cmax%${taglabel[amptnm2]} corr. w. ${taglabel[$mcdefault]}%1%event v_{z}"
-        "${group}.s.$cmin.$cmax&${taglabel[$mcdefault]}","${group/$mcdefault/hydjet}.s.$cmin.$cmax&${taglabel[hydjet]}","${group/$mcdefault/amptnm}.s.$cmin.$cmax&${taglabel[amptnm]}%mc-${group/$mcdefault/amptnm2}.s.$cmin.$cmax%${taglabel[amptnm2]} corr. w. different MC%1%model dependence"
-        # "${group}.s.$cmin.$cmax&nominal","${group}-split.s.$cmin.$cmax&pixel splitting%split-${group}.s.$cmin.$cmax%${taglabel[amptnm2]} corr. w. ${taglabel[$mcdefault]}%1%pixel splitting"
-        # "${group}.s.$cmin.$cmax&nominal","${group}-hfeffup.s.$cmin.$cmax&centrality up","${group}-hfeffdown.s.$cmin.$cmax&centrality down%ctable-${group}.s.$cmin.$cmax%${taglabel[amptnm2]} corr. w. ${taglabel[$mcdefault]}%1%centrality table"
+        "${group}.s.$cmin.$cmax&#Deltar < 0.5","${group}-drlt0p4.s.$cmin.$cmax&#Deltar < 0.4","${group}-drlt0p6.s.$cmin.$cmax&#Deltar < 0.6"%"dr-${group}.s.$cmin.$cmax"%"${taglabel[amptnm2]} corr. w. ${taglabel[$mcdefault]}"%"1"%"tracklet #Deltar selection"
+        "${group}.s.$cmin.$cmax&-15 < v_{z} < 15","${group}-vz1.s.$cmin.$cmax&-10 < v_{z} < -5","${group}-vz2.s.$cmin.$cmax&-5 < v_{z} < 0","${group}-vz3.s.$cmin.$cmax&0 < v_{z} < 5","${group}-vz4.s.$cmin.$cmax&5 < v_{z} < 10"%"vz-${group}.s.$cmin.$cmax"%"${taglabel[amptnm2]} corr. w. ${taglabel[$mcdefault]}"%"1"%"event v_{z}"
+        "${group}.s.$cmin.$cmax&${taglabel[$mcdefault]}","${group/$mcdefault/hydjet}.s.$cmin.$cmax&${taglabel[hydjet]}","${group/$mcdefault/amptnm}.s.$cmin.$cmax&${taglabel[amptnm]}","${group/$mcdefault/amptnm2}.s.$cmin.$cmax&${taglabel[amptnm2]}""%""mc-${group}.s.$cmin.$cmax"%"${taglabel[amptnm2]} corr. w. different MC"%"1"%"model dependence"
+        "${group}.s.$cmin.$cmax&number of tracklets","${group}-nhit2.s.$cmin.$cmax&number of hits"%"mult-${group}.s.$cmin.$cmax"%"${taglabel[amptnm2]} corr. w. ${taglabel[$mcdefault]}"%"1"%"correction factorization"
+        # "${group}.s.$cmin.$cmax&nominal","${group}-split.s.$cmin.$cmax&pixel splitting"%"split-${group}.s.$cmin.$cmax"%"${taglabel[amptnm2]} corr. w. ${taglabel[$mcdefault]}"%"1"%"pixel splitting"
+        # "${group}.s.$cmin.$cmax&nominal","${group}-hfeffup.s.$cmin.$cmax&centrality up","${group}-hfeffdown.s.$cmin.$cmax&centrality down"%"ctable-${group}.s.$cmin.$cmax"%"${taglabel[amptnm2]} corr. w. ${taglabel[$mcdefault]}"%"1"%"centrality table"
     )
     [[ $cmin -eq 0 && $cmax -eq 20 ]] && {
         CONFIGS+=(
-            "${group}.s.$cmin.$cmax&tracklet count.","${group}-clus.s.$cmin.$cmax&pixel count.%method-${group}.s.$cmin.$cmax%${taglabel[amptnm2]} corr. w. ${taglabel[${mcdefault}]}%0%-"
-            "${group}.s.$cmin.$cmax&number of tracklets","${group}-nhit2.s.$cmin.$cmax&number of hits%mult-${group}.s.$cmin.$cmax%${taglabel[amptnm2]} corr. w. ${taglabel[$mcdefault]}%1%correction factorization"
-            # "${group}.s.$cmin.$cmax&${taglabel[amptnm]}","${group/${taglabel[amptnm]}/362318}.s.$cmin.$cmax&362318%run-cgm.${mcdefault}.m.v3.s.$cmin.$cmax%Different run corr. w. ${taglabel[${mcdefault}]}%0%-"
-            # "${group}.s.$cmin.$cmax&all lumi","${group}-lumi0.s.$cmin.$cmax&1 <= lumi < 20","${group}-lumi1.s.$cmin.$cmax&20 <= lumi < 40","${group}-lumi2.s.$cmin.$cmax&40 <= lumi < 54%lumi-${group}.s.$cmin.$cmax%${taglabel[amptnm2]} corr. w. ${taglabel[${mcdefault}]}%0%-"            
+            "${group}.s.$cmin.$cmax&tracklet count.","${group}-clus.s.$cmin.$cmax&pixel count."%"method-${group}.s.$cmin.$cmax"%"${taglabel[amptnm2]} corr. w. ${taglabel[${mcdefault}]}"%"0"%"-"
+            # "${group}.s.$cmin.$cmax&${taglabel[amptnm]}","${group/${taglabel[amptnm]}/362318}.s.$cmin.$cmax&362318"%"run-cgm.${mcdefault}.m.v3.s.$cmin.$cmax"%"Different run corr. w. ${taglabel[${mcdefault}]}"%"0"%"-"
+            # "${group}.s.$cmin.$cmax&all lumi","${group}-lumi0.s.$cmin.$cmax&1 <= lumi < 20","${group}-lumi1.s.$cmin.$cmax&20 <= lumi < 40","${group}-lumi2.s.$cmin.$cmax&40 <= lumi < 54"%"lumi-${group}.s.$cmin.$cmax"%"${taglabel[amptnm2]} corr. w. ${taglabel[${mcdefault}]}"%"0"%"-"            
         )
     }
 

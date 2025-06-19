@@ -71,7 +71,7 @@ int reap_results(int type,
    TFile* fes = 0;
    if (strcmp(estag, "null")) {
       fes = new TFile(Form("output/correction-%s-%i.root", estag, type));
-      printf("$ applying external event selection corrections\n");
+      printf("$ applying external event selection corrections: %s\n", Form("output/correction-%s-%i.root", estag, type));
    }
 
    TFile* fpu = 0;

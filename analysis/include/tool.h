@@ -16,6 +16,8 @@ std::string _t_hep_dNdeta = "\\mathrm{d}N_{\\mathrm{ch}}/\\mathrm{d}\\eta";
 
 std::string _t_dNdetatitle = ";#it{#eta};d#it{N}_{ch}/d#kern[-0.08]{#it{#eta}}";
 
+std::string _t_truth = "hijing&H#scale[0.9]{IJING}&2,amptnm&A#scale[0.9]{MPT}&6,amptnm2&A#scale[0.9]{MPT}#scale[0.5]{ }#scale[0.9]{(varied params)}&4,hydjet&H#scale[0.8]{YDJET}&9";
+
 static const int goodrange[] = { 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0 };
 void goodresult(TH1* h, const int* goodbin = goodrange) {
   for(int i=0; i<h->GetXaxis()->GetNbins(); i++) {
@@ -203,8 +205,8 @@ std::vector<TGraphErrors*> combgh1WGhadron(std::string filename,
     std::cout<<filename<<std::endl;
     auto gr = xjjroot::gethist<TGraphErrors>(filename + "::gh1WGhadron-"+itruth.value[i][0]);
     if(!gr) continue;
-    if(xjjc::str_contains(itruth.value[i][0], "amptsm"))
-      gr->SetLineStyle(9);
+    if (itruth.value[i].size() > 2)
+      gr->SetLineStyle(atoi(itruth.value[i][2].c_str()));
     gh1WGhadron.push_back(gr);
     legTRUTH->AddEntry(gr, Form("%s", itruth.value[i][1].c_str()), "l");
   }

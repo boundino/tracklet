@@ -15,32 +15,40 @@
 #include "include/hepdata.h"
 
 #define NCENT   20
-#define OFFSET  4
+#define OFFSET  0 // 4
 
-// https://twiki.cern.ch/twiki/bin/view/CMS/Glauber5360GeVPbPb
+const float _2a = 32;
+// https://indico.cern.ch/event/1553375/contributions/6541187/attachments/3080800/5453158/o_glauber_040625.pdf
 const float npart[NCENT] = {
-                            3.105   , 4.471   , 6.289   , 9.047   , 13.10  ,
-                            18.76  , 26.32  , 35.68  , 47.16  , 61.08  ,
-                            77.36  , 96.32  , 118.2 , 143.2  , 171.7 ,
-                            204.1 , 241.0 , 283.3 , 331.3 , 382.3
+                            0, 0, 0, 0, 0,
+                            0, 4.67465, 5.51457, 6.45313, 7.52777,
+                            8.82114, 10.242, 11.7848, 13.5512, 15.5194,
+                            17.6784, 19.9881, 22.4748, 24.9794, 27.444
 };
 
 const float nparterr[NCENT] = {
-                               0.414 , 0.367   , 0.136  , 0.236  , 0.37  ,
-                               0.59 ,  0.79  ,  0.94 ,  1.17 ,  1.21 ,
-                               1.34 ,  1.32  ,  1.4 ,  1.5 ,  1.5 ,
-                               1.5 ,   1.4 ,  1.4 ,  1.3 ,  1.6
+                               0, 0, 0, 0, 0,
+                               0, 0, 0, 0, 0,
+                               0, 0, 0, 0, 0,
+                               0, 0, 0, 0, 0,
 };
 
 void printnpart() {
   for (int i=NCENT-1; i>=0; i--) {
-    std::cout<<(NCENT-i-1)*5<<"--"<<(NCENT-i)*5<<" & $"<<Form("%.1f", npart[i])<<" \\pm "<<Form("%.1f", nparterr[i])<<"$ \\\\"<<std::endl;
+    std::cout<<(NCENT-i-1)*5<<"--"<<(NCENT-i)*5<<" & $"<<Form("%.3f", npart[i])<<" \\pm "<<Form("%.3f", nparterr[i])<<"$ \\\\"<<std::endl;
   }
 }
 
-// std::string cmsprel = "#scale[1.1]{#bf{CMS}} #scale[0.9]{#it{Preliminary}}";
-// std::string cmsprel = "#scale[1.1]{#bf{CMS}}";
-  
+template <class T>
+void cleangrzero(T* gr) {
+  for (int i=0; i<gr->GetN();) {
+    if (gr->GetPointY(i) < 1.e-8) {
+      gr->RemovePoint(i);
+      continue;
+    }
+    i++;
+  }
+}
 void drawdNdeta(xjjroot::mypdf& pdf, std::string tag);
 int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
   auto label = tag;
@@ -52,6 +60,7 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
   //                         "recreate");
 
   TGraphErrors* g = new TGraphErrors(ntotal); g->SetName("g");
+  xjjana::grzero(g);
   gstyle(g, 21, COLOUR0, 1.4); g->SetFillColorAlpha(COLOUR0, 0.5);
   TGraphErrors* g2a = (TGraphErrors*)g->Clone("g2a");
   gstyle(g2a, 21, COLOUR0, 1.4); g2a->SetFillColorAlpha(COLOUR0, 0.3);
@@ -65,8 +74,10 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
   gnorm2a2a->SetLineWidth(1);
   gnorm2a2a->SetLineStyle(2);
   TGraph* gsnp = new TGraph(2 * ntotal + 2);
+  xjjana::grzero(gsnp);
   gstyle(gsnp, 21, COLOUR0, 1.4); gsnp->SetFillColorAlpha(COLOUR0, 0.2);
   TGraph* gsnp2a = new TGraph(2 * ntotal + 2);
+  xjjana::grzero(gsnp2a);
   gstyle(gsnp2a, 21, COLOUR0, 1.4); gsnp2a->SetFillColorAlpha(COLOUR0, 0.2);
 
   for (int c = OFFSET; c < NCENT; c+=1) {
@@ -83,43 +94,52 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
     g->SetPoint(cindex, 5 * c + 2.5, midy);
     g->SetPointError(cindex, 0, midyerr);
 
-    g2a->SetPoint(cindex, 5 * c + 2.5, midy / 32.);
-    g2a->SetPointError(cindex, 0, midyerr / 32.);
+    g2a->SetPoint(cindex, 5 * c + 2.5, midy / _2a);
+    g2a->SetPointError(cindex, 0, midyerr / _2a);
 
     float mnpart = npart[c]; float mnparterr = nparterr[c];
 
+    if (mnpart == 0) continue;
+    
     switch (cindex) {
     case 0:
       gsnp->SetPoint(0, mnpart - mnparterr,
                      (midy - midyerr) / (mnpart - mnparterr));
-      gsnp2a->SetPoint(0, (mnpart - mnparterr) / 32.,
+      gsnp2a->SetPoint(0, (mnpart - mnparterr) / _2a,
                        (midy - midyerr) / (mnpart - mnparterr));
       break;
     case ntotal - 1:
       gsnp->SetPoint(ntotal + 1, mnpart + mnparterr,
                      (midy + midyerr) / (mnpart + mnparterr));
-      gsnp2a->SetPoint(ntotal + 1, (mnpart + mnparterr) / 32.,
+      gsnp2a->SetPoint(ntotal + 1, (mnpart + mnparterr) / _2a,
                        (midy + midyerr) / (mnpart + mnparterr));
       break;
     }
 
-    std::cout<<cindex<<" "<<midy<<" +- "<<midyerr<<std::endl;
     gnorm->SetPoint(cindex, mnpart, midy / mnpart);
     gnorm->SetPointError(cindex, mnparterr, midyerr / mnpart);
     gsnp->SetPoint(cindex + 1, mnpart - mnparterr,
                    (midy + midyerr) / (mnpart - mnparterr));
     gsnp->SetPoint(2 * ntotal - cindex + 1, mnpart + mnparterr,
                    (midy - midyerr) / (mnpart + mnparterr));
-    gnorm2a->SetPoint(cindex, mnpart / 32., midy / mnpart);
-    gnorm2a->SetPointError(cindex, mnparterr / 32., midyerr / mnpart);
-    gsnp2a->SetPoint(cindex + 1, (mnpart - mnparterr) / 32.,
+    gnorm2a->SetPoint(cindex, mnpart / _2a, midy / mnpart);
+    gnorm2a->SetPointError(cindex, mnparterr / _2a, midyerr / mnpart);
+    gsnp2a->SetPoint(cindex + 1, (mnpart - mnparterr) / _2a,
                      (midy + midyerr) / (mnpart - mnparterr));
-    gsnp2a->SetPoint(2 * ntotal - cindex + 1, (mnpart + mnparterr) / 32.,
+    gsnp2a->SetPoint(2 * ntotal - cindex + 1, (mnpart + mnparterr) / _2a,
                      (midy - midyerr) / (mnpart + mnparterr));
-    gnorm2a2a->SetPoint(cindex, mnpart / 32., midy / 32.);
-    gnorm2a2a->SetPointError(cindex, mnparterr / 32., midyerr / 32.);
+    gnorm2a2a->SetPoint(cindex, mnpart / _2a, midy / _2a);
+    gnorm2a2a->SetPointError(cindex, mnparterr / _2a, midyerr / _2a);
   }
 
+  cleangrzero(gnorm);
+  cleangrzero(gsnp);
+  cleangrzero(gnorm2a);
+  cleangrzero(gsnp2a);
+  cleangrzero(gnorm2a2a);
+  
+  xjjroot::printgrvalue(g);
+  
   // fout->cd();
 
   TGraphErrors* gcms_pbpb_2p76 = cms_pbpb_2p76();
@@ -145,7 +165,7 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
   TH1F* gframe = new TH1F("gframe", "", 1, 0, 100);
   xjjroot::sethempty(gframe, 0, 0);
   gframe->SetLabelOffset(999, "X"); gframe->SetTickLength(0, "X");
-  htitle(gframe, ";Centrality (%);" + _t_dNdeta + " " + _t_eta0p5);
+  htitle(gframe, ";Centrality (%);" + _t_dNdeta + "#scale[0.5]{ }" + _t_eta0p5);
   hrange(gframe, 1.5, 4000);
 
   pdf.prepare();
@@ -206,7 +226,7 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
                                   {"'$|\\eta|$'", "", "< 0.5"} }
                                 );
   hep_Table_2a.print(outf_Table_2a, 0, 1, 0, 80);
-
+  
   pdf.getc()->SetLogy(0);
 
   TGraphErrors* gcms_pbpb_2p76_n2a = cms_pbpb_2p76_n2a();
@@ -228,7 +248,7 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
   TH1F* g2aframe = new TH1F("g2aframe", "", 1, 0, 100);
   xjjroot::sethempty(g2aframe, 0, 0);
   g2aframe->SetLabelOffset(999, "X"); g2aframe->SetTickLength(0, "X");
-  htitle(g2aframe, ";Centrality (%);" + _t_2a + "#kern[-0.1]{ }" + _t_dNdeta + " " + _t_eta0p5);
+  htitle(g2aframe, ";Centrality (%);" + _t_2a + "#scale[0.5]{ }" + _t_dNdeta + "#scale[0.5]{ }" + _t_eta0p5);
   g2aframe->SetTitleOffset(1.3, "Y");
   hrange(g2aframe, 1.e-5, 5.5); g2aframe->Draw();
   TGaxis* axis2 = new TGaxis(100, 0, 0, 0, 0, 100, 510, "-");
@@ -245,6 +265,7 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
   galice_pbpb_5p02_n2a->Draw("pX same");
   gphobos_auau_0p2_n2a->Draw("pX same"); gphobos_cucu_0p2_n2a->Draw("pX same");
   g2a->Draw("pX same");
+  xjjroot::printgrvalue(g2a);
 
   watermark_inner(ismc);
   // xjjroot::drawCMSleft(cmsprel.c_str(), 0.05, -0.1); // Preliminary
@@ -316,7 +337,7 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
   TH1F* gnframe = new TH1F("gnframe", "", 1, -20, 420);
   xjjroot::sethempty(gnframe, 0, 0);
   // htitle(gnframe, ";N_{part};#frac{dN}{d#eta}#lbar_{#eta=0}/#LTN_{part}#GT");
-  htitle(gnframe, ";" + _t_npart + ";" + _t_1npart + "#kern[-0.1]{ }" + _t_dNdeta + " " + _t_eta0p5);
+  htitle(gnframe, ";" + _t_npart + ";" + _t_1npart + "#scale[0.5]{ }" + _t_dNdeta + "#scale[0.5]{ }" + _t_eta0p5);
   gnframe->SetTitleOffset(1.3, "Y");
   hrange(gnframe, 0, 6); gnframe->Draw();
 
@@ -332,6 +353,7 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
   galice_pbpb_5p02_nnpart_x_npart->Draw("pX same");
   gphobos_auau_0p2_nnpart_x_npart->Draw("pX same"); gphobos_cucu_0p2_nnpart_x_npart->Draw("pX same");
   gnorm->Draw("pX same");
+  xjjroot::printgrvalue(gnorm);
 
   watermark_inner(ismc);
   // xjjroot::drawCMSleft(cmsprel.c_str(), 0.05, -0.1); // Preliminary
@@ -421,7 +443,7 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
   pdf.prepare();
   TH1F* gn2aframe = new TH1F("gn2aframe", "", 1, -0.02, 1);
   xjjroot::sethempty(gn2aframe, 0, 0);
-  htitle(gn2aframe, ";" + _t_npart + "" + _t_slash + "2#it{A};" + _t_1npart + "#kern[-0.1]{ }" + _t_dNdeta + " " + _t_eta0p5);
+  htitle(gn2aframe, ";" + _t_npart + "" + _t_slash + "2#it{A};" + _t_1npart + "#scale[0.5]{ }" + _t_dNdeta + "#scale[0.5]{ }" + _t_eta0p5);
   gn2aframe->SetTitleOffset(1.3, "Y");
   hrange(gn2aframe, 0, 6); gn2aframe->Draw();
 
@@ -437,7 +459,8 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
   galice_pbpb_5p02_nnpart_x_npart2a->Draw("pX same");
   gphobos_auau_0p2_nnpart_x_npart2a->Draw("pX same"); gphobos_cucu_0p2_nnpart_x_npart2a->Draw("pX same");
   gnorm2a->Draw("pX same");
-
+  xjjroot::printgrvalue(gnorm2a);
+  
   watermark_inner(ismc);
   // xjjroot::drawCMSleft(cmsprel.c_str(), 0.05, -0.1); // Preliminary
   // xjjroot::drawCMSright("OO (5.36 TeV)");
@@ -508,7 +531,7 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
   pdf.prepare();
   TH1F* gn2a2aframe = new TH1F("gn2a2aframe", "", 1, -0.02, 1);
   xjjroot::sethempty(gn2a2aframe, 0, 0);
-  htitle(gn2a2aframe, ";" + _t_npart + "" + _t_slash + "2#it{A};" + _t_2a + "#kern[-0.1]{ }" + _t_dNdeta + " " + _t_eta0p5);
+  htitle(gn2a2aframe, ";" + _t_npart + "" + _t_slash + "2#it{A};" + _t_2a + "#scale[0.5]{ }" + _t_dNdeta + "#scale[0.5]{ }" + _t_eta0p5);
   gn2a2aframe->SetTitleOffset(1.3, "Y");
   hrange(gn2a2aframe, 0, 6); gn2a2aframe->Draw();
 
@@ -522,6 +545,7 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
   galice_pbpb_5p02_n2a_x_npart2a->Draw("pX same");
   gphobos_auau_0p2_n2a_x_npart2a->Draw("pX same"); gphobos_cucu_0p2_n2a_x_npart2a->Draw("pX same");
   gnorm2a2a->Draw("pX same");
+  xjjroot::printgrvalue(gnorm2a2a);
 
   watermark_inner(ismc);
   // xjjroot::drawCMSleft(cmsprel.c_str(), 0.05, -0.1); // Preliminary
@@ -616,7 +640,7 @@ spectrum::spectrum(std::string filename, std::string title, float xleg, float yl
   xjjroot::setleg(leg, 0.038);
   leg->AddEntry((TObject*)0, Form("#bf{%s}", title.c_str()), NULL);
   leg->AddEntry(gsyst, "Data", "pf");
-  gh1WGhadron = combgh1WGhadron(filename, leg, "hijing&H#scale[0.9]{IJING},amptnm&A#scale[0.9]{MPT},amptnm2&A#scale[0.9]{MPT} #scale[0.9]{(varied params)},hydjet&H#scale[0.8]{YDJET}");
+  gh1WGhadron = combgh1WGhadron(filename, leg, _t_truth);
 
   gsyst_ratio = (TGraphErrors*)gsyst->Clone("gsyst_ratio");
   for (int i=0; i<gsyst->GetN(); i++) {
@@ -743,7 +767,7 @@ void drawdNdeta(xjjroot::mypdf& pdf, std::string tag) {
   // xjjroot::drawCMSright("OO (5.36 TeV)", 0, 0, 0.055);
   p2->cd();
   drawNormtext();
-  sp_0_20.gsyst_ratio->Draw("p2 same");
+  sp_0_20.gsyst_ratio->Draw("2 same");
   for(auto& gg : sp_0_20.gratio) {
     gg->Draw("c same");
   }
@@ -890,8 +914,8 @@ void drawdNdeta(xjjroot::mypdf& pdf, std::string tag) {
   // xjjroot::drawCMSleft(cmsprel.c_str(), 0.05, -0.15, 0.065); /*Preliminary*/
   // xjjroot::drawCMSright("OO (5.36 TeV)", 0, 0, 0.055);
   p22->cd();
-  sp_19_20.gsyst_ratio->Draw("p2 same");
-  sp_9_10.gsyst_ratio->Draw("p2 same");
+  sp_19_20.gsyst_ratio->Draw("2 same");
+  sp_9_10.gsyst_ratio->Draw("2 same");
   for(auto& gg : sp_19_20.gratio) {
     gg->Draw("c same");
   }
