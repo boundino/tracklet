@@ -94,20 +94,25 @@ void pixgeo::parsevar(std::string var, std::string &x, std::string &y, std::stri
 void pixgeo::draw(std::string var, int layer) {
   std::string x, y, opt;
   parsevar(var, x, y, opt);
-  std::cout<<__FUNCTION__<<": "<<x<<" "<<y<<" "<<opt<<std::endl;
+  std::cout<<__PRETTY_FUNCTION__<<": "<<x<<" "<<y<<" "<<opt<<std::endl;
   if (std::find(m_var.begin(), m_var.end(), x) == m_var.end() ||
       std::find(m_var.begin(), m_var.end(), y) == m_var.end())
     return;
+  bool berrel = layer < 5;
   std::vector<mod> modules;
-  if (layer < 5) modules = m_bpix[layer-1];
+  if (berrel) modules = m_bpix[layer-1];
   else {
     if (xjjc::str_contains(opt, "plus")) modules = m_fpix_plus[layer-5];
     else modules = m_fpix_minus[layer-5];
   }
   for (auto mm : modules) {
     double shifty = 0.;
+    float angle = 0;
+    if (!berrel) {
+      angle = std::atan( mm.pos[y]/ mm.pos[x] ) / M_PI * 180;
+    }
     // xjjroot::drawtexnum(mm.pos[x], mm.pos[y] + shifty, Form("%d", mm.rawid),
     xjjroot::drawtexnum(mm.pos[x], mm.pos[y] + shifty, int_to_hex(mm.rawid).c_str(),
-                        0.015, 22, 62, kBlack, 0);
+                        0.015, 22, 62, kBlack, angle);
   }
 }
