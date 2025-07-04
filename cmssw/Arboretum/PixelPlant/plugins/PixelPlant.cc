@@ -47,9 +47,22 @@
 #include "DataFormats/TrackerRecHit2D/interface/SiPixelRecHitCollection.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
-#include <DataFormats/HeavyIonEvent/interface/ClusterCompatibility.h>
+#include "DataFormats/HeavyIonEvent/interface/ClusterCompatibility.h"
 #include "DataFormats/PatCandidates/interface/PackedCandidate.h"
+#include "DataFormats/HcalDigi/interface/HcalQIESample.h"
+#include "DataFormats/HcalDigi/interface/HcalDigiCollections.h"
+#include "DataFormats/HcalDetId/interface/HcalDetId.h"
 
+#include "CalibFormats/HcalObjects/interface/HcalDbService.h"
+#include "CalibFormats/HcalObjects/interface/HcalDbRecord.h"
+#include "CalibFormats/HcalObjects/interface/HcalCoderDb.h"
+#include "CondFormats/HcalObjects/interface/HcalQIEShape.h"
+#include "CalibFormats/HcalObjects/interface/HcalCalibrations.h"
+#include "DataFormats/HcalRecHit/interface/HcalRecHitCollections.h"
+#include "DataFormats/HcalDetId/interface/HcalSubdetector.h"
+
+#include "Geometry/HcalCommonData/interface/HcalDDDRecConstants.h"
+#include "Geometry/CaloTopology/interface/HcalTopology.h"
 #include "SimDataFormats/GeneratorProducts/interface/HepMCProduct.h"
 #include "SimDataFormats/Vertex/interface/SimVertexContainer.h"
 
@@ -104,7 +117,10 @@ struct PixelEvent {
    float hft;
    float hftp;
    float hftm;
-
+  // hf adc
+   int maxhfadcp;
+   int maxhfadcn;
+  
 #define STRUCT(q)                                                             \
    int nhits##q;                                                              \
    float eta##q[MAXHITS];                                                     \
@@ -153,6 +169,7 @@ class PixelPlant : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
       void fill_beamspot(const edm::Event&);
       void fill_vertices(const edm::Event&);
       void fill_hf(const edm::Event&);
+      void fill_hfadc(const edm::Event&);
       void fill_pixels(const edm::Event&);
       void fill_particles(const edm::Event&);
       void fill_cluscomp(const edm::Event&);
@@ -161,6 +178,7 @@ class PixelPlant : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
       bool fillhlt_;
       bool fillgen_;
       bool fillhf_;
+      bool fillhfadc_;
       bool fillcluscomp_;
 
       edm::EDGetTokenT<edm::TriggerResults> hlt_;
@@ -171,6 +189,7 @@ class PixelPlant : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
       std::vector<edm::EDGetTokenT<reco::VertexCollection>> vertices_;
       edm::EDGetTokenT<CaloTowerCollection> towers_;
       edm::EDGetTokenT<pat::PackedCandidateCollection> pfcands_;
+      edm::EDGetTokenT<QIE10DigiCollection> hfqie_;
       edm::EDGetTokenT<SiPixelRecHitCollection> pixels_;
       edm::EDGetTokenT<edm::HepMCProduct> generator_;
   edm::EDGetTokenT<reco::ClusterCompatibility> cluscomp_;
@@ -182,6 +201,9 @@ class PixelPlant : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
       edm::ESGetToken<TrackerGeometry, TrackerDigiGeometryRecord> geo_token_;
       edm::ESHandle<TrackerTopology> topo_;
       edm::ESGetToken<TrackerTopology, TrackerTopologyRcd> topo_token_;
+  edm::ESHandle<HcalDbService> hcal_;
+  edm::ESGetToken<HcalDbService, HcalDbRecord> hcal_token_;
+
 
       edm::Service<edm::service::TriggerNamesService> nameserv_;
 
@@ -219,7 +241,8 @@ PixelPlant::PixelPlant(const edm::ParameterSet& iConfig) {
 
    pdt_token_ = esConsumes();
    geo_token_ = esConsumes();
-   topo_token_ = esConsumes();   
+   topo_token_ = esConsumes();
+   hcal_token_ = esConsumes();
 
    beamspot_ = consumes<reco::BeamSpot>(iConfig.getParameter<edm::InputTag>("beamspot_tag"));
    for (const auto& tag : iConfig.getParameter<std::vector<edm::InputTag>>("vertex_tags"))
@@ -241,6 +264,11 @@ PixelPlant::PixelPlant(const edm::ParameterSet& iConfig) {
    if (fillhf_) {
       towers_ = consumes<CaloTowerCollection>(iConfig.getParameter<edm::InputTag>("hf_tag"));
       pfcands_ = consumes<pat::PackedCandidateCollection>(iConfig.getParameter<edm::InputTag>("hf_tag"));
+   }
+
+   fillhfadc_ = iConfig.getParameter<bool>("fillhfadc");
+   if (fillhfadc_) {
+     hfqie_ = consumes<QIE10DigiCollection>(iConfig.getParameter<edm::InputTag>("hfadc_tag"));
    }
 
    fillgen_ = iConfig.getParameter<bool>("fillgen");
@@ -405,6 +433,49 @@ void PixelPlant::fill_hf(const edm::Event& iEvent) {
    pix_.hft = hftp + hftm;
    pix_.hftp = hftp;
    pix_.hftm = hftm;
+}
+
+void PixelPlant::fill_hfadc(const edm::Event& iEvent) {
+
+  int maxhfadcp = -1, maxhfadcn = -1;
+
+  edm::Handle<QIE10DigiCollection> digi;
+  iEvent.getByToken(hfqie_, digi);
+  CaloSamples tool;
+
+  for (auto& it : *digi) {
+    const QIE10DataFrame& frame(it);
+    const HcalDetId cell(frame.id());
+    int sub = cell.subdet();
+    if(sub != HcalSubdetector::HcalForward) continue; // DataFormats/HcalDetId/interface/HcalSubdetector.h
+    if (cell.depth() > 4) continue;
+
+    const HcalQIECoder* channelCoder = hcal_->getHcalCoder(cell);
+    const HcalQIEShape* shape = hcal_->getHcalShape(channelCoder);
+    HcalCoderDb coder(*channelCoder, *shape);
+    coder.adc2fC(frame, tool);
+      
+    if(frame.samples() != tool.size()) { edm::LogError("HFAdcToGeV") << "frame.samples() != tool.size()"; break; }
+    
+    int soi = tool.presamples();
+    int ampl = 0;
+    for (int ii = 0; ii < tool.size(); ii++) {
+      QIE10DataFrame::Sample sam = frame[ii];
+      if((sam.soi() && ii != soi) || (!sam.soi() && ii == soi)) { edm::LogError("HFAdcToGeV") << "Wrong soi information"; ampl = -1; break; }
+      if(ii != soi) continue;
+      ampl += sam.adc();
+    }
+    int ieta = cell.ieta();
+    if (ieta > 0 && ampl > maxhfadcp) {
+      maxhfadcp = ampl;
+    }
+    if (ieta < 0 && ampl > maxhfadcn) {
+      maxhfadcn = ampl;
+    }
+  }
+
+   pix_.maxhfadcp = maxhfadcp;
+   pix_.maxhfadcn = maxhfadcn;
 }
 
 void PixelPlant::fill_pixels(const edm::Event& iEvent) {
@@ -579,6 +650,7 @@ void PixelPlant::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
    pdt_ = iSetup.getHandle(pdt_token_);
    geo_ = iSetup.getHandle(geo_token_);
    topo_ = iSetup.getHandle(topo_token_);
+   hcal_ = iSetup.getHandle(hcal_token_);
 
    pix_.run = (int)iEvent.id().run();
    pix_.lumi = (int)iEvent.luminosityBlock();
@@ -594,6 +666,8 @@ void PixelPlant::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
    if (fillhf_) { fill_hf(iEvent); } else {
       pix_.nhfp = 0; pix_.nhfn = 0;
       pix_.hft = 0; pix_.hftp = 0; pix_.hftm = 0; }
+   if (fillhfadc_) { fill_hfadc(iEvent); } else {
+     pix_.maxhfadcp = -2; pix_.maxhfadcn = -2; }
    if (fillgen_) { fill_particles(iEvent); } else {
       pix_.process = -1; pix_.npart = 0; }
 
@@ -626,6 +700,9 @@ void PixelPlant::beginJob() {
    tpix_->Branch("hft", &pix_.hft, "hft/F");
    tpix_->Branch("hftp", &pix_.hftp, "hftp/F");
    tpix_->Branch("hftm", &pix_.hftm, "hftm/F");
+
+   tpix_->Branch("maxhfadcp", &pix_.maxhfadcp, "maxhfadcp/I");
+   tpix_->Branch("maxhfadcn", &pix_.maxhfadcn, "maxhfadcn/I");
 
 #define BRANCH(q)                                                             \
    tpix_->Branch("nhits" #q, &pix_.nhits##q, "nhits" #q "/I");                \
@@ -669,6 +746,9 @@ void PixelPlant::fillDescriptions(edm::ConfigurationDescriptions& descriptions) 
                 false >> edm::EmptyGroupDescription());
    desc.ifValue(edm::ParameterDescription<bool>("fillhf", false, true),
                 true >> edm::ParameterDescription<edm::InputTag>("hf_tag", edm::InputTag("towerMaker"), true) or
+                false >> edm::EmptyGroupDescription());
+   desc.ifValue(edm::ParameterDescription<bool>("fillhfadc", false, true),
+                true >> edm::ParameterDescription<edm::InputTag>("hfadc_tag", edm::InputTag("hcalDigis"), true) or
                 false >> edm::EmptyGroupDescription());
    desc.ifValue(edm::ParameterDescription<bool>("fillgen", false, true),
       true >> (edm::ParameterDescription<edm::InputTag>("generator_tag", edm::InputTag("generatorSmeared"), true) and

@@ -18,5 +18,9 @@
 <use name="Alignment/CommonAlignment"/>
 <use name="Alignment/TrackerAlignment"/>
 <use name="CondFormats/Alignment"/>
+<use name="DataFormats/HcalDigi"/>
+<use name="DataFormats/HcalDetId"/>
+<use name="CondFormats/DataRecord"/>
 <use name="CLHEP"/>
+<use name="CalibFormats/HcalObjects"/>
 <flags EDM_PLUGIN="1"/>
