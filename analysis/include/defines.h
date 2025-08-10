@@ -19,18 +19,18 @@
    EXPAND(2, 3)               \
    EXPAND(2, 4)               \
    EXPAND(3, 4)               \
-   // EXPAND(1, 1)               \
-   // EXPAND(2, 2)               \
-   // EXPAND(3, 3)               \
-   // EXPAND(4, 4)               \
+   EXPAND(1, 1)               \
+   EXPAND(2, 2)               \
+   EXPAND(3, 3)               \
+   EXPAND(4, 4)               \
 
 #define FTRKLT2P(EXPAND)      \
    EXPAND(5, 6)               \
    EXPAND(5, 7)               \
    EXPAND(6, 7)               \
-   // EXPAND(5, 5)               \
-   // EXPAND(6, 6)               \
-   // EXPAND(7, 7)               \
+   EXPAND(5, 5)               \
+   EXPAND(6, 6)               \
+   EXPAND(7, 7)               \
 
 #define BTRKLT3P(p, EXPAND)   \
    EXPAND(p, 1, 2)            \

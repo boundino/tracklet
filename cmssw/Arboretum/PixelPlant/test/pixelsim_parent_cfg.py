@@ -13,21 +13,15 @@ process.load("Configuration.StandardSequences.Reconstruction_cff")
 process.load("Configuration.StandardSequences.Services_cff")
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(10)
+    input = cms.untracked.int32(100)
 )
 
 process.source = cms.Source("PoolSource",
                             fileNames = cms.untracked.vstring(
-                                'file:miniaod_PAT_14.root',
-		                # '/store/user/wangj/Hijing_MinimumBias_b015_OO_5362GeV/MINIAOD_250518_el8_Run3_2025_OXY_1506/250520_104022/0000/miniaod_PAT_14.root',
-                                # '/store/user/wangj/Hijing_MinimumBias_b015_OO_5362GeV/DIGIRAW_250518_el8_gcc12_1506/250519_145746/0000/digiraw_DIGI_L1_DIGI2RAW_HLT_317.root', 
+                                '/store/user/wangj/MinBias_Hijing_OO_5362GeV/MINIAOD_250715_1509p1_realisticBS/250717_011926/0000/reco_RAW2DIGI_L1Reco_RECO_RECOSIM_PAT_20.root'
                            ),
                             secondaryFileNames = cms.untracked.vstring(
-                                'file:digiraw_DIGI_L1_DIGI2RAW_HLT_317.root',
-                                # '/store/user/wangj/Hijing_MinimumBias_b015_OO_5362GeV/DIGIRAW_250518_el8_gcc12_1506/250519_145746/0000/digiraw_DIGI_L1_DIGI2RAW_HLT_317.root',
-                                # '/store/user/wangj/Hijing_MinimumBias_b015_OO_5362GeV/DIGIRAW_250518_el8_gcc12_1506/250519_145746/0000/digiraw_DIGI_L1_DIGI2RAW_HLT_318.root',
-                                # '/store/user/wangj/Hijing_MinimumBias_b015_OO_5362GeV/DIGIRAW_250518_el8_gcc12_1506/250519_145746/0000/digiraw_DIGI_L1_DIGI2RAW_HLT_319.root',
-                                # '/store/user/wangj/Hijing_MinimumBias_b015_OO_5362GeV/DIGIRAW_250518_el8_gcc12_1506/250519_145746/0000/digiraw_DIGI_L1_DIGI2RAW_HLT_32.root'
+                                '/store/user/wangj/MinBias_Hijing_OO_5362GeV/DIGIRAW_250715_el8_gcc12_1508/250716_123030/0000/digiraw_DIGI_L1_DIGI2RAW_HLT_116.root'
                             )
 )
 
@@ -40,14 +34,14 @@ process.TFileService = cms.Service('TFileService',
 from Configuration.AlCa.GlobalTag import GlobalTag
 process.GlobalTag = GlobalTag(
     process.GlobalTag,
-    '141X_mcRun3_2024_realistic_HI_v13',
+    '150X_mcRun3_2025_forOO_realistic_v7',
     ''
 )
 
 process.raw2digi_step = cms.Path(process.RawToDigi)
 process.reconstruction_step = cms.Path(process.reconstruction_trackingOnly) # siPixelRecHits
 
-process.load('Arboretum.PixelPlant.pixel_miniaod_cff')
+process.load('Arboretum.PixelPlant.pixel_mc_miniaod_cfi')
 process.output = cms.EndPath(process.pixel)
 
 process.schedule = cms.Schedule(
@@ -55,3 +49,5 @@ process.schedule = cms.Schedule(
     process.reconstruction_step,
     process.output
 )
+
+process.MessageLogger.cerr.FwkReport.reportEvery = 10

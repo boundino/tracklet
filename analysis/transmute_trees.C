@@ -23,7 +23,7 @@
 
 #define NSAMPLES  1
 static const float vzpar[NSAMPLES][2] = { // for reweight
-   {0.2290316, 4.9068349},    /* private hydjet */
+   {0.199548, 5.2814},    /* private Jul18 */
 };
 
 #define BKG_ARG(q)   , float add_bkg_l##q = 0
@@ -44,8 +44,8 @@ int transmute_trees(const char* input,
 {
    printf("................................................................\n");
 
-   TFile* finput = TFile::Open(input);
-   TTree* t = (TTree*)finput->Get("pixel/PixelTree");
+   auto* finput = TFile::Open(input);
+   auto* t = (TTree*)finput->Get("pixel/PixelTree");
 
    float vz_shift = 0;
    float vx = 0, vy = 0, vz, recovx = -99, recovy = -99;
@@ -62,17 +62,21 @@ int transmute_trees(const char* input,
 
       /* Nominal2025OOCollision */
       // https://github.com/cms-sw/cmssw/blob/master/IOMC/EventVertexGenerators/python/VtxSmearedParameters_cfi.py#L1088
-      vx = 0.0184194; // BS x0
-      vy = -0.0141852; // BS y0
-      /* pixel barycentre */
-      vz_shift = -0.367294; // barycentre, 391856 (May 9)
+      // vx = 0.0184194; // BS x0
+      // vy = -0.0141852; // BS y0
+      // vz_shift = -0.367294; // barycentre, 391856 (May 9)
+      /* Realistic2025OORealistic not official */
+      vx = 0.0158483; // BS x0
+      vy = -0.00652439; // BS y0
+      vz_shift = -0.365973; // barycentre, 394153
       
    } else {
       printf("$ data analysis\n");
 
       /* Data */
-      vx = 0.1729877;
-      vy = -0.182863;
+      /* 150X_dataRun3_Prompt_v3 */
+      vx = 0.0859173;
+      vy = -0.183422;
 
       pileup = 0.0f;
       sample = -1;
@@ -243,7 +247,7 @@ int transmute_trees(const char* input,
          else
            {
              /* run 362294 + bad private MC */
-             double data_pdf = TMath::Gaus(event_vz, -1.76519e-01, 5.01265, 1);
+             double data_pdf = TMath::Gaus(event_vz, 0.465915, 5.44665, 1);
              double mc_pdf = TMath::Gaus(event_vz, vzpar[sample][0], vzpar[sample][1], 1);
              
              event_weight = event_weight * data_pdf / mc_pdf;

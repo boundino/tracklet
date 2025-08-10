@@ -102,7 +102,8 @@ int reap_results(int type,
    TCut ssel = Form("(dr2<%f)", maxdr2);
    TCut csel = Form("(hft>=%f && hft<%f)", hftmin, hftmax);
    TCut osel = "(hlt && nhfn>1 && nhfp>1 && cluscomp)";
-   TCut psel = "(process!=102 && process!=103 && process!=104)";
+   // TCut psel = "(process!=102 && process!=103 && process!=104)"; // ! only works for Epos but will affect Pythia
+   TCut psel = "(1)"; // ! only works for Epos but will affect Pythia
 
    TCut esel = fsel && csel && osel;
    TCut gsel = fsel && csel && psel;
@@ -340,7 +341,7 @@ int reap_results(int type,
       TCanvas* ctrigger = new TCanvas("ctrigger", "", CANVASW, CANVASH);
       gPad->SetLogx();
       hstyle(h1teff, 38, COLOUR4); hrange(h1teff, 0, 1.2);
-      htitle(h1teff, ";number of tracklets;trigger efficiency");
+      htitle(h1teff, ";number of tracklets;Event selection efficiency");
       h1teff->Draw();
       watermark(ismc);
       xjjroot::saveas(ctrigger, Form("figs/corrections/trigger-%s-%i.png", label, type));
@@ -349,7 +350,7 @@ int reap_results(int type,
       TCanvas* csdf = new TCanvas("csdf", "", CANVASW, CANVASH);
       gPad->SetLogx();
       hstyle(h1sdf, 40, COLOUR5); hrange(h1sdf, -0.05, 0.2);
-      htitle(h1sdf, ";number of tracklets;single-diffractive event fraction");
+      htitle(h1sdf, ";number of tracklets;Single-diffractive event fraction");
       h1sdf->Draw("e0");
       watermark(ismc);
       xjjroot::saveas(csdf, Form("figs/corrections/sdfrac-%s-%i.png", label, type));
@@ -603,7 +604,10 @@ int reap_results(int type,
    for (int y=1; y<=nmult; y++) {
       double sdfrac = h1sdf->GetBinContent(y);
       double trigeff = h1teff->GetBinContent(y);
-
+      if (trigeff == 0) { // make a better way for 0 bin
+        trigeff = 1;
+        printf("     ! get 0 trigger efficiency, use 1 \n", x, z);
+      }
       double totalc = (1 - sdfrac * SDMULT) / trigeff;
 
       for (int x=1; x<=neta; x++) {

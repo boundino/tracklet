@@ -8,9 +8,9 @@ process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 from Configuration.AlCa.GlobalTag import GlobalTag
 process.GlobalTag = GlobalTag(
     process.GlobalTag,
-    # 'auto:phase1_2022_realistic_hi', # CMSSW_12_5_5_patch1 -> v8
-    '150X_mcRun3_2025_forOO_realistic_v1',
-    # '141X_mcRun3_2024_realistic_HI_v13',
+    # '150X_mcRun3_2025_forOO_realistic_v1',
+    # '150X_dataRun3_Prompt_v3',
+    '150X_dataRun3_Express_v2',
     ''
 )
 

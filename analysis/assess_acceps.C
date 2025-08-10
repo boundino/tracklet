@@ -37,7 +37,7 @@ void print_acceps(int type, TH2D* hratio) {
     auto nxbins = hratio->GetXaxis()->GetNbins();
     std::cout<<"   ";
     for (int i=0; i<nxbins; i++) {
-      int onoroff = (fabs(hratio->GetBinContent(i+1, j+1)-1)<0.01?1:0);
+      int onoroff = (fabs(hratio->GetBinContent(i+1, j+1)-1)<0.05?1:0);
       std::cout<<" "<<onoroff<<",";
     }
     std::cout<<std::endl;
@@ -136,7 +136,8 @@ int assess_acceps(bool recreate, int type, float maxdr2,
   xjjroot::drawtex(0.5, 0.8, Form("#frac{%s (MC)}{%s (data)}", mc_tag, data_tag), 0.038, 23);
   xjjana::drawhoutline(h2amapxev, kRed);
   watermark();
-  pdf.write(Form("figs/corrections/geometric-%s-%i.png", label, type));
+  // pdf.write(Form("figs/corrections/geometric-%s-%i.png", label, type));
+  pdf.write(Form("figs/geometric/geometric-%s-%i.png", label, type));
 
   pdf.prepare();
   hdata->Draw("colz");

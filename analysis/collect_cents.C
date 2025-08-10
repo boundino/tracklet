@@ -15,7 +15,7 @@
 #include "include/hepdata.h"
 
 #define NCENT   20
-#define OFFSET  0 // 4
+#define OFFSET  6 // 4
 
 const float _2a = 32;
 // https://indico.cern.ch/event/1553375/contributions/6541187/attachments/3080800/5453158/o_glauber_040625.pdf
@@ -193,7 +193,7 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
   TLegendEntry* h23cms = l2->AddEntry((TObject*)0, "CMS", "");
   h23cms->SetTextFont(63); h23cms->SetTextSize(20);
   l2->AddEntry(gnorm, "OO 5.36 TeV", "p");
-  l2->AddEntry((TObject*)0, "(A#scale[0.9]{MPT})", NULL);
+  l2->AddEntry((TObject*)0, "(This analysis)", NULL);
   l2->AddEntry(gcms_pbpb_2p76, "PbPb 2.76 TeV", "p");
   l2->AddEntry(gcms_xexe_5p44, "XeXe 5.44 TeV", "p");
   lstyle(l2, 43, 20); l2->Draw();
@@ -274,7 +274,7 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
   TLegendEntry* h3cms = l7->AddEntry((TObject*)0, "CMS", "");
   h3cms->SetTextFont(63); h3cms->SetTextSize(20);
   l7->AddEntry(gnorm, "OO 5.36 TeV", "p");
-  l7->AddEntry((TObject*)0, "(A#scale[0.9]{MPT})", NULL);
+  l7->AddEntry((TObject*)0, "(This analysis)", NULL);
   l7->AddEntry(gcms_pbpb_2p76_n2a, "PbPb 2.76 TeV", "p");
   l7->AddEntry(gcms_xexe_5p44_n2a, "XeXe 5.44 TeV", "p");
   lstyle(l7, 43, 20); l7->Draw();
@@ -362,11 +362,11 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
   TLegendEntry* h2cms = l3->AddEntry((TObject*)0, "CMS", "");
   h2cms->SetTextFont(63); h2cms->SetTextSize(20);
   l3->AddEntry(gnorm, "OO 5.36 TeV", "p");
-  l3->AddEntry((TObject*)0, "(A#scale[0.9]{MPT})", NULL);
+  l3->AddEntry((TObject*)0, "(This analysis)", NULL);
   l3->AddEntry(gcms_pbpb_2p76_nnpart_x_npart, "PbPb 2.76 TeV", "p");
   l3->AddEntry(gcms_xexe_5p44_nnpart_x_npart, "XeXe 5.44 TeV", "p");
   lstyle(l3, 43, 20); l3->Draw();
-  // xjjroot::drawtex(0.61, 0.58-heightperline*2, "(A#scale[0.9]{MPT})", 0.035, 31);
+  // xjjroot::drawtex(0.61, 0.58-heightperline*2, "(This analysis)", 0.035, 31);
   
   TLegend* l6 = new TLegend(0.6, 0.34-heightperline*4, 0.9, 0.34);
   TLegendEntry* h2alice = l6->AddEntry((TObject*)0, "ALICE", "");
@@ -468,7 +468,7 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
   TLegendEntry* h4cms = l10->AddEntry((TObject*)0, "CMS", "");
   h4cms->SetTextFont(63); h4cms->SetTextSize(20);
   l10->AddEntry(gnorm2a, "OO 5.36 TeV", "p");
-  l10->AddEntry((TObject*)0, "(A#scale[0.9]{MPT})", NULL);
+  l10->AddEntry((TObject*)0, "(This analysis)", NULL);
   l10->AddEntry(gcms_pbpb_2p76_nnpart_x_npart2a, "PbPb 2.76 TeV", "p");
   l10->AddEntry(gcms_xexe_5p44_nnpart_x_npart2a, "XeXe 5.44 TeV", "p");
   lstyle(l10, 43, 20); l10->Draw();
@@ -554,7 +554,7 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
   TLegendEntry* h5cms = l13->AddEntry((TObject*)0, "CMS", "");
   h5cms->SetTextFont(63); h5cms->SetTextSize(20);
   l13->AddEntry(gnorm2a2a, "OO 5.36 TeV", "p");
-  l13->AddEntry((TObject*)0, "(A#scale[0.9]{MPT})", NULL);
+  l13->AddEntry((TObject*)0, "(This analysis)", NULL);
   l13->AddEntry(gcms_pbpb_2p76_n2a_x_npart2a, "PbPb 2.76 TeV", "p");
   l13->AddEntry(gcms_xexe_5p44_n2a_x_npart2a, "XeXe 5.44 TeV", "p");
   lstyle(l13, 43, 20); l13->Draw();
@@ -713,18 +713,18 @@ void drawdNdeta(xjjroot::mypdf& pdf, std::string tag) {
   sp_9_10.style(COLOUR5, 21);
 
   auto hempty = makehempty(sp_0_20.hsym, ";#it{#eta};" + _t_dNdeta + "", 1.7);
-  hempty->SetAxisRange(-3.4, 3.5, "X");
+  hempty->SetAxisRange(-3.0, 2.9, "X");
   auto hemptyp1 = makehempty(sp_0_20.hsym, ";#it{#eta};" + _t_dNdeta + "", 1.7);
-  hemptyp1->SetAxisRange(-3.4, 3.5, "X");
+  hemptyp1->SetAxisRange(-3.0, 2.9, "X");
   hemptyp1->SetMinimum(0.1);
   auto hempty_ratio = (TH1F*)hemptyp1->Clone("hempty_ratio");
   hempty_ratio->GetYaxis()->SetTitle("MC / data");
   hempty_ratio->SetMinimum(0.7); hempty_ratio->SetMaximum(1.3);
-  // hempty_ratio->SetAxisRange(-3.4, 3.5, "X");
+  // hempty_ratio->SetAxisRange(-3.0, 2.9, "X");
   auto hempty2 = makehempty(sp_19_20.hsym, ";#it{#eta};" + _t_dNdeta + "", 3, 0.1);
-  hempty2->SetAxisRange(-3.4, 3.5, "X");
+  hempty2->SetAxisRange(-3.0, 2.9, "X");
   auto hempty2p1 = makehempty(sp_19_20.hsym, ";#it{#eta};" + _t_dNdeta + "", 3, 0.1);
-  hempty2p1->SetAxisRange(-3.4, 3.5, "X");
+  hempty2p1->SetAxisRange(-3.0, 2.9, "X");
   
   
   xjjroot::setgstyle(1);

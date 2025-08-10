@@ -23,7 +23,7 @@ int evaluate_effs(const char* config, const char* label) {
   std::size_t nfiles = files.size();
   if (!nfiles) { printf("error: no files provided!\n"); return 1; }
 
-  TFile* foutput = new TFile(Form("data/vertex-%s.root", label), "recreate");
+  auto* foutput = new TFile(Form("data/vertex-%s.root", label), "recreate");
 
   const int nresbins = 8;
   const double resbins[nresbins + 1] = {

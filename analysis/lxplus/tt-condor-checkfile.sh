@@ -2,8 +2,8 @@
 
 # https://batchdocs.web.cern.ch/local/submit.html
 
-if [[ $# -ne 7 ]]; then
-    echo "usage: ./tt-condor-checkfile.sh [input dir] [output dir] [max jobs] [log dir] [random] [split] [drop]"
+if [[ $# -ne 8 ]]; then
+    echo "usage: ./tt-condor-checkfile.sh [input dir] [output dir] [max jobs] [log dir] [random] [split] [drop] [weight]"
     exit 1
 fi
 
@@ -14,6 +14,7 @@ LOGDIR=$4
 USERANDOM=$5
 USESPLIT=$6
 USEDROP=$7
+USEWEIGHT=$8
 
 # PROXYFILE=$(ls /tmp/ -lt | grep $USER | grep -m 1 x509 | awk '{print $NF}')
 PROXYFILE=$HOME/$(ls $HOME -lt | grep $USER | grep -m 1 x509 | awk '{print $NF}')
@@ -50,7 +51,7 @@ Universe     = vanilla
 Initialdir   = $PWD/
 Notification = Error
 Executable   = $PWD/tt-${tag}-checkfile.sh
-Arguments    = $inputname $DEST_CONDOR ${outputfile} $USERANDOM $USESPLIT $USEDROP
+Arguments    = $inputname $DEST_CONDOR ${outputfile} $USERANDOM $USESPLIT $USEDROP $USEWEIGHT
 Output       = $LOGDIR/log-${infn}.out
 Error        = $LOGDIR/log-${infn}.err
 Log          = $LOGDIR/log-${infn}.log

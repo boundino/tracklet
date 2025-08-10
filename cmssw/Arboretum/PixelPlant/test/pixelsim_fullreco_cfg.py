@@ -18,7 +18,7 @@ process.maxEvents = cms.untracked.PSet(
 
 process.source = cms.Source("PoolSource",
                             fileNames = cms.untracked.vstring(
-		                '/store/user/wangj/MinBias_AMPT_StringMelting_b015_OO_5362GeV/DIGIRAW_250527_el8_gcc12_1506p1_141X/250527_152140/0000/digiraw_DIGI_L1_DIGI2RAW_HLT_274.root'
+		                '/store/user/wangj/MinBias_EposLHC_ReggeGribovParton_pO_9617GeV/DIGIRAW_250626_el8_gcc12_1508/250702_112750/0000/digiraw_DIGI_L1_DIGI2RAW_HLT_122.root'
                             ),
 )
 
@@ -31,14 +31,14 @@ process.TFileService = cms.Service('TFileService',
 from Configuration.AlCa.GlobalTag import GlobalTag
 process.GlobalTag = GlobalTag(
     process.GlobalTag,
-    '150X_mcRun3_2025_forOO_realistic_v1',
+    '150X_mcRun3_2025_forOO_realistic_v7',
     ''
 )
 
 process.raw2digi_step = cms.Path(process.RawToDigi)
 process.reconstruction_step = cms.Path(process.reconstruction)
 
-process.load('Arboretum.PixelPlant.pixel_cfi')
+process.load('Arboretum.PixelPlant.pixel_mc_cfi')
 process.output = cms.EndPath(process.pixel)
 
 process.schedule = cms.Schedule(

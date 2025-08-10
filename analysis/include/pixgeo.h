@@ -109,10 +109,10 @@ void pixgeo::draw(std::string var, int layer) {
     double shifty = 0.;
     float angle = 0;
     if (!berrel) {
-      angle = std::atan( mm.pos[y]/ mm.pos[x] ) / M_PI * 180;
+      angle = std::atan( mm.pos[y]/mm.pos[x] ) / M_PI * 180;
     }
     // xjjroot::drawtexnum(mm.pos[x], mm.pos[y] + shifty, Form("%d", mm.rawid),
     xjjroot::drawtexnum(mm.pos[x], mm.pos[y] + shifty, int_to_hex(mm.rawid).c_str(),
-                        0.015, 22, 62, kBlack, angle);
+                        0.015, 22, 62, kBlack, 1.0, angle);
   }
 }

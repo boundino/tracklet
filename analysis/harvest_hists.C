@@ -23,6 +23,13 @@
 #include "include/cosmetics.h"
 #include "include/pixgeo.h"
 
+// std::string sel_ = "(1)";
+std::string sel_ = "(fabs(vz[1]) < 15 && cluscomp && nhfp > 1 && nhfn > 1)";
+std::string sfcs = "ceil(0.78235*TMath::Abs(sinh(x))-2.8373)";
+bool labelid = true;
+bool recreate = false;
+bool test = false;
+
 #define OPT(val)  options[opt].val
 #define CS(str)   str.data()
 #define OS(val)   CS(OPT(val))
@@ -54,14 +61,11 @@ typedef struct varinfo_t {
    Long64_t                            maxnevt;
 } varinfo_t;
 
-std::string sel_ = "(1)";
-// std::string sel_ = "(nhfp > 1 && nhfn > 1)";
-
 static const std::vector<varinfo_t> options_pixel_1d = {
    {
       "cs", {"cluster size"}, {"cs"},
       {{50, 0, 50}},
-      {600, 600}, 0x01, sel_, "", 2000
+      {600, 600}, 0x01, sel_, "", 10000
    }, {
       "nhits", {"number of pixel hits"}, {"nhits"},
       {{100, 0, 4000}},
@@ -93,87 +97,95 @@ int compare_pixels(std::vector<varinfo_t> const& options,
       t[j] = (TTree*)f[j]->Get("pixel/PixelTree");
    }
 
-#define SETUP_1D_PIXELS(q)                                                    \
-   TH1D* h##q[nfiles]; TH1D* hr##q[nfiles] = {0};                             \
-   for (std::size_t j = 0; j < nfiles; ++j) {                                 \
-      h##q[j] = new TH1D(Form("hp" #q "f%zu%s", j, idstr),                    \
-            Form(";%s (layer " #q ");", OS(label[0])),                        \
-            (int)OPT(bins[0][0]), OPT(bins[0][1]), OPT(bins[0][2]));          \
-   }                                                                          \
+auto* fout = new TFile(Form("data/%s.root", label), (recreate?"update":"read"));
+   
+#define SETUP_1D_PIXELS(q)                                              \
+  TH1D* h##q[nfiles]; TH1D* hr##q[nfiles] = {0};                        \
+   for (std::size_t j = 0; j < nfiles; ++j) {                           \
+     if (recreate) {                                                    \
+       h##q[j] = new TH1D(Form("hp" #q "f%zu%s", j, idstr),             \
+                          Form(";%s (layer " #q ");", OS(label[0])),    \
+                          (int)OPT(bins[0][0]), OPT(bins[0][1]), OPT(bins[0][2])); \
+     } else {                                                           \
+       h##q[j] = (TH1D*)fout->Get(Form("hp" #q "f%zu%s", j, idstr));    \
+     }                                                                  \
+   }                                                                    \
 
    PIXELS1P(SETUP_1D_PIXELS)
 
-#define PROJECT_1D_PIXELS(q)                                                  \
-   for (std::size_t j = 0; j < nfiles; ++j) {                                 \
-      t[j]->Draw(Form("%s" #q ">>hp" #q "f%zu%s", varstr, j, idstr),          \
-                 fsel, "goff", OPT(maxnevt));                                 \
-      h##q[j]->Scale(1. / h##q[j]->Integral());                               \
-   }
+#define PROJECT_1D_PIXELS(q)                                            \
+     for (std::size_t j = 0; j < nfiles; ++j) {                         \
+       t[j]->Draw(Form("%s" #q ">>hp" #q "f%zu%s", varstr, j, idstr),   \
+                  fsel, "goff", OPT(maxnevt));                          \
+       h##q[j]->Scale(1. / h##q[j]->Integral());                        \
+     }                                                                  \
 
-   PIXELS1P(PROJECT_1D_PIXELS)
-
+     if (recreate) {
+       PIXELS1P(PROJECT_1D_PIXELS)
+         }
    int cheight = OPT(flags) & 0x10 ? OPT(csize[1]) * 1.2 : OPT(csize[1]);
 
-   xjjroot::mypdf* pdf_DRAW_1D_PIXELS = new xjjroot::mypdf(Form("figspdf/pixel/pixel-%s-%s.pdf", OS(id), label), "c_DRAW_1D_PIXELS", OPT(csize[0]), cheight);
-
-#define DRAW_1D_PIXELS(q)                                                     \
-    pdf_DRAW_1D_PIXELS->prepare();                                            \
-   if (OPT(flags) & 0x10) {                                                   \
-      TPad* t1 = new TPad("t" #q "1", "", 0, 0.25, 1, 1);                     \
-      t1->SetTopMargin(0.11111); t1->SetBottomMargin(0);                      \
-      t1->Draw(); t1->SetNumber(1);                                           \
-      TPad* t2 = new TPad("t" #q "2", "", 0, 0, 1, 0.25);                     \
-      t2->SetTopMargin(0); t2->SetBottomMargin(0.32);                         \
-      t2->Draw(); t2->SetNumber(2);                                           \
-      pdf_DRAW_1D_PIXELS->getc()->cd(1);                                      \
-                                                                              \
-      h##q[0]->SetLabelOffset(99, "X");                                       \
-      h##q[0]->SetTitleOffset(99, "X");                                       \
-   }                                                                          \
-                                                                              \
-   if (OPT(flags) & 0x1) { gPad->SetLogy(); }                                 \
-                                                                              \
-   h##q[0]->Draw("axis");                                                     \
-   for (std::size_t j = 1; j < nfiles; ++j) {                                 \
-      h##q[j]->SetLineColor(colours[j % ncolours]);                           \
-      h##q[j]->Draw("hist e same");                                           \
-   }                                                                          \
-   h##q[0]->SetMarkerStyle(21);                                               \
-   h##q[0]->SetMarkerSize(0.6);                                               \
-   h##q[0]->SetMarkerColor(1);                                                \
-   h##q[0]->SetLineColor(1);                                                  \
-   h##q[0]->Draw("p e same");                                                 \
-                                                                              \
-   TLegend* l##q = new TLegend(0.50, 0.875-0.05*nfiles, 0.80, 0.875);         \
-   l##q->AddEntry(h##q[0], CS(legends[0]), "p");                              \
-   for (std::size_t j = 1; j < nfiles; ++j)                                   \
-      l##q->AddEntry(h##q[j], CS(legends[j]), "l");                           \
-   lstyle(l##q, 43, 22); l##q->Draw();                                        \
-                                                                              \
-   if (OPT(flags) & 0x10) {                                                   \
-      pdf_DRAW_1D_PIXELS->getc()->cd(2);                                      \
-      for (std::size_t j = 1; j < nfiles; ++j) {                              \
-         hr##q[j] = (TH1D*)h##q[j]->Clone(Form("hpr" #q "f%zu%s", j, idstr)); \
-         hr##q[j]->Divide(h##q[0]);                                           \
-         rformat(hr##q[j], 0.5, 1.5);                                         \
-         hr##q[j]->Draw("p e same");                                          \
-      }                                                                       \
-      pdf_DRAW_1D_PIXELS->getc()->cd(1);                                      \
-   }                                                                          \
-   watermark();                                                         \
-   pdf_DRAW_1D_PIXELS->write(Form("figs/pixel/pixel-%s-l" #q "-%s.png",    \
-                                  OS(id), label), "Q");                 \
-   // delete c##q;                                                              \
-
-   PIXELS1P(DRAW_1D_PIXELS)
+   auto* pdf_DRAW_1D_PIXELS = new xjjroot::mypdf(Form("figspdf/pixel/pixel-%s-%s.pdf", OS(id), label), "c_DRAW_1D_PIXELS", OPT(csize[0]), cheight);
    
-   pdf_DRAW_1D_PIXELS->close();
+#define DRAW_1D_PIXELS(q)                                               \
+   pdf_DRAW_1D_PIXELS->prepare();                                       \
+   if (OPT(flags) & 0x10) {                                             \
+     TPad* t1 = new TPad("t" #q "1", "", 0, 0.25, 1, 1);                \
+     t1->SetTopMargin(0.11111); t1->SetBottomMargin(0);                 \
+     t1->Draw(); t1->SetNumber(1);                                      \
+     TPad* t2 = new TPad("t" #q "2", "", 0, 0, 1, 0.25);                \
+     t2->SetTopMargin(0); t2->SetBottomMargin(0.32);                    \
+     t2->Draw(); t2->SetNumber(2);                                      \
+     pdf_DRAW_1D_PIXELS->getc()->cd(1);                                 \
+                                                                        \
+     h##q[0]->SetLabelOffset(99, "X");                                  \
+     h##q[0]->SetTitleOffset(99, "X");                                  \
+   }                                                                    \
+                                                                        \
+   if (OPT(flags) & 0x1) { gPad->SetLogy(); }                           \
+                                                                        \
+   h##q[0]->Draw("axis");                                               \
+   for (std::size_t j = 1; j < nfiles; ++j) {                           \
+     h##q[j]->SetLineColor(colours[j % ncolours]);                      \
+     h##q[j]->Draw("hist e same");                                      \
+   }                                                                    \
+   h##q[0]->SetMarkerStyle(21);                                         \
+   h##q[0]->SetMarkerSize(0.6);                                         \
+   h##q[0]->SetMarkerColor(1);                                          \
+   h##q[0]->SetLineColor(1);                                            \
+   h##q[0]->Draw("p e same");                                           \
+                                                                        \
+   auto* l##q = new TLegend(0.50, 0.875-0.05*nfiles, 0.80, 0.875);      \
+   l##q->AddEntry(h##q[0], CS(legends[0]), "p");                        \
+   for (std::size_t j = 1; j < nfiles; ++j)                             \
+     l##q->AddEntry(h##q[j], CS(legends[j]), "l");                      \
+   lstyle(l##q, 43, 22); l##q->Draw();                                  \
+                                                                        \
+   if (OPT(flags) & 0x10) {                                             \
+     pdf_DRAW_1D_PIXELS->getc()->cd(2);                                 \
+     for (std::size_t j = 1; j < nfiles; ++j) {                         \
+       hr##q[j] = (TH1D*)h##q[j]->Clone(Form("hpr" #q "f%zu%s", j, idstr)); \
+       hr##q[j]->Divide(h##q[0]);                                       \
+       rformat(hr##q[j], 0.5, 1.5);                                     \
+       hr##q[j]->Draw("p e same");                                      \
+     }                                                                  \
+     pdf_DRAW_1D_PIXELS->getc()->cd(1);                                 \
+   }                                                                    \
+   watermark();                                                         \
+   pdf_DRAW_1D_PIXELS->write(Form("figs/pixel/pixel-%s-l" #q "-%s.png", \
+                                  OS(id), label), "Q");                 \
+   
+   PIXELS1P(DRAW_1D_PIXELS)
+     
+     pdf_DRAW_1D_PIXELS->close();
 
-   TFile* fout = new TFile(Form("data/%s.root", label), "update");
-#define SAVE_1D_PIXELS(q)                                                     \
-   for (std::size_t j = 0; j < nfiles; ++j)                                   \
-      h##q[j]->Write("", TObject::kOverwrite);
-   PIXELS1P(SAVE_1D_PIXELS)
+#define SAVE_1D_PIXELS(q)                                               \
+   for (std::size_t j = 0; j < nfiles; ++j)                             \
+     h##q[j]->Write("", TObject::kOverwrite);
+   
+   if (recreate) {
+     PIXELS1P(SAVE_1D_PIXELS)
+       }
    fout->Close();
 
    return 0;
@@ -235,156 +247,165 @@ int compare_tracklets(std::vector<varinfo_t> const& options,
    for (std::size_t j = 0; j < nfiles; ++j)
       f[j] = new TFile(files[j].data(), "read");
 
-#define SETUP_1D_TRACKLETS(q, w)                                              \
-   TTree* t##q##w[nfiles];                                                    \
-   TH1D* h##q##w[nfiles]; TH1D* hr##q##w[nfiles] = {0};                       \
-   for (std::size_t j = 0; j < nfiles; ++j) {                                 \
-      t##q##w[j] = (TTree*)f[j]->Get("TrackletTree" #q #w);                   \
-      h##q##w[j] = new TH1D(Form("ht" #q #w "f%zu%s", j, idstr),              \
-            Form(";%s (layers " #q "+" #w ");", OS(label[0])),                \
-            (int)OPT(bins[0][0]), OPT(bins[0][1]), OPT(bins[0][2]));          \
-   }                                                                          \
+auto* fout = new TFile(Form("data/%s.root", label), (recreate?"update":"read"));
+ 
+#define SETUP_1D_TRACKLETS(q, w)                                        \
+  TTree* t##q##w[nfiles];                                               \
+  TH1D* h##q##w[nfiles]; TH1D* hr##q##w[nfiles] = {0};                  \
+  for (std::size_t j = 0; j < nfiles; ++j) {                            \
+    if (recreate) {                                                     \
+      t##q##w[j] = (TTree*)f[j]->Get("TrackletTree" #q #w);             \
+      h##q##w[j] = new TH1D(Form("ht" #q #w "f%zu%s", j, idstr),        \
+                            Form(";%s (layers " #q "+" #w ");", OS(label[0])), \
+                            (int)OPT(bins[0][0]), OPT(bins[0][1]), OPT(bins[0][2])); \
+    } else {                                                            \
+      h##q##w[j] = (TH1D*)fout->Get(Form("ht" #q #w "f%zu%s", j, idstr)); \
+    }                                                                   \
+  }                                                                     \
+  
+TRKLTS2P(SETUP_1D_TRACKLETS)
 
-   TRKLTS2P(SETUP_1D_TRACKLETS)
+#define PROJECT_1D_TRACKLETS(q, w)                                      \
+  for (std::size_t j = 0; j < nfiles; ++j) {                            \
+    t##q##w[j]->Draw(Form("%s>>ht" #q #w "f%zu%s", varstr, j, idstr),   \
+                     fsel, "goff", OPT(maxnevt));                       \
+    h##q##w[j]->Scale(1. / h##q##w[j]->Integral(), "width");            \
+  }                                                                     \
+  
+if (recreate) {
+  TRKLTS2P(PROJECT_1D_TRACKLETS)
+    }
+int cheight = OPT(flags) & 0x10 ? OPT(csize[1]) * 1.2 : OPT(csize[1]);
 
-#define PROJECT_1D_TRACKLETS(q, w)                                            \
-   for (std::size_t j = 0; j < nfiles; ++j) {                                 \
-      t##q##w[j]->Draw(Form("%s>>ht" #q #w "f%zu%s", varstr, j, idstr),       \
-                       fsel, "goff", OPT(maxnevt));                           \
-      h##q##w[j]->Scale(1. / h##q##w[j]->Integral(), "width");                \
-   }                                                                          \
+   auto* pdf_DRAW_1D_TRACKLETS = new xjjroot::mypdf(Form("figspdf/tracklet/tracklet-%s-%s.pdf", OS(id), label), "c_DRAW_1D_TRACKLETS", OPT(csize[0]), cheight);
 
-   TRKLTS2P(PROJECT_1D_TRACKLETS)
-
-   int cheight = OPT(flags) & 0x10 ? OPT(csize[1]) * 1.2 : OPT(csize[1]);
-
-   xjjroot::mypdf* pdf_DRAW_1D_TRACKLETS = new xjjroot::mypdf(Form("figspdf/tracklet/tracklet-%s-%s.pdf", OS(id), label), "c_DRAW_1D_TRACKLETS", OPT(csize[0]), cheight);
-
-#define DRAW_1D_TRACKLETS(q, w)                                               \
-   pdf_DRAW_1D_TRACKLETS->prepare();                                          \
-   if (OPT(flags) & 0x10) {                                                   \
-      TPad* t1 = new TPad("t" #q #w "1", "", 0, 0.25, 1, 1);                  \
-      t1->SetTopMargin(0.11111); t1->SetBottomMargin(0);                      \
-      t1->Draw(); t1->SetNumber(1);                                           \
-      TPad* t2 = new TPad("t" #q #w "2", "", 0, 0, 1, 0.25);                  \
-      t2->SetTopMargin(0); t2->SetBottomMargin(0.32);                         \
-      t2->Draw(); t2->SetNumber(2);                                           \
-      pdf_DRAW_1D_TRACKLETS->getc()->cd(1);                                   \
-                                                                              \
-      h##q##w[0]->SetLabelOffset(99, "X");                                    \
-      h##q##w[0]->SetTitleOffset(99, "X");                                    \
-   }                                                                          \
-                                                                              \
-   if (OPT(flags) & 0x1) { gPad->SetLogy(); }                                 \
-                                                                              \
-   h##q##w[0]->Draw("axis");                                                  \
-   for (std::size_t j = 1; j < nfiles; ++j) {                                 \
-      h##q##w[j]->SetLineColor(colours[j % ncolours]);                        \
-      h##q##w[j]->Draw("hist e same");                                        \
-   }                                                                          \
-   h##q##w[0]->SetMarkerStyle(21);                                            \
-   h##q##w[0]->SetMarkerSize(0.6);                                            \
-   h##q##w[0]->SetMarkerColor(1);                                             \
-   h##q##w[0]->SetLineColor(1);                                               \
-   h##q##w[0]->Draw("p e same");                                              \
-                                                                              \
-   TLegend* l##q##w = new TLegend(0.50, 0.875-0.05*nfiles, 0.80, 0.875);      \
-   l##q##w->AddEntry(h##q##w[0], CS(legends[0]), "p");                        \
-   for (std::size_t j = 1; j < nfiles; ++j)                                   \
-      l##q##w->AddEntry(h##q##w[j], CS(legends[j]), "l");                     \
-   lstyle(l##q##w, 43, 22); l##q##w->Draw();                                  \
-                                                                              \
-   if (OPT(flags) & 0x10) {                                                   \
-      pdf_DRAW_1D_TRACKLETS->getc()->cd(2);                                   \
-      for (std::size_t j = 1; j < nfiles; ++j) {                              \
-         hr##q##w[j] = (TH1D*)h##q##w[j]->Clone(                              \
-               Form("htr" #q "f%zu%s", j, idstr));                            \
-         hr##q##w[j]->Divide(h##q##w[0]);                                     \
-         hr##q##w[j]->SetAxisRange(0.5, 1.5, "Y");                            \
-         hr##q##w[j]->SetLabelSize(0.08, "X");                                \
-         hr##q##w[j]->SetTitleSize(0.1, "X");                                 \
-         hr##q##w[j]->SetLabelSize(0.08, "Y");                                \
-         hr##q##w[j]->SetTitleSize(0.08, "Y");                                \
-         hr##q##w[j]->SetTitleOffset(0.5, "Y");                               \
-         hr##q##w[j]->SetNdivisions(205, "Y");                                \
-         hr##q##w[j]->SetYTitle("ratio");                                     \
-         hr##q##w[j]->GetYaxis()->CenterTitle();                              \
-         hr##q##w[j]->Draw("p e same");                                       \
-      }                                                                       \
-                                                                              \
-      TLine* line1 = new TLine(OPT(bins[0][1]), 1, OPT(bins[0][2]), 1);       \
-      line1->Draw();                                                          \
-      pdf_DRAW_1D_TRACKLETS->getc()->cd(1);                             \
-   }                                                                          \
-   watermark();                                                         \
-                                                                              \
-   pdf_DRAW_1D_TRACKLETS->write(Form("figs/tracklet/tracklet-%s-t" #q #w "-%s.png", \
-                                     OS(id), label), "Q");              \
-   // delete c##q##w; \
-
+#define DRAW_1D_TRACKLETS(q, w)                                         \
+  pdf_DRAW_1D_TRACKLETS->prepare();                                     \
+  if (OPT(flags) & 0x10) {                                              \
+    TPad* t1 = new TPad("t" #q #w "1", "", 0, 0.25, 1, 1);              \
+    t1->SetTopMargin(0.11111); t1->SetBottomMargin(0);                  \
+    t1->Draw(); t1->SetNumber(1);                                       \
+    TPad* t2 = new TPad("t" #q #w "2", "", 0, 0, 1, 0.25);              \
+    t2->SetTopMargin(0); t2->SetBottomMargin(0.32);                     \
+    t2->Draw(); t2->SetNumber(2);                                       \
+    pdf_DRAW_1D_TRACKLETS->getc()->cd(1);                               \
+                                                                        \
+    h##q##w[0]->SetLabelOffset(99, "X");                                \
+    h##q##w[0]->SetTitleOffset(99, "X");                                \
+  }                                                                     \
+                                                                        \
+  if (OPT(flags) & 0x1) { gPad->SetLogy(); }                            \
+                                                                        \
+  h##q##w[0]->Draw("axis");                                             \
+  for (std::size_t j = 1; j < nfiles; ++j) {                            \
+    h##q##w[j]->SetLineColor(colours[j % ncolours]);                    \
+    h##q##w[j]->Draw("hist e same");                                    \
+  }                                                                     \
+  h##q##w[0]->SetMarkerStyle(21);                                       \
+  h##q##w[0]->SetMarkerSize(0.6);                                       \
+  h##q##w[0]->SetMarkerColor(1);                                        \
+  h##q##w[0]->SetLineColor(1);                                          \
+  h##q##w[0]->Draw("p e same");                                         \
+                                                                        \
+  auto* l##q##w = new TLegend(0.50, 0.875-0.05*nfiles, 0.80, 0.875);    \
+  l##q##w->AddEntry(h##q##w[0], CS(legends[0]), "p");                   \
+  for (std::size_t j = 1; j < nfiles; ++j)                              \
+    l##q##w->AddEntry(h##q##w[j], CS(legends[j]), "l");                 \
+  lstyle(l##q##w, 43, 22); l##q##w->Draw();                             \
+                                                                        \
+  if (OPT(flags) & 0x10) {                                              \
+    pdf_DRAW_1D_TRACKLETS->getc()->cd(2);                               \
+    for (std::size_t j = 1; j < nfiles; ++j) {                          \
+      hr##q##w[j] = (TH1D*)h##q##w[j]->Clone(                           \
+                                             Form("htr" #q "f%zu%s", j, idstr)); \
+      hr##q##w[j]->Divide(h##q##w[0]);                                  \
+      hr##q##w[j]->SetAxisRange(0.5, 1.5, "Y");                         \
+      hr##q##w[j]->SetLabelSize(0.08, "X");                             \
+      hr##q##w[j]->SetTitleSize(0.1, "X");                              \
+      hr##q##w[j]->SetLabelSize(0.08, "Y");                             \
+      hr##q##w[j]->SetTitleSize(0.08, "Y");                             \
+      hr##q##w[j]->SetTitleOffset(0.5, "Y");                            \
+      hr##q##w[j]->SetNdivisions(205, "Y");                             \
+      hr##q##w[j]->SetYTitle("ratio");                                  \
+      hr##q##w[j]->GetYaxis()->CenterTitle();                           \
+      hr##q##w[j]->Draw("p e same");                                    \
+    }                                                                   \
+                                                                        \
+    auto* line1 = new TLine(OPT(bins[0][1]), 1, OPT(bins[0][2]), 1);    \
+    line1->Draw();                                                      \
+    pdf_DRAW_1D_TRACKLETS->getc()->cd(1);                               \
+  }                                                                     \
+  watermark();                                                          \
+                                                                        \
+  pdf_DRAW_1D_TRACKLETS->write(Form("figs/tracklet/tracklet-%s-t" #q #w "-%s.png", \
+                                    OS(id), label), "Q");               \
+  // delete c##q##w;                                                    \
+  
    TRKLTS2P(DRAW_1D_TRACKLETS)
-   pdf_DRAW_1D_TRACKLETS->close();
+     
+     pdf_DRAW_1D_TRACKLETS->close();
 
-   TFile* fout = new TFile(Form("data/%s.root", label), "update");
-#define SAVE_1D_TRACKLETS(q, w)                                               \
-   for (std::size_t j = 0; j < nfiles; ++j)                                   \
-      h##q##w[j]->Write("", TObject::kOverwrite);
-   TRKLTS2P(SAVE_1D_TRACKLETS)
+#define SAVE_1D_TRACKLETS(q, w)                                         \
+   for (std::size_t j = 0; j < nfiles; ++j)                             \
+     h##q##w[j]->Write("", TObject::kOverwrite);                        \
+   
+   if (recreate) {
+     TRKLTS2P(SAVE_1D_TRACKLETS)
+       }
    fout->Close();
-
+   
    return 0;
 }
 
 static const std::vector<varinfo_t> options_pixel_2d = {
    {
-      "eta-phi", {"#eta", "#phi"},
-      {"eta@", "phi@"},
-      {{1000, -4, 4}, {1000, -4, 4}},
-      {600, 600}, 0x03, sel_, "colz", 10000
-   }, {
-      "eta-r", {"#eta", "r"},
-      {"eta@", "r@"},
-      {{1000, -4, 4}, {1000, 0, 20}},
-      {600, 600}, 0x33, sel_, "colz", 10000
-   }, {
       "eta-cs", {"#eta", "cluster size"},
       {"eta@", "cs@"},
       {{200, -4, 4}, {40, 0, 40}},
-      {600, 600}, 0x03, sel_, "colz", 10000
-   }, {
-      "x-y", {"x", "y"},
-      {"r@*cos(phi@)", "r@*sin(phi@)"},
-      {{1000, -20, 20}, {1000, -20, 20}},
-      {600, 600}, 0x11, sel_, "colz", 10000
-   }, {
-      "z-phi", {"z", "#phi"},
-      {"r@/tan(2*atan(exp(-eta@)))", "phi@"},
-      {{1000, -30, 30}, {1000, -4, 4}},
-      {600, 2400}, 0x01, sel_, "colz", 10000
-   }, {
-      "z-r", {"z", "r"},
-      {"r@/tan(2*atan(exp(-eta@)))", "r@"},
-      {{1000, -60, 60}, {1000, 0, 20}},
-      {1200, 600}, 0x33, sel_, "colz", 10000
-   }, {
-      "fpix-x-y-plus", {"x", "y"},
-      {"r@*cos(phi@)", "r@*sin(phi@)"},
-      {{1000, -20, 20}, {1000, -20, 20}},
-      {600, 600}, 0x02, "(eta@>0)", "colz", 10000
-   }, {
-      "fpix-x-y-minus", {"x", "y"},
-      {"r@*cos(phi@)", "r@*sin(phi@)"},
-      {{1000, -20, 20}, {1000, -20, 20}},
-      {600, 600}, 0x02, "(eta@<0)", "colz", 10000
-   }, {
-      "fpix-z-phi", {"z", "#phi"},
-      {"r@/tan(2*atan(exp(-eta@)))", "phi@"},
-      {{1000, -60, 60}, {1000, -4, 4}},
-      {1200, 600}, 0x22, sel_, "colz", 10000
-   }
+      {600, 600}, 0x1003, sel_, "colz", (test?5000:50000)
+   },
+   // {
+   //    "eta-phi", {"#eta", "#phi"},
+   //    {"eta@", "phi@"},
+   //    {{1000, -4, 4}, {1000, -4, 4}},
+   //    {600, 600}, 0x03, sel_, "colz", 5000
+   // }, {
+   //    "eta-r", {"#eta", "r"},
+   //    {"eta@", "r@"},
+   //    {{1000, -4, 4}, {1000, 0, 20}},
+   //    {600, 600}, 0x33, sel_, "colz", 5000
+   // }, {
+   //    "x-y", {"x", "y"},
+   //    {"r@*cos(phi@)", "r@*sin(phi@)"},
+   //    {{1000, -20, 20}, {1000, -20, 20}},
+   //    {600, 600}, 0x11, sel_, "colz", 5000
+   // }, {
+   //    "z-phi", {"z", "#phi"},
+   //    {"r@/tan(2*atan(exp(-eta@)))", "phi@"},
+   //    {{1000, -30, 30}, {1000, -4, 4}},
+   //    {600, 2400}, 0x01, sel_, "colz", (test?5000:50000)
+   // }, {
+   //    "z-r", {"z", "r"},
+   //    {"r@/tan(2*atan(exp(-eta@)))", "r@"},
+   //    {{1000, -60, 60}, {1000, 0, 20}},
+   //    {1200, 600}, 0x33, sel_, "colz", 5000
+   // }, {
+   //    "fpix-x-y-plus", {"x", "y"},
+   //    {"r@*cos(phi@)", "r@*sin(phi@)"},
+   //    {{1000, -20, 20}, {1000, -20, 20}},
+   //    {600, 600}, 0x02, "(eta@>0)", "colz", (test?5000:100000)
+   // }, {
+   //    "fpix-x-y-minus", {"x", "y"},
+   //    {"r@*cos(phi@)", "r@*sin(phi@)"},
+   //    {{1000, -20, 20}, {1000, -20, 20}},
+   //    {600, 600}, 0x02, "(eta@<0)", "colz", (test?5000:100000)
+   // }, {
+   //    "fpix-z-phi", {"z", "#phi"},
+   //    {"r@/tan(2*atan(exp(-eta@)))", "phi@"},
+   //    {{1000, -60, 60}, {1000, -4, 4}},
+   //    {1200, 600}, 0x22, sel_, "colz", 5000
+   // }
 };
-
-bool labelid = false;
 
 int map_pixels(std::vector<varinfo_t> const& options,
       const char* input, const char* label, int opt) {
@@ -401,44 +422,52 @@ int map_pixels(std::vector<varinfo_t> const& options,
 
    gStyle->SetOptStat(0);
 
-   pixgeo geo("data/pixelGeo.root");
+   auto* fcs = new TF1("fcs", sfcs.c_str(), -3, 3);
+   fcs->SetLineColor(kRed);
 
-   TFile* f = new TFile(input, "r");
-   TTree* t = (TTree*)f->Get("pixel/PixelTree");
+   auto* f = new TFile(input, "r");
+   auto* t = (TTree*)f->Get("pixel/PixelTree");
 
-#define SETUP_2D_PIXELS(q)                                                    \
-   std::string x##q = OPT(var[0]);                                            \
-   std::string y##q = OPT(var[1]);                                            \
-   std::replace(x##q.begin(), x##q.end(), '@', #q[0]);                        \
-   std::replace(y##q.begin(), y##q.end(), '@', #q[0]);                        \
-                                                                              \
-   TH2D* h##q = new TH2D(Form("h" #q "%s", idstr),                            \
-         Form(";%s (layer " #q ");%s (layer " #q ")", l0str, l1str),          \
-         (int)OPT(bins[0][0]), OPT(bins[0][1]), OPT(bins[0][2]),              \
-         (int)OPT(bins[1][0]), OPT(bins[1][1]), OPT(bins[1][2]));             \
+   auto* fout = new TFile(Form("data/%s.root", label), (recreate?"update":"read"));
 
+#define SETUP_2D_PIXELS(q)                                              \
+  std::string x##q = OPT(var[0]);                                       \
+  std::string y##q = OPT(var[1]);                                       \
+  std::replace(x##q.begin(), x##q.end(), '@', #q[0]);                   \
+  std::replace(y##q.begin(), y##q.end(), '@', #q[0]);                   \
+  TH2D* h##q;                                                           \
+  if (recreate) {                                                      \
+    h##q = new TH2D(Form("h" #q "%s", idstr),                           \
+                    Form(";%s (layer " #q ");%s (layer " #q ")", l0str, l1str), \
+                    (int)OPT(bins[0][0]), OPT(bins[0][1]), OPT(bins[0][2]), \
+                    (int)OPT(bins[1][0]), OPT(bins[1][1]), OPT(bins[1][2])); \
+  } else {                                                              \
+    h##q = (TH2D*)fout->Get(Form("h" #q "%s", idstr));                  \
+  }                                                                     \
+  
    PIXELS1P(SETUP_2D_PIXELS)
 
-     xjjroot::mypdf* pdf_DRAW_2D_PIXELS = new xjjroot::mypdf(Form("figspdf/pixel/pixel-%s-%s.pdf", OS(id), label), "c_DRAW_2D_PIXELS",  OPT(csize[0]), OPT(csize[1]));
-
+     auto* pdf_DRAW_2D_PIXELS = new xjjroot::mypdf(Form("figspdf/pixel/pixel-%s-%s.pdf", OS(id), label), "c_DRAW_2D_PIXELS",  OPT(csize[0]), OPT(csize[1]));
+   
 #define DRAW_2D_PIXELS(q)                                               \
-   t->Draw(Form("%s:%s>>h" #q "%s", CS(y##q), CS(x##q), idstr),         \
-           fsel##q, "goff", OPT(maxnevt));                              \
+   if (recreate) {                                                      \
+     t->Draw(Form("%s:%s>>h" #q "%s", CS(y##q), CS(x##q), idstr),       \
+             fsel##q, "goff", OPT(maxnevt));                            \
+   }                                                                    \
                                                                         \
    pdf_DRAW_2D_PIXELS->prepare();                                       \
    h##q->Draw(OS(gopt));                                                \
-   if (labelid)                                                         \
-     geo.draw##q(OS(id));                                               \
+   if (OPT(flags) & 0x1000) { fcs->Draw("same"); }                      \
                                                                         \
    watermark();                                                         \
    pdf_DRAW_2D_PIXELS->write(Form("figs/pixel/pixel-%s-l" #q "-%s.png", \
                                   OS(id), label));                      \
-
-
+   
+   
    if (OPT(flags) & 0x1) { BPIX1P(DRAW_2D_PIXELS) }
    if (OPT(flags) & 0x2) { FPIX1P(DRAW_2D_PIXELS) }
 
-   TH2D* hall = new TH2D(Form("hall%s", idstr), Form(";%s;%s", l0str, l1str),
+   auto* hall = new TH2D(Form("hall%s", idstr), Form(";%s;%s", l0str, l1str),
          (int)OPT(bins[0][0]), OPT(bins[0][1]), OPT(bins[0][2]),
          (int)OPT(bins[1][0]), OPT(bins[1][1]), OPT(bins[1][2]));
 
@@ -458,10 +487,12 @@ int map_pixels(std::vector<varinfo_t> const& options,
    }
    pdf_DRAW_2D_PIXELS->close();
 
-   TFile* fout = new TFile(Form("data/%s.root", label), "update");
 #define SAVE_2D_PIXELS(q) h##q->Write("", TObject::kOverwrite);
-   PIXELS1P(SAVE_2D_PIXELS)
-   hall->Write("", TObject::kOverwrite);
+
+   if (recreate) {
+     PIXELS1P(SAVE_2D_PIXELS)
+       hall->Write("", TObject::kOverwrite);
+   }
    fout->Close();
 
    return 0;
@@ -472,17 +503,17 @@ static const std::vector<varinfo_t> options_compare_pixel_2d = {
     "z-phi", {"z", "#phi"},
     {"r@/tan(2*atan(exp(-eta@)))", "phi@"},
     {{1000, -30, 30}, {1000, -4, 4}},
-    {600, 2400}, 0x01, sel_, "colz", 10000
+    {600, 2400}, 0x01, sel_, "colz", 5000
   }, {
     "fpix-x-y-plus", {"x", "y"},
     {"r@*cos(phi@)", "r@*sin(phi@)"},
     {{1000, -20, 20}, {1000, -20, 20}},
-    {600, 600}, 0x02, Form("(%s && eta@>0)", sel_.c_str()), "colz", 10000
+    {600, 600}, 0x02, Form("(%s && eta@>0)", sel_.c_str()), "colz", 5000
   }, {
     "fpix-x-y-minus", {"x", "y"},
     {"r@*cos(phi@)", "r@*sin(phi@)"},
     {{1000, -20, 20}, {1000, -20, 20}},
-    {600, 600}, 0x02, Form("(%s && eta@<0)", sel_.c_str()), "colz", 10000
+    {600, 600}, 0x02, Form("(%s && eta@<0)", sel_.c_str()), "colz", 5000
   }
 };
 
@@ -491,9 +522,11 @@ int compare_map_pixels(std::vector<varinfo_t> const& options,
 
   const char* idstr = OS(id);
 
-  configurer* conf = new configurer(config);
+  auto* conf = new configurer(config);
   auto tags = conf->get<std::vector<std::string>>("tags");
   std::size_t nfiles = tags.size();
+
+  pixgeo geo("data/pixelGeo.root");
 
   TFile* f[nfiles];
   for (std::size_t j = 0; j < nfiles; ++j)
@@ -513,13 +546,15 @@ int compare_map_pixels(std::vector<varinfo_t> const& options,
 
   PIXELS1P(SETUP_2D_PIXELS_COMPARE)
 
-    xjjroot::mypdf* pdf_DRAW_2D_PIXELS_COMPARE = new xjjroot::mypdf(Form("figspdf/ratio/ratio-%s-%s.pdf", OS(id), label), "c_DRAW_2D_RATIO", OPT(csize[0]), OPT(csize[1]));
+    auto* pdf_DRAW_2D_PIXELS_COMPARE = new xjjroot::mypdf(Form("figspdf/ratio/ratio-%s-%s.pdf", OS(id), label), "c_DRAW_2D_RATIO", OPT(csize[0]), OPT(csize[1]));
 
 #define DRAW_2D_PIXELS_COMPARE(q)                                       \
   for (std::size_t j = 0; j < nfiles; ++j) {                            \
     if (!j) continue;                                                   \
     pdf_DRAW_2D_PIXELS_COMPARE->prepare();                              \
     hr##q[j]->Draw("colz");                                             \
+   if (labelid)                                                         \
+     geo.draw##q(OS(id));                                               \
     watermark();                                                        \
     pdf_DRAW_2D_PIXELS_COMPARE->write(Form("figs/pixel/ratio-%s-l" #q "-%s-%s.png", \
                                            OS(id), label, tags[j].data())); \
@@ -538,12 +573,12 @@ static const std::vector<varinfo_t> options_tracklet_2d = {
       "eta-phi", {"#eta", "#phi"},
       {"eta1", "phi1"},
       {{1000, -4, 4}, {1000, -4, 4}},
-      {600, 600}, 0, sel_, "colz", 10000
+      {600, 600}, 0, sel_, "colz", 5000
    }, {
       "eta-vz", {"#eta", "v_{z}"},
       {"eta1", "vz[1]"},
       {{200, -4, 4}, {200, -20, 20}},
-      {600, 600}, 0, sel_, "colz", 10000
+      {600, 600}, 0, sel_, "colz", 5000
    }
 };
 
@@ -559,41 +594,48 @@ int map_tracklets(std::vector<varinfo_t> const& options,
 
    gStyle->SetOptStat(0);
 
-   TFile* f = new TFile(input, "READ");
+   auto* f = new TFile(input, "READ");
+   auto* fout = new TFile(Form("data/%s.root", label), (recreate?"update":"read"));
 
-#define SETUP_2D_TRACKLETS(q, w)                                              \
-   TTree* t##q##w = (TTree*)f->Get("TrackletTree" #q #w);                     \
-   TH2D* h##q##w = new TH2D(Form("h" #q #w "%s", idstr),                      \
-         Form(";%s (layer " #q "+" #w ");%s (layer " #q "+" #w ")",           \
-               l0str, l1str),                                                 \
-         OPT(bins[0][0]), OPT(bins[0][1]), OPT(bins[0][2]),                   \
-         OPT(bins[1][0]), OPT(bins[1][1]), OPT(bins[1][2]));                  \
-
+#define SETUP_2D_TRACKLETS(q, w)                                        \
+   TTree* t##q##w = 0; TH2D* h##q##w = 0;                               \
+   if (recreate) {                                                      \
+     t##q##w = (TTree*)f->Get("TrackletTree" #q #w);                    \
+     h##q##w = new TH2D(Form("h" #q #w "%s", idstr),                    \
+                        Form(";%s (layer " #q "+" #w ");%s (layer " #q "+" #w ")", \
+                             l0str, l1str),                             \
+                        OPT(bins[0][0]), OPT(bins[0][1]), OPT(bins[0][2]), \
+                        OPT(bins[1][0]), OPT(bins[1][1]), OPT(bins[1][2])); \
+   } else {                                                             \
+     h##q##w = (TH2D*)fout->Get(Form("h" #q #w "%s", idstr));           \
+   }                                                                    \
+   
    TRKLTS2P(SETUP_2D_TRACKLETS)
 
-   xjjroot::mypdf* pdf_DRAW_2D_TRACKLETS = new xjjroot::mypdf(Form("figspdf/tracklet/tracklet-%s-%s.pdf", OS(id), label), "c_DRAW_2D_TRACKLETS", 600, 600);
+     auto* pdf_DRAW_2D_TRACKLETS = new xjjroot::mypdf(Form("figspdf/tracklet/tracklet-%s-%s.pdf", OS(id), label), "c_DRAW_2D_TRACKLETS", 600, 600);
 
-#define DRAW_2D_TRACKLETS(q, w)                                               \
-   t##q##w->Draw(Form("%s:%s>>h" #q #w "%s", OS(var[1]), OS(var[0]), idstr),  \
-                 fsel, "goff", OPT(maxnevt));                                 \
-                                                                              \
-   pdf_DRAW_2D_TRACKLETS->prepare();                                          \
-   h##q##w->Draw(OS(gopt));                                                   \
+#define DRAW_2D_TRACKLETS(q, w)                                         \
+   t##q##w->Draw(Form("%s:%s>>h" #q #w "%s", OS(var[1]), OS(var[0]), idstr), \
+                 fsel, "goff", OPT(maxnevt));                           \
+                                                                        \
+   pdf_DRAW_2D_TRACKLETS->prepare();                                    \
+   h##q##w->Draw(OS(gopt));                                             \
    watermark();                                                         \
-                                                                              \
+                                                                        \
    pdf_DRAW_2D_TRACKLETS->write(Form("figs/tracklet/tracklet-%s-t" #q #w "-%s.png", \
                                      OS(id), label));                   \
-   // delete c##q##w;                                                            \
-
+   // delete c##q##w;                                                   \
+   
    TRKLTS2P(DRAW_2D_TRACKLETS)
-
-   pdf_DRAW_2D_TRACKLETS->close();
-
-   TFile* fout = new TFile(Form("data/%s.root", label), "update");
+     
+     pdf_DRAW_2D_TRACKLETS->close();
+   
 #define SAVE_2D_TRACKLETS(q, w) h##q##w->Write("", TObject::kOverwrite);
-   TRKLTS2P(SAVE_2D_TRACKLETS)
+   if (recreate) {
+     TRKLTS2P(SAVE_2D_TRACKLETS)
+       }
    fout->Close();
-
+   
    return 0;
 }
 
@@ -602,7 +644,7 @@ static const std::vector<varinfo_t> options_compare_tracklet_2d = {
       "eta-phi", {"#eta", "#phi"},
       {"eta1", "phi1"},
       {{1000, -4, 4}, {1000, -4, 4}},
-      {600, 600}, 0, sel_, "colz", 10000
+      {600, 600}, 0, sel_, "colz", 5000
    }
 };
 
@@ -633,7 +675,7 @@ int compare_map_tracklets(std::vector<varinfo_t> const& options,
 
   TRKLTS2P(SETUP_2D_TRACKLETS_COMPARE)
 
-    xjjroot::mypdf* pdf_DRAW_2D_TRACKLETS_COMPARE = new xjjroot::mypdf(Form("figspdf/ratio/ratio-%s-%s.pdf", OS(id), label), "c_DRAW_2D_RATIO",  OPT(csize[0]), OPT(csize[1]));
+    auto* pdf_DRAW_2D_TRACKLETS_COMPARE = new xjjroot::mypdf(Form("figspdf/ratio/ratio-%s-%s.pdf", OS(id), label), "c_DRAW_2D_RATIO",  OPT(csize[0]), OPT(csize[1]));
 
 #define DRAW_2D_TRACKLETS_COMPARE(q, w)                                 \
   for (std::size_t j = 0; j < nfiles; ++j) {                            \

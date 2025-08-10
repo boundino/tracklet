@@ -1,7 +1,7 @@
 #!/bin/bash
 
-if [[ $# -ne 6 ]]; then
-    echo "usage: ./tt-tracklet-checkfile.sh [input file] [output dir] [output filename] [random] [split] [drop]"
+if [[ $# -ne 7 ]]; then
+    echo "usage: ./tt-tracklet-checkfile.sh [input file] [output dir] [output filename] [random] [split] [drop] [weight]"
     exit 1
 fi
 
@@ -11,6 +11,7 @@ OUTFILE=$3
 USERANDOM=$4
 USESPLIT=$5
 USEDROP=$6
+USEWEIGHT=$7
 # RELEASE=CMSSW_12_5_5_patch1
 
 echo $SCRAM_ARCH
@@ -33,7 +34,10 @@ xrdcp $INFILE .
 
 input_file=$INFILE
 [[ -f $PWD/${INFILE##*/} ]] && input_file=$PWD/${INFILE##*/} || echo "xrdcp failed."
-./transmute_trees $input_file $OUTFILE 0 1000000000 -1 0 0 $USERANDOM $USESPLIT $USEDROP
+reweight=0
+[[ $USEWEIGHT -gt -1 ]] && { reweight=1 ; }
+sample=$USEWEIGHT
+./transmute_trees $input_file $OUTFILE 0 1000000000 $sample $reweight 0 $USERANDOM $USESPLIT $USEDROP
 
 if [[ $(wc -c $OUTFILE | awk '{print $1}') -gt 700 ]]; then
     # gfal-copy
