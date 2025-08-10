@@ -97,7 +97,7 @@ int compare_pixels(std::vector<varinfo_t> const& options,
       t[j] = (TTree*)f[j]->Get("pixel/PixelTree");
    }
 
-auto* fout = new TFile(Form("data/%s.root", label), (recreate?"update":"read"));
+auto* fout = new TFile(Form("output/hh/%s.root", label), (recreate?"update":"read"));
    
 #define SETUP_1D_PIXELS(q)                                              \
   TH1D* h##q[nfiles]; TH1D* hr##q[nfiles] = {0};                        \
@@ -247,7 +247,7 @@ int compare_tracklets(std::vector<varinfo_t> const& options,
    for (std::size_t j = 0; j < nfiles; ++j)
       f[j] = new TFile(files[j].data(), "read");
 
-auto* fout = new TFile(Form("data/%s.root", label), (recreate?"update":"read"));
+auto* fout = new TFile(Form("output/hh/%s.root", label), (recreate?"update":"read"));
  
 #define SETUP_1D_TRACKLETS(q, w)                                        \
   TTree* t##q##w[nfiles];                                               \
@@ -428,7 +428,7 @@ int map_pixels(std::vector<varinfo_t> const& options,
    auto* f = new TFile(input, "r");
    auto* t = (TTree*)f->Get("pixel/PixelTree");
 
-   auto* fout = new TFile(Form("data/%s.root", label), (recreate?"update":"read"));
+   auto* fout = new TFile(Form("output/hh/%s.root", label), (recreate?"update":"read"));
 
 #define SETUP_2D_PIXELS(q)                                              \
   std::string x##q = OPT(var[0]);                                       \
@@ -526,11 +526,11 @@ int compare_map_pixels(std::vector<varinfo_t> const& options,
   auto tags = conf->get<std::vector<std::string>>("tags");
   std::size_t nfiles = tags.size();
 
-  pixgeo geo("data/pixelGeo.root");
+  pixgeo geo("output/hh/pixelGeo.root");
 
   TFile* f[nfiles];
   for (std::size_t j = 0; j < nfiles; ++j)
-    f[j] = new TFile(Form("data/%s.root", tags[j].data()), "read");
+    f[j] = new TFile(Form("output/hh/%s.root", tags[j].data()), "read");
 
 #define SETUP_2D_PIXELS_COMPARE(q)                                      \
   TH2D* h##q[nfiles]; TH2D* hr##q[nfiles];                              \
@@ -595,7 +595,7 @@ int map_tracklets(std::vector<varinfo_t> const& options,
    gStyle->SetOptStat(0);
 
    auto* f = new TFile(input, "READ");
-   auto* fout = new TFile(Form("data/%s.root", label), (recreate?"update":"read"));
+   auto* fout = new TFile(Form("output/hh/%s.root", label), (recreate?"update":"read"));
 
 #define SETUP_2D_TRACKLETS(q, w)                                        \
    TTree* t##q##w = 0; TH2D* h##q##w = 0;                               \
@@ -659,7 +659,7 @@ int compare_map_tracklets(std::vector<varinfo_t> const& options,
 
   TFile* f[nfiles];
   for (std::size_t j = 0; j < nfiles; ++j)
-    f[j] = new TFile(Form("data/%s.root", tags[j].data()), "read");
+    f[j] = new TFile(Form("output/hh/%s.root", tags[j].data()), "read");
 
 #define SETUP_2D_TRACKLETS_COMPARE(q, w)                                \
   TH2D* h##q##w[nfiles]; TH2D* hr##q##w[nfiles];                        \

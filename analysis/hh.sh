@@ -13,6 +13,8 @@ RUN_VTX_EFF=0 ;
 
 . tool.shinc 
 
+mkdir -p output/hh/
+
 INPUTS_PIXEL=(
     # smiling cut
     # after mask
