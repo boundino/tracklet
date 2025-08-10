@@ -5,5 +5,8 @@ build/
 figs/
 figspdf/
 output/
-data/
-git/
+logs/
+lxplus/filelists/
+lists/
+lxplus/tracklet.tar.gz
+*.log
