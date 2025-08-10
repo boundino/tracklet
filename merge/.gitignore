@@ -1,0 +1,13 @@
+*
+!*/
+!*.*
+build/
+figs/
+figspdf/
+output/
+logs/
+filelists/
+lxplus/filelists/
+lists/
+lxplus/tracklet.tar.gz
+*.log
