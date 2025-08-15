@@ -5,14 +5,18 @@ make merge_monde || exit 1
 
 asels=(
     "(1),"
-    # "(vz[1]<-10&&vz[1]>-15),vz0"
+    
     "(vz[1]<-5&&vz[1]>-10),vz1"
     "(vz[1]<0&&vz[1]>-5),vz2"
     "(vz[1]>0&&vz[1]<5),vz3"
     "(vz[1]>5&&vz[1]<10),vz4"
-    # "(vz[1]>10&&vz[1]<15),vz5"
+
     "(lumi>=52&&lumi<=99),lumi0"
     "(lumi>=100&&lumi<=163),lumi1"
+    "(lumi>=52&&lumi<=74),lumi2"
+    "(lumi>=75&&lumi<=99),lumi3"
+    "(lumi>=100&&lumi<=129),lumi4"
+    "(lumi>=130&&lumi<=163),lumi5"
 )
 maxdr2s=(
     "0.25 drlt0p5"
@@ -28,6 +32,12 @@ ctableindexs=(
     "1,hfeffup"
     "2,hfeffdown"
 )
+hfsels=(
+    "(nhfp > 1 && nhfn > 1),"
+    "(nhfp_low > 2 && nhfn_low > 2),evtsel1"
+    "(nhfp_high > 1 && nhfn_high > 1),evtsel2"
+)
+
 
 for vasels in "${asels[@]}" ; do
 
@@ -54,25 +64,36 @@ for vasels in "${asels[@]}" ; do
                 tagctable=${vctable[1]}
                 [[ x$tagctable == x ]] && defctable=1 || defctable=0
 
-                # echo $ctable
-                # echo $multhandle
-                # echo $tagmult
-                # echo $defmult
+                for vhfsels in "${hfsels[@]}" ; do
+                    
+                    IFS=',' ; vhfsel=($vhfsels) ; unset IFS ;
+                    hfsel=${vhfsel[0]}
+                    taghfsel=${vhfsel[1]}
+                    [[ x$taghfsel == x ]] && defhfsel=1 || defhfsel=0
+    
+                    [[ $(($defasel+$defdr2+$defmult+$defctable+$defhfsel)) -eq 4 ]] || continue
                 
-                [[ $(($defasel+$defdr2+$defmult+$defctable)) -eq 3 ]] || continue
-                
-                tagver="v1"
-                [[ $defasel -eq 1 ]] || tagver=$tagver"-"$tagasel    
-                [[ $defdr2 -eq 1 ]] || tagver=$tagver"-"${vmaxdr2[1]}
-                [[ $defmult -eq 1 ]] || tagver=$tagver"-"$tagmult    
-                [[ $defctable -eq 1 ]] || tagver=$tagver"-"$tagctable    
-
-                echo $tagver
-
-                [[ $defasel -eq 0 ]] && ./rrvar.sh ${1:-0011} 00 $tagver "$asel" $maxdr2 $multhandle $ctable
-                [[ $defdr2 -eq 0 ]] && ./rrvar.sh ${1:-1011} 10 $tagver "$asel" $maxdr2 $multhandle $ctable
-                [[ $defmult -eq 0 ]] && ./rrvar.sh ${1:-1111} 11 $tagver "$asel" $maxdr2 $multhandle $ctable
-                [[ $defctable -eq 0 ]] && ./rrvar.sh ${1:-0011} 00 $tagver "$asel" $maxdr2 $multhandle $ctable
+                    tagver="v1"
+                    [[ $defasel -eq 1 ]] || tagver=$tagver"-"$tagasel
+                    [[ $defdr2 -eq 1 ]] || tagver=$tagver"-"${vmaxdr2[1]}
+                    [[ $defmult -eq 1 ]] || tagver=$tagver"-"$tagmult
+                    [[ $defctable -eq 1 ]] || tagver=$tagver"-"$tagctable
+                    [[ $defhfsel -eq 1 ]] || tagver=$tagver"-"$taghfsel
+                    
+                    echo "--> "$tagver
+                    echo "asel: "$asel
+                    echo "maxdr2: "$maxdr2
+                    echo "ctable: "$ctable
+                    echo "multhandle: "$multhandle
+                    echo "hfsel: "$hfsel
+                    echo
+                    
+                    [[ $defasel -eq 0 ]] && ./rrvar.sh ${1:-0011} 00 $tagver "$asel" $maxdr2 $multhandle $ctable "$hfsel" 1
+                    [[ $defdr2 -eq 0 ]] && ./rrvar.sh ${1:-1011} 10 $tagver "$asel" $maxdr2 $multhandle $ctable "$hfsel" 1
+                    [[ $defmult -eq 0 ]] && ./rrvar.sh ${1:-1111} 11 $tagver "$asel" $maxdr2 $multhandle $ctable "$hfsel" 1
+                    [[ $defctable -eq 0 ]] && ./rrvar.sh ${1:-0011} 00 $tagver "$asel" $maxdr2 $multhandle $ctable "$hfsel" 1
+                    [[ $defhfsel -eq 0 ]] && ./rrvar.sh ${1:-1111} 11 $tagver "$asel" $maxdr2 $multhandle $ctable "$hfsel" 1
+                done
             done
         done        
     done

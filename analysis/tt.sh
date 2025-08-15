@@ -2,7 +2,7 @@ make transmute_trees || exit 1
 
 # ./transmute_trees $INPUT $OUTPUT [start:0] [end:-1] [reweight_sample:-1] [reweight:0] [pileup:0.] [random:0] [split:0.] [drop:0] [smear:0]
 
-INPUT=/eos/cms/store/group/phys_heavyions/wangj/tracklet2025/private/MinBias_Hijing_OO_5362GeV/crab_pixel_250715_Hijing_OO_5362GeV_pf_realistic/250717_123454/0000/pixelsim_pf_7.root
+INPUT=/eos/cms/store/group/phys_heavyions/wangj/tracklet2025/MinBias_Hijing_OO_5362GeV/crab_pixel_250810_MINI_0731_Hijing_OO_5362GeV_pf_realistic_maskf/250810_232533/0000/pixelsim_pf_1.root
 OUTPUTDIR=$PWD
 TAG=${INPUT##*/}
 DIR=${INPUT/${TAG}/}

@@ -46,8 +46,8 @@ std::string tcent(std::string tag) {
   return Form("Cent. %.0f-%.0f%s", cmin, cmax, "%");
 }
 
-TH1F* gethsym(TH1* havg, const char* name="hsym") {
-  TH1F* hsym = (TH1F*)havg->Clone(name);
+TH1D* gethsym(TH1* havg, const char* name="hsym") {
+  TH1D* hsym = (TH1D*)havg->Clone(name);
   int nbins = hsym->GetNbinsX();
   for (int i=1; i<=nbins; i++) {
     if (havg->GetBinContent(i) != 0 && havg->GetBinContent(nbins - i + 1) != 0) {
@@ -62,8 +62,8 @@ TH1F* gethsym(TH1* havg, const char* name="hsym") {
   return hsym;
 }
 
-TH1F* gethsymhigh(TH1* havg, const char* name="hsymhigh") {
-  TH1F* hsymhigh = (TH1F*)havg->Clone(name);
+TH1D* gethsymhigh(TH1* havg, const char* name="hsymhigh") {
+  TH1D* hsymhigh = (TH1D*)havg->Clone(name);
   int nbins = hsymhigh->GetNbinsX();
   for (int i=1; i<=nbins; i++) {
     if (havg->GetBinContent(i) != 0 && havg->GetBinContent(nbins - i + 1) != 0) {
@@ -79,8 +79,8 @@ TH1F* gethsymhigh(TH1* havg, const char* name="hsymhigh") {
   return hsymhigh;
 }
 
-TH1F* gethsymlow(TH1* havg, const char* name="hsymlow") {
-  TH1F* hsymlow = (TH1F*)havg->Clone(name);
+TH1D* gethsymlow(TH1* havg, const char* name="hsymlow") {
+  TH1D* hsymlow = (TH1D*)havg->Clone(name);
   int nbins = hsymlow->GetNbinsX();
   for (int i=1; i<=nbins; i++) {
     if (havg->GetBinContent(i) != 0 && havg->GetBinContent(nbins - i + 1) != 0) {
@@ -92,9 +92,9 @@ TH1F* gethsymlow(TH1* havg, const char* name="hsymlow") {
   return hsymlow;
 }
 
-TH1F* gethhigh(std::vector<TH1D*> h1WEfinal)
+TH1D* gethhigh(std::vector<TH1D*> h1WEfinal)
 {
-  TH1F* hhigh = (TH1F*)h1WEfinal[0]->Clone("hhigh");
+  TH1D* hhigh = (TH1D*)h1WEfinal[0]->Clone("hhigh");
   for(int i=1; i<=hhigh->GetNbinsX(); i++) {
     float vh = 0, vh_err = 0;
     for(int j=0; j<h1WEfinal.size(); j++) {
@@ -112,9 +112,9 @@ TH1F* gethhigh(std::vector<TH1D*> h1WEfinal)
   return hhigh;
 }
 
-TH1F* gethlow(std::vector<TH1D*> h1WEfinal)
+TH1D* gethlow(std::vector<TH1D*> h1WEfinal)
 {
-  TH1F* hlow = (TH1F*)h1WEfinal[0]->Clone("hlow");
+  TH1D* hlow = (TH1D*)h1WEfinal[0]->Clone("hlow");
   for(int i=1; i<=hlow->GetNbinsX(); i++) {
     float vl = 1.e+10, vl_err = 0;
     for(int j=0; j<h1WEfinal.size(); j++) {
@@ -134,8 +134,8 @@ TH1F* gethlow(std::vector<TH1D*> h1WEfinal)
   return hlow;
 }
 
-TH1F* getherr(TH1* havg, TH1F* hhigh, TH1F* hlow) {
-  TH1F* herr = (TH1F*)havg->Clone("herr");
+TH1D* getherr(TH1* havg, TH1D* hhigh, TH1D* hlow) {
+  TH1D* herr = (TH1D*)havg->Clone("herr");
   herr->SetTitle(_t_dNdetatitle.c_str());
   for(int i=1; i<=havg->GetNbinsX(); i++) {
     float err = std::max(fabs(hhigh->GetBinContent(i)-havg->GetBinContent(i)),
@@ -145,8 +145,8 @@ TH1F* getherr(TH1* havg, TH1F* hhigh, TH1F* hlow) {
   return herr;
 }
 
-TH1F* gethrelerr(TH1* havg, TH1F* hhigh, TH1F* hlow) {
-  TH1F* hrelerr = (TH1F*)havg->Clone("hrelerr");
+TH1D* gethrelerr(TH1* havg, TH1D* hhigh, TH1D* hlow) {
+  TH1D* hrelerr = (TH1D*)havg->Clone("hrelerr");
   hrelerr->SetTitle(";#it{#eta};relative uncertainty");
   for(int i=1; i<=havg->GetNbinsX(); i++) {
     float err = std::max(fabs(hhigh->GetBinContent(i)-havg->GetBinContent(i)),
@@ -193,11 +193,11 @@ std::vector<TH1D*> combh1WEfinal(std::string filename,
 }
 
 std::vector<TGraphErrors*> combgh1WGhadron(std::string filename,
-                                           TLegend* legTRUTH = 0,
+                                           TLegend* &legTRUTH,
                                            std::string input_truth="") {
   xjjc::sconfig itruth(input_truth, ",", "&", "v");
   if(!legTRUTH) {
-    legTRUTH = new TLegend(0.55, 0.47-0.031*itruth.n(), 0.55+0.2, 0.47);
+    legTRUTH = new TLegend(0.55, 0.42-0.031*itruth.n(), 0.55+0.2, 0.42);
     xjjroot::setleg(legTRUTH, 0.028);
   }
   std::vector<TGraphErrors*> gh1WGhadron;
@@ -216,11 +216,17 @@ std::vector<TGraphErrors*> combgh1WGhadron(std::string filename,
 
 class combgh1WGhadron_multfiles {
 public:
+  unsigned int n() { return n_; }
+  float leg_up() { return yleg_; }
+  float leg_down() { return yleg_-n_*1.1*tleg_; }
+  float leg_left() { return xleg_; }
+  float leg_right() { return xleg_+0.2; }
   std::vector<std::pair<std::string, TGraphErrors*>> gh1() { return gh1_; }
   std::vector<std::pair<std::string, TH1D*>> h1() { return h1_; }
   bool valid() { return gh1_.size()>0; }
   combgh1WGhadron_multfiles(std::string input_truth,
-                            std::string div = "&") : leg_(0) {
+                            std::string div = "&") :
+    leg_(0), xleg_(0.55), yleg_(0.47), tleg_(0.028) {
     if(input_truth != "null") {
       xjjc::sconfig itruth(input_truth, ",", div, "v");
       n_ = 0;
@@ -241,11 +247,12 @@ public:
   }
 
   void remakeleg(float xleg = -1, float yleg = -1, float tleg = 0.028) {
-    if (xleg < 0) xleg = 0.55;
-    if (yleg < 0) yleg = 0.47;
+    if (xleg >= 0) xleg_ = xleg;
+    if (yleg >= 0) yleg_ = yleg;
+    if (tleg >= 0) tleg_ = tleg;
     if (leg_) delete leg_;
-    leg_ = new TLegend(xleg, yleg-tleg*1.1*n_, xleg+0.2, yleg);
-    xjjroot::setleg(leg_, tleg);
+    leg_ = new TLegend(xleg_, yleg_-tleg_*1.1*n_, xleg_+0.2, yleg_);
+    xjjroot::setleg(leg_, tleg_);
     for (auto& g : gh1_) {
       leg_->AddEntry(g.second,
                      Form("%s", latex_[g.first].c_str()),
@@ -311,8 +318,9 @@ private:
   std::vector<std::pair<std::string, TGraphErrors*>> gh1_; 
   std::vector<std::pair<std::string, TH1D*>> h1_;
   std::map<std::string, std::string> latex_;
+  float xleg_, yleg_, tleg_;
   TLegend* leg_;
-  int n_;
+  unsigned int n_;
 };
 
 // std::vector<TGraphErrors*> combgh1WGhadron_multfiles::combgh1WGhadron_multfiles(std::string input_truth,

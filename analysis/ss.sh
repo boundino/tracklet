@@ -5,31 +5,35 @@ make sum_systematics || exit 1
 
 source tool.shinc 
 
-group="394153.cgm.hijing.m.v1"
 mcdefault=hijing
+group="394153.cgm.hijing.m.v1"
 
 CENTS=(0 20)
-for i in {20..4} ; do CENTS+=($((i-1)) $i) ; done ;
+for i in {20..7} ; do CENTS+=($((i-1)) $i) ; done ;
 
 ##
 c=0
+# 000001111111111111111111111111100000
 while [ $c -lt $((${#CENTS[@]}-1)) ] ; do
     cmin=${CENTS[c]}
     cmax=${CENTS[c+1]}
 
     CONFIGS=(
+        "${group}.s.$cmin.$cmax&-15 < v_{z} < 15","${group}-vz1.s.$cmin.$cmax&-10 < v_{z} < -5&000000011111111111111111111111100000","${group}-vz2.s.$cmin.$cmax&-5 < v_{z} < 0&000001111111111111111111111110000000","${group}-vz3.s.$cmin.$cmax&0 < v_{z} < 5&000000111111111111111111111100000000","${group}-vz4.s.$cmin.$cmax&5 < v_{z} < 10&000001111111111111111111111000000000"%"vz-${group}.s.$cmin.$cmax"%"394153 corr. w. ${taglabel[$mcdefault]}"%"1"%"event v_{z}"
         "${group}.s.$cmin.$cmax&#Deltar < 0.5","${group}-drlt0p4.s.$cmin.$cmax&#Deltar < 0.4","${group}-drlt0p6.s.$cmin.$cmax&#Deltar < 0.6"%"dr-${group}.s.$cmin.$cmax"%"394153 corr. w. ${taglabel[$mcdefault]}"%"1"%"tracklet #Deltar selection"
-        "${group}.s.$cmin.$cmax&-15 < v_{z} < 15","${group}-vz1.s.$cmin.$cmax&-10 < v_{z} < -5","${group}-vz2.s.$cmin.$cmax&-5 < v_{z} < 0","${group}-vz3.s.$cmin.$cmax&0 < v_{z} < 5","${group}-vz4.s.$cmin.$cmax&5 < v_{z} < 10"%"vz-${group}.s.$cmin.$cmax"%"394153 corr. w. ${taglabel[$mcdefault]}"%"1"%"event v_{z}"
-        # "${group}.s.$cmin.$cmax&${taglabel[$mcdefault]}","${group/$mcdefault/hydjet}.s.$cmin.$cmax&${taglabel[hydjet]}","${group/$mcdefault/amptnm}.s.$cmin.$cmax&${taglabel[amptnm]}","${group/$mcdefault/amptnm2}.s.$cmin.$cmax&394153""%""mc-${group}.s.$cmin.$cmax"%"394153 corr. w. different MC"%"1"%"model dependence"
+        "${group}.s.$cmin.$cmax&${taglabel[$mcdefault]}","${group/$mcdefault/amptnm}.s.$cmin.$cmax&$(ftaglabel amptnm)","${group/$mcdefault/amptsm}.s.$cmin.$cmax&$(ftaglabel amptsm)","${group/$mcdefault/epos}.s.$cmin.$cmax&$(ftaglabel epos)"%"mc-${group}.s.$cmin.$cmax"%"394153 corr. w. different MC"%"1"%"model dependence"
         "${group}.s.$cmin.$cmax&number of tracklets","${group}-nhit2.s.$cmin.$cmax&number of hits"%"mult-${group}.s.$cmin.$cmax"%"394153 corr. w. ${taglabel[$mcdefault]}"%"1"%"correction factorization"
-        # "${group}.s.$cmin.$cmax&nominal","${group}-split.s.$cmin.$cmax&pixel splitting"%"split-${group}.s.$cmin.$cmax"%"394153 corr. w. ${taglabel[$mcdefault]}"%"1"%"pixel splitting"
         "${group}.s.$cmin.$cmax&nominal","${group}-hfeffup.s.$cmin.$cmax&centrality up","${group}-hfeffdown.s.$cmin.$cmax&centrality down"%"ctable-${group}.s.$cmin.$cmax"%"394153 corr. w. ${taglabel[$mcdefault]}"%"1"%"centrality table"
+        "${group}.s.$cmin.$cmax&$(ftaglabel epos)","${group}-sdf1.s.$cmin.$cmax&$(ftaglabel angantyr)"%"sdf-${group}.s.$cmin.$cmax"%"Single diffractive correction"%"1"%"single diffraction fraction"
+        "${group}.s.$cmin.$cmax&HFCoin2Th4","${group}-evtsel1.s.$cmin.$cmax&HFCoinc3Th3","${group}-evtsel2.s.$cmin.$cmax&HFCoinc2Th5"%"evtsel-${group}.s.$cmin.$cmax"%"394153 corr. w. ${taglabel[$mcdefault]}"%"1"%"event selection"
+        # "${group}.s.$cmin.$cmax&nominal","${group}-split.s.$cmin.$cmax&pixel splitting"%"split-${group}.s.$cmin.$cmax"%"394153 corr. w. ${taglabel[$mcdefault]}"%"1"%"pixel splitting"
     )
     [[ $cmin -eq 0 && $cmax -eq 20 ]] && {
         CONFIGS+=(
             "${group}.s.$cmin.$cmax&tracklet count.","${group/cgm/cm}-clus.s.$cmin.$cmax&cluster count."%"method-${group}.s.$cmin.$cmax"%"394153 corr. w. ${taglabel[${mcdefault}]}"%"0"%"-"
-            # "${group}.s.$cmin.$cmax&${taglabel[amptnm]}","${group/${taglabel[amptnm]}/362318}.s.$cmin.$cmax&362318"%"run-cgm.${mcdefault}.m.v3.s.$cmin.$cmax"%"Different run corr. w. ${taglabel[${mcdefault}]}"%"0"%"-"
-            "${group}.s.$cmin.$cmax&all lumi","${group}-lumi0.s.$cmin.$cmax&52 <= lumi < 100","${group}-lumi1.s.$cmin.$cmax&100 <= lumi < 164"%"lumi-${group}.s.$cmin.$cmax"%"394153 corr. w. ${taglabel[${mcdefault}]}"%"0"%"-"            
+            "${group}.s.$cmin.$cmax&all lumi","${group}-lumi2.s.$cmin.$cmax&52 <= lumi < 75","${group}-lumi3.s.$cmin.$cmax&75 <= lumi < 100","${group}-lumi4.s.$cmin.$cmax&100 <= lumi < 130","${group}-lumi5.s.$cmin.$cmax&130 <= lumi < 164"%"lumi-${group}.s.$cmin.$cmax"%"394153 corr. w. ${taglabel[${mcdefault}]}"%"0"%"-"            
+            "${group}.s.$cmin.$cmax&${taglabel[$mcdefault]}","${group/$mcdefault/amptnm}.s.$cmin.$cmax&$(ftaglabel amptnm)","${group/$mcdefault/amptsm}.s.$cmin.$cmax&$(ftaglabel amptsm)","${group/$mcdefault/epos}.s.$cmin.$cmax&$(ftaglabel epos)","${group/$mcdefault/hydjet}.s.$cmin.$cmax&$(ftaglabel hydjet)"%"mcall-${group}.s.$cmin.$cmax"%"394153 corr. w. different MC"%"0"%"-"
+            # "${group}.s.$cmin.$cmax&$(ftaglabel amptnm)","${group/$(ftaglabel amptnm)/362318}.s.$cmin.$cmax&362318"%"run-cgm.${mcdefault}.m.v3.s.$cmin.$cmax"%"Different run corr. w. ${taglabel[${mcdefault}]}"%"0"%"-"
         )
     }
 

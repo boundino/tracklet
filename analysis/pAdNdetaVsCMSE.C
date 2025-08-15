@@ -21,7 +21,7 @@
 
 // pp, pA, AA points from Constantin Loizides
 // INEL pp points from Jan Fiete's compilation
-
+float new_result = 4.872095;
 int pAdNdetaVsCMSE(bool onlyAA=false) {
     TCanvas* c = new TCanvas("c", "", 600, 600);
     gStyle->SetOptStat(0);
@@ -477,7 +477,7 @@ int pAdNdetaVsCMSE(bool onlyAA=false) {
     // Graph_AA_CMS->SetPointError(1, 0.0, 0.234662*2);
     // Graph_AA_CMS->SetPoint(1, 5362.0, 5.186796*2);
     // Graph_AA_CMS->SetPointError(1, 0.0, 0.075918*2);
-    Graph_AA_CMS->SetPoint(1, 5362.0, 4.946683*2);
+    Graph_AA_CMS->SetPoint(1, 5362.0, new_result*2);
     Graph_AA_CMS->SetPointError(1, 0.0, 0.138508*2);
     Graph_AA_CMS->Draw("E1P");
 

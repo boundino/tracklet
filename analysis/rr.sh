@@ -4,18 +4,32 @@ make reap_results || exit 1
 make merge_monde || exit 1
 
 maxdr2=0.25 ; tagdr="drlt0p5" 
-tagver="v1" ; nominal="hijing" ; corrtagver="v1"
+tagver="v1" ; defaultsdf="epos" ; corrtagver=$tagver
+# tagver="v1-sdf1" ; defaultsdf="angantyr" ; corrtagver="v1"
 
 TYPES=(12 13 14 23 24 34 56 57 67)
 # TYPES=(11 22 33 44 55 66 77) ; tagver=$tagver"-clus" ; corrtagver=$corrtagver"-clus" ;
-CENTS=(0 20) # (4 20)
-for i in {20..4} ; do CENTS+=($((i-1)) $i) ; done ; 
+CENTS=(0 20)
+# CENTS=(6 20) # 0-70%
+for i in {20..7} ; do CENTS+=($((i-1)) $i) ; done ; 
 
 ##
 INPUTS_MC=(
+    # fix maskf
+    /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/tt_250810_weight_pixel_250810_MINI_0731_Hijing_OO_5362GeV_pf_realistic_maskf.root,hijing,7
+    # after maskf
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/tt_250809_weight_pixel_250809_MINI_0731_Hijing_OO_5362GeV_pf_realistic_maskf.root,hijing,7
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/tt_250809_weight_pixel_250809_MINI_0731_AMPT_NoStringMelting_OO_5362GeV_pf_realistic_maskf.root,amptnm,5
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/tt_250809_weight_pixel_250809_MINI_0731_EposLHC_ReggeGribovParton_OO_5362GeV_pf_realistic_maskf.root,epos,3
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/tt_250809_weight_pixel_250809_MINI_0715_Pythia_Angantyr_OO_5362GeV_pf_realistic_maskf.root,angantyr,9
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/tt_250809_weight_pixel_250809_MINI_0731_AMPT_StringMelting_OO_5362GeV_pf_realistic_maskf.root,amptsm,6
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/tt_250809_weight_pixel_250809_MINI_0731_Hydjet_Cello_OO_5362GeV_pf_realistic_maskf.root,hydjet,4
+    # clus
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/tt_250809_weight_pixel_250809_MINI_0731_EposLHC_ReggeGribovParton_OO_5362GeV_pf_realistic_maskf_clus.root,epos,3
+    
     # after smiling cut
-    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/private/tt_250806_weight_pixel_250806_Hijing_OO_5362GeV_pf_realistic_smile.root,hijing,7
-    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/private/tt_250806_weight_pixel_250806_Hijing_OO_5362GeV_pf_realistic_smile_clus.root,hijing,7
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/tt_250809_weight_pixel_250809_MINI_0731_Hijing_OO_5362GeV_pf_realistic_smile_maskf_clus.root,hijing,7
+
     # after mask
     # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/private/tt_250727_weight_pixel_250727_Hijing_OO_5362GeV_pf_realistic_mask.root,hijing,7
     # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/private/tt_250727_weight_pixel_250727_Hijing_OO_5362GeV_pf_realistic_mask_clus.root,hijing,7
@@ -23,8 +37,6 @@ INPUTS_MC=(
     # before mask
     # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/private/tt_250715_pixel_250715_Hijing_OO_5362GeV_pf_realistic.root,hijing,7
     # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/private/tt_250718_weight_pixel_250715_Hijing_OO_5362GeV_pf_realistic.root,hijing,7
-    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/private/tt_250718_weight_pixel_250715_AMPT_StringMelting_OO_5362GeV_pf_realistic.root,amptsm,6
-    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/private/tt_250718_weight_pixel_250715_Pythia_Angantyr_OO_5362GeV_pf_realistic.root,angantyr,9
     # clus
     # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/private/tt_250718_pixel_250715_Hijing_OO_5362GeV_pf_realistic_clus.root,hijing,7
 
@@ -39,11 +51,24 @@ INPUTS_MC=(
 )
 
 INPUTS_DATA=(
+    # fix maskf
+    /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/tt_250810_pixel_250810_IonPhysics0_394153_mask_p10.root,394153,0 # 10% full stats
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/tt_250810_pixel_250810_IonPhysics0_394153_mask.root,394153,0
+    
+    # after maskf
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/tt_250809_pixel_250809_IonPhysics0_394153_maskf.root,394153,0
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/tt_250809_pixel_250809_IonPhysics0_394153_maskf_p10.root,394153,0
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/tt_250810_weight_pixel_250810_MINI_0731_Hijing_OO_5362GeV_pf_realistic_maskf.root,hijingCLOSE,7
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/tt_250809_weight_pixel_250809_MINI_0731_AMPT_NoStringMelting_OO_5362GeV_pf_realistic_maskf.root,amptnmCLOSE,5
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/tt_250809_weight_pixel_250809_MINI_0731_EposLHC_ReggeGribovParton_OO_5362GeV_pf_realistic_maskf.root,eposCLOSE,3
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/tt_250809_weight_pixel_250809_MINI_0731_AMPT_StringMelting_OO_5362GeV_pf_realistic_maskf.root,amptsmCLOSE,6
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/tt_250809_weight_pixel_250809_MINI_0731_Hydjet_Cello_OO_5362GeV_pf_realistic_maskf.root,hydjetCLOSE,4
+
     # after smiling cut
-    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/tt_250806_pixel_250806_IonPhysics0_394153_mask_p10.root,394153,0
-    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/tt_250806_pixel_250806_IonPhysics0_394153_mask_clus_p10.root,394153,0
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/tt_250809_pixel_250809_IonPhysics0_394153_smile_maskf_clus_p10.root,394153,0
+    
     # after mask
-    /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/tt_250727_pixel_250727_IonPhysics0_394153_mask_p10.root,394153,0
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/tt_250727_pixel_250727_IonPhysics0_394153_mask_p10.root,394153,0
     # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/tt_250727_pixel_250727_IonPhysics0_394153_mask_clus_p10.root,394153,0
 
     # before mask
@@ -106,10 +131,10 @@ do
 
         tcgm=m # correction, geometric, acceptance map
         cgm=$(getcgm $tcgm)
-        # tages=$nominal".m."$tagver".s."$cmin"."$cmax ;
-        tages=$TAG_MC"."$tcgm"."$tagver".s."$cmin"."$cmax
-        # tages=$nominal".m."$corrtagver".s."$cmin"."$cmax ;
-        [[ $TAG_MC == *${nominal}* || ${2:-0} -eq 2 ]] && {
+        # tages=$defaultsdf".m."$tagver".s."$cmin"."$cmax ;
+        tages=$defaultsdf".m."$corrtagver".s."$cmin"."$cmax ;
+        # tages=$TAG_MC"."$tcgm"."$tagver".s."$cmin"."$cmax
+        [[ ${2:-0} -eq 2 ]] && {
             # ==> tag name
             tages=$TAG_MC"."$tcgm"."$tagver".s."$cmin"."$cmax
             # [[ $cmin -eq 0 && $cmax -eq 20 ]] && tages="incl."$TAG_MC"."$tcgm"."$tagver
@@ -186,12 +211,12 @@ do
             done
             mergecomb=${mergecomb##,}
             [[ ${4:-0} -eq 1 ]] && {
-                truth="hijing.m.v1.s."$cmin"."$cmax"&"${taglabel[hijing]}"&2","amptnm.m.v0.s."$cmin"."$cmax"&"${taglabel[amptnm]}"&6","amptsm.m.v0.s."$cmin"."$cmax"&"${taglabel[amptsm]}"&4","hydjet.m.v0.s."$cmin"."$cmax"&"${taglabel[hydjet]}"&9","angantyr.m.v0.s."$cmin"."$cmax"&"${taglabel[angantyr]}"&8","epos.m.v0.s."$cmin"."$cmax"&"${taglabel[epos]}"&10"
-                # [[ $TAG_DATA == *CLOSE* ]] && {
-                #     truth=${TAG_DATA%%CLOSE}".m."$tagver".s."$cmin"."$cmax"&"${taglabel[${TAG_DATA%%CLOSE}]}"&2" ; 
-                #     # [[ $cmin -eq 0 && $cmax -eq 20 ]] &&
-                #         # { truth="incl."${TAG_DATA%%CLOSE}".m.v0&"${taglabel[${TAG_DATA%%CLOSE}]}"&1" ; }
-                # }
+                truth="hijing.m.v1.s."$cmin"."$cmax"&"${taglabel[hijing]}"&2","amptnm.m.v1.s."$cmin"."$cmax"&"${taglabel[amptnm]}"&6","amptsm.m.v1.s."$cmin"."$cmax"&"${taglabel[amptsm]}"&4","hydjet.m.v1.s."$cmin"."$cmax"&"${taglabel[hydjet]}"&9","angantyr.m.v1.s."$cmin"."$cmax"&"${taglabel[angantyr]}"&8","epos.m.v1.s."$cmin"."$cmax"&"${taglabel[epos]}"&10"
+                [[ $TAG_DATA == *CLOSE* ]] && {
+                    truth=${TAG_DATA%%CLOSE}".m."$tagver".s."$cmin"."$cmax"&"${taglabel[${TAG_DATA%%CLOSE}]}"&2" ; 
+                    # [[ $cmin -eq 0 && $cmax -eq 20 ]] &&
+                        # { truth="incl."${TAG_DATA%%CLOSE}".m.v0&"${taglabel[${TAG_DATA%%CLOSE}]}"&1" ; }
+                }
                 ./merge_monde $tagappl "$(ftaglabel ${TAG_DATA%%CLOSE}) corr. w. ${taglabel[$TAG_MC]}" $mergecomb "$truth"
             }
             

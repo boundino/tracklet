@@ -38,6 +38,7 @@ int reap_results(int type,
                  const char* putag = "null",      // pileup correction
                  int ctable = 0,                  // centrality table
                  const char* asel = "(1)",        // additional selection
+                 const char* hfsel = "nhfn>1 && nhfp>1", // offline hf coinc event selection 
                  Long64_t nentries = TTree::kMaxEntries)
 {
    TFile* finput = new TFile(input, "read");
@@ -101,9 +102,9 @@ int reap_results(int type,
 
    TCut ssel = Form("(dr2<%f)", maxdr2);
    TCut csel = Form("(hft>=%f && hft<%f)", hftmin, hftmax);
-   TCut osel = "(hlt && nhfn>1 && nhfp>1 && cluscomp)";
-   // TCut psel = "(process!=102 && process!=103 && process!=104)"; // ! only works for Epos but will affect Pythia
-   TCut psel = "(1)"; // ! only works for Epos but will affect Pythia
+   TCut osel = Form("(hlt && cluscomp && %s)", hfsel);
+   TCut psel = "(process!=102 && process!=103 && process!=104)"; // ! only works for Epos but will affect Pythia
+   // TCut psel = "(1)"; // ! only works for Epos but will affect Pythia
 
    TCut esel = fsel && csel && osel;
    TCut gsel = fsel && csel && psel;
@@ -349,7 +350,7 @@ int reap_results(int type,
       /* draw single-diffractive fraction                                     */
       TCanvas* csdf = new TCanvas("csdf", "", CANVASW, CANVASH);
       gPad->SetLogx();
-      hstyle(h1sdf, 40, COLOUR5); hrange(h1sdf, -0.05, 0.2);
+      hstyle(h1sdf, 40, COLOUR5); hrange(h1sdf, -0.05, 0.5);
       htitle(h1sdf, ";number of tracklets;Single-diffractive event fraction");
       h1sdf->Draw("e0");
       watermark(ismc);
@@ -415,8 +416,11 @@ int reap_results(int type,
    /* external single-diffractive fraction                                    */
    if (fes) {
       delete h1sdf; h1sdf = (TH1F*)fes->Get("h1sdf")->Clone();
-      delete h1teff; h1teff = (TH1F*)fes->Get("h1teff")->Clone();
-      delete h1empty; h1empty = (TH1F*)fes->Get("h1empty")->Clone();
+      if (xjjc::str_contains(label, "CLOSE")) {
+        delete h1teff; h1teff = (TH1F*)fes->Get("h1teff")->Clone();
+        delete h1empty; h1empty = (TH1F*)fes->Get("h1empty")->Clone();
+        printf("     # use original MC as event correction for closure test\n");
+      }
    }
 
    printf("-------------------------------------------------------------\n");
@@ -606,7 +610,7 @@ int reap_results(int type,
       double trigeff = h1teff->GetBinContent(y);
       if (trigeff == 0) { // make a better way for 0 bin
         trigeff = 1;
-        printf("     ! get 0 trigger efficiency, use 1 \n", x, z);
+        printf("     ! get 0 trigger efficiency, use 1 : %.0f\n", h1teff->GetBinCenter(y));
       }
       double totalc = (1 - sdfrac * SDMULT) / trigeff;
 
@@ -790,7 +794,15 @@ int main(int argc, char* argv[]) {
             atoi(argv[4]), atoi(argv[5]), argv[6], atoi(argv[7]),
             atoi(argv[8]), atoi(argv[9]), argv[10],
             atoi(argv[11]), atof(argv[12]), argv[13], argv[14],
-                          atoi(argv[15]), argv[16], atoi(argv[17]));
+                          atoi(argv[15]), argv[16], argv[17]);
+   } else if (argc == 19) {
+      return reap_results(atoi(argv[1]), argv[2], argv[3],
+                          atoi(argv[4]), atoi(argv[5]), argv[6], atoi(argv[7]),
+                          atoi(argv[8]), atoi(argv[9]), argv[10],
+                          atoi(argv[11]), atof(argv[12]), argv[13], argv[14],
+                          atoi(argv[15]), argv[16], argv[17],
+                          atoi(argv[18]));
+     
    } else {
       printf("usage: ./reap_results [type] [input] [label]\n"
              "(cmin cmax) (corrections (apply))"
@@ -798,6 +810,7 @@ int main(int argc, char* argv[]) {
              "(event-selection-corrections)\n"
              "(multiplicity-handle) (maxdr2) (gcorr-path)\n"
              "(pileup-correction) (centrality-table)\n"
+             "(hf-coinc-selection)\n"
              "(additional-selection)\n");
       return -1;
    }

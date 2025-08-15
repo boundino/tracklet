@@ -13,7 +13,25 @@
 
 #include "include/tool.h"
 
+#define INCLUDE_ETA_RANGE
+#include "include/bins.h"
+
 auto ms = xjjroot::markerlist_solid;
+std::vector<int> make_vgood(std::string zeroone) {
+  std::vector<int> result;
+  for (auto d : zeroone) {
+    if (d == '0') {
+      result.push_back(0);
+    } else {
+      result.push_back(1);
+    }
+  }
+  if (result.size() != neta) {
+    std::cout<<__FUNCTION__<<": ! result.size() = "<<result.size()<<" with different length from neta. set all bins to 1."<<std::endl;
+    result = std::vector<int>(neta, 1);
+  }
+  return result;
+}
 int macro(std::string input_avg, std::string tag,
           std::string text = "Run 362294 corr w/ EPOS",
           std::string input_truth = "null",
@@ -24,22 +42,26 @@ int macro(std::string input_avg, std::string tag,
 
   std::vector<Color_t> cc = xjjroot::colorlist_light;
   std::vector<TH1D*> havg(iavg.n(), 0), hsym(iavg.n(), 0);
-  for(int j=0; j<iavg.n(); j++)
-    {
-      havg[j] = xjjroot::gethist<TH1D>("output/avg-"+iavg.value[j][0]+".root::havg");
-      havg[j]->SetName(Form("%s-%i", havg[j]->GetName(), j));
-      xjjroot::setthgrstyle(havg[j], cc[j], ms[j], 1.0, cc[j]);
-
-      hsym[j] = xjjroot::gethist<TH1D>("output/avg-"+iavg.value[j][0]+".root::hsym");
-      hsym[j]->SetName(Form("%s-%i", hsym[j]->GetName(), j));
-      xjjroot::setthgrstyle(hsym[j], cc[j], ms[j], 1.0, cc[j]);
+  std::vector<std::vector<int>> vgood(iavg.n(), std::vector<int>(neta, 1));
+  for(int j=0; j<iavg.n(); j++) {
+    havg[j] = xjjroot::gethist<TH1D>("output/avg-"+iavg.value[j][0]+".root::havg");
+    havg[j]->SetName(Form("%s-%i", havg[j]->GetName(), j));
+    xjjroot::setthgrstyle(havg[j], cc[j], ms[j], 1.0, cc[j]);
+    
+    if (iavg.value[j].size() > 2) {
+      auto vgood = make_vgood(iavg.value[j][2]);
+      goodresult(havg[j], vgood.data());
     }
+    hsym[j] = gethsym(havg[j]);
+    hsym[j]->SetName(Form("hsym-%i", j));
+    xjjroot::setthgrstyle(hsym[j], cc[j], ms[j], 1.0, cc[j]);
+  }
   
-  TH1F *hhigh = gethhigh(hsym), *hlow = gethlow(hsym);
-  // TH1F *hsymhigh = gethsymhigh(hhigh), *hsymlow = gethsymlow(hlow);
-  TH1F *herr = getherr(hsym[0], hhigh, hlow),
+  auto *hhigh = gethhigh(hsym), *hlow = gethlow(hsym);
+  // auto *hsymhigh = gethsymhigh(hhigh), *hsymlow = gethsymlow(hlow);
+  auto *herr = getherr(hsym[0], hhigh, hlow),
     *hrelerr = gethrelerr(hsym[0], hhigh, hlow);
-  xjjroot::setthgrstyle(hrelerr, kGray+3, -1, -1, kGray+3);
+  xjjroot::setthgrstyle(hrelerr, kBlack, -1, -1, kBlack);
 
   auto hempty = makehempty(hsym[0], ";#it{#eta};d#it{N}_{ch}/d#kern[-0.08]{#it{#eta}}", 1.7);
   hempty->SetAxisRange(-3.4, 3.4, "X");

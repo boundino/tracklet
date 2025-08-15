@@ -27,9 +27,11 @@ int macro(std::string input_avg, std::string tag,
   auto legPIX = new TLegend(0.3, 0.45-0.030*9, 0.3+0.2, 0.45);
   xjjroot::setleg(legPIX, 0.028);
   auto h1WEfinal = combh1WEfinal(iavg.value[0][0]+".root", legPIX);
-  auto legTRUTH = new TLegend(0.55, 0.45-0.030*5, 0.55+0.2, 0.45-0.030);
-  xjjroot::setleg(legTRUTH, 0.028);
+  TLegend* legTRUTH = 0;
   auto gh1WGhadron = combgh1WGhadron(iavg.value[0][0]+".root", legTRUTH, _t_truth);
+  // auto legTRUTH = new TLegend(0.55, 0.45-0.030*(gh1WGhadron.size()+1), 0.55+0.2, 0.45-0.030);
+  std::cout<<legTRUTH<<std::endl;
+  xjjroot::setleg(legTRUTH, 0.028);
 
   std::vector<float> relerr2(hsym->GetNbinsX(), 0);
   std::vector<TH1F*> hrelerr(iavg.n(), 0);
@@ -52,8 +54,8 @@ int macro(std::string input_avg, std::string tag,
   xjjroot::printhistvalue(hsyst, {17, 18, 19, 20});
   xjjroot::setthgrstyle(hrelerrtotal, kBlack, 21, 1.0, kBlack);
   TGraphErrors* gsyst = xjjana::shifthistcenter(hsyst, "gsyst");
-  xjjroot::setthgrstyle(gsyst, kGray+3, 21, 0.8, 0, 0, 0, kGray+3, 0.3, 1001, 1, 1);
-  xjjroot::setthgrstyle(hsym, kGray+3, 21, 0.8, 0, 0, 0, kGray+3, 0.3, 1001, 1, 1);
+  xjjroot::setthgrstyle(gsyst, kGray+3, 21, 0.8, 0, 0, 0, kGray+3, 0.2, 1001, 1, 1);
+  xjjroot::setthgrstyle(hsym, kGray+3, 21, 0.8, 0, 0, 0, kGray+3, 0.2, 1001, 1, 1);
 
   auto legDATA = new TLegend(0.55, 0.45-0.030*1, 0.55+0.2, 0.45);
   xjjroot::setleg(legDATA, 0.028);

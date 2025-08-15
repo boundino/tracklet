@@ -9,6 +9,7 @@ struct data_t {
   int run, event, lumi, bx;
   int nv; float vx[8], vy[8], vz[8]; float weight;
   int hlt; int nhfp, nhfn; float hft; int cluscomp;
+  int nhfp_low, nhfp_high, nhfn_low, nhfn_high;
   float *eta1, *phi1, *r1;
   float *eta2, *phi2, *r2;
   float *deta, *dphi, *dr2;
@@ -59,6 +60,10 @@ void branch_event_data(TTree* t, data_t& data) {
   t->Branch("hlt", &data.hlt, "hlt/I");
   t->Branch("nhfp", &data.nhfp, "nhfp/I");
   t->Branch("nhfn", &data.nhfn, "nhfn/I");
+  t->Branch("nhfp_low", &data.nhfp_low, "nhfp_low/I");
+  t->Branch("nhfn_low", &data.nhfn_low, "nhfn_low/I");
+  t->Branch("nhfp_high", &data.nhfp_high, "nhfp_high/I");
+  t->Branch("nhfn_high", &data.nhfn_high, "nhfn_high/I");
   t->Branch("hft", &data.hft, "hft/F");
   t->Branch("cluscomp", &data.cluscomp, "cluscomp/I");
 
@@ -103,6 +108,10 @@ void set_event_data(TTree* t, data_t& data) {
   t->SetBranchAddress("hlt", &data.hlt);
   t->SetBranchAddress("nhfp", &data.nhfp);
   t->SetBranchAddress("nhfn", &data.nhfn);
+  t->SetBranchAddress("nhfp_low", &data.nhfp_low);
+  t->SetBranchAddress("nhfn_low", &data.nhfn_low);
+  t->SetBranchAddress("nhfp_high", &data.nhfp_high);
+  t->SetBranchAddress("nhfn_high", &data.nhfn_high);
   t->SetBranchAddress("hft", &data.hft);
   t->SetBranchAddress("cluscomp", &data.cluscomp);
 
@@ -136,6 +145,7 @@ struct PixelEvent {
   float bsx, bsy, bsz;
   int nv; float vx[8], vy[8], vz[8];
   int hlt; int nhfp, nhfn; float hft; int cluscomp;
+  int nhfp_low, nhfp_high, nhfn_low, nhfn_high;
 
 #define DECLARE_LAYER_VARIABLES(q)              \
   int nhits##q;                                 \
@@ -183,6 +193,10 @@ void set_pixel_data(TTree* t, PixelEvent& par) {
   t->SetBranchAddress("hlt", &par.hlt);
   t->SetBranchAddress("nhfp", &par.nhfp);
   t->SetBranchAddress("nhfn", &par.nhfn);
+  t->SetBranchAddress("nhfp_low", &par.nhfp_low);
+  t->SetBranchAddress("nhfn_low", &par.nhfn_low);
+  t->SetBranchAddress("nhfp_high", &par.nhfp_high);
+  t->SetBranchAddress("nhfn_high", &par.nhfn_high);
   t->SetBranchAddress("hft", &par.hft);
   t->SetBranchAddress("cluscomp", &par.cluscomp);
 
