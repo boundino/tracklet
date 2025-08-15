@@ -8,7 +8,7 @@ fi
 
 #
 MAXFILENO=10000
-USERANDOM=1
+USERANDOM=0
 USESPLIT=0
 USEDROP=0
 USEWEIGHT=-1
@@ -16,16 +16,32 @@ USEWEIGHT=-1
 movetosubmit=${1:-0}
 runjobs=${2:-0}
 
-PRIMARY="tt_250727"
+PRIMARY="tt_250810"
 [[ $USERANDOM -eq 1 ]] && PRIMARY=${PRIMARY}_randomvz
 [[ $USESPLIT -gt 0 ]] && PRIMARY=${PRIMARY}_split
 [[ $USEDROP -gt 0 ]] && PRIMARY=${PRIMARY}_drop
 [[ $USEWEIGHT -gt -1 ]] && PRIMARY=${PRIMARY}_weight
 
 INPUTS=(
+    # fix maskf
+    /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/IonPhysics0/crab_pixel_250810_IonPhysics0_394153_mask/250810_232411/0000
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/MinBias_Hijing_OO_5362GeV/crab_pixel_250810_MINI_0731_Hijing_OO_5362GeV_pf_realistic_maskf/250810_232533/0000
+    
     # after smiling cut
-    # "/eos/cms/store/group/phys_heavyions/wangj/tracklet2025/IonPhysics0/crab_pixel_250806_IonPhysics0_394153_mask/250807_145922/0000/"
-    # "/eos/cms/store/group/phys_heavyions/wangj/tracklet2025/private/MinBias_Hijing_OO_5362GeV/crab_pixel_250806_Hijing_OO_5362GeV_pf_realistic_smile/250807_163954/0000/"
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/IonPhysics0/crab_pixel_250809_IonPhysics0_394153_smile_maskf/250809_193004/0000
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/MinBias_Hijing_OO_5362GeV/crab_pixel_250809_MINI_0731_Hijing_OO_5362GeV_pf_realistic_smile_maskf/250809_210052/0000
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/MinBias_AMPT_StringMelting_OO_5362GeV/crab_pixel_250809_AMPT_StringMelting_OO_5362GeV_pf_realistic_smile_maskf/250809_202125/0000
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/MinBias_Pythia_Angantyr_OO_5362GeV/crab_pixel_250809_Pythia_Angantyr_OO_5362GeV_pf_realistic_smile_maskf/250809_201839/0000
+    
+    # after maskf
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/IonPhysics0/crab_pixel_250809_IonPhysics0_394153_maskf/250809_234622/0000
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/MinBias_Hijing_OO_5362GeV/crab_pixel_250809_MINI_0731_Hijing_OO_5362GeV_pf_realistic_maskf/250809_234820/0000
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/MinBias_AMPT_StringMelting_OO_5362GeV/crab_pixel_250809_MINI_0731_AMPT_StringMelting_OO_5362GeV_pf_realistic_maskf/250809_235914/0000
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/MinBias_AMPT_NoStringMelting_OO_5362GeV/crab_pixel_250809_MINI_0731_AMPT_NoStringMelting_OO_5362GeV_pf_realistic_maskf/250809_234932/0000
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/MinBias_EposLHC_ReggeGribovParton_OO_5362GeV/crab_pixel_250809_MINI_0731_EposLHC_ReggeGribovParton_OO_5362GeV_pf_realistic_maskf/250809_235034/0000
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/MinBias_Hydjet_Cello_OO_5362GeV/crab_pixel_250809_MINI_0731_Hydjet_Cello_OO_5362GeV_pf_realistic_maskf/250809_235531/0000
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/MinBias_Pythia_Angantyr_OO_5362GeV/crab_pixel_250809_MINI_0715_Pythia_Angantyr_OO_5362GeV_pf_realistic_maskf/250810_000131/0000
+    
     # after mask
     # "/eos/cms/store/group/phys_heavyions/wangj/tracklet2025/IonPhysics0/crab_pixel_250727_IonPhysics0_394153_mask/250728_202022/0000/"
     # "/eos/cms/store/group/phys_heavyions/wangj/tracklet2025/private/MinBias_Hijing_OO_5362GeV/crab_pixel_250727_Hijing_OO_5362GeV_pf_realistic_mask/250728_202541/0000/"
@@ -47,7 +63,7 @@ INPUTS=(
 )
 
 OUTPUTPRIDIR="/eos/cms/store/group/phys_heavyions/wangj/tracklet2025"
-OUTPUTPRIDIR=$OUTPUTPRIDIR"/private"
+# OUTPUTPRIDIR=$OUTPUTPRIDIR"/private"
 WORKDIR="$PWD"
 
 #

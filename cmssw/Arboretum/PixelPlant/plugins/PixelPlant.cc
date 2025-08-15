@@ -65,6 +65,7 @@
 #include "Geometry/CaloTopology/interface/HcalTopology.h"
 #include "SimDataFormats/GeneratorProducts/interface/HepMCProduct.h"
 #include "SimDataFormats/Vertex/interface/SimVertexContainer.h"
+#include "SimDataFormats/HiGenData/interface/GenHIEvent.h"
 
 #include "SimGeneral/HepPDTRecord/interface/ParticleDataTable.h"
 
@@ -112,8 +113,8 @@ struct PixelEvent {
    int cluscomp;
 
    // hf information
-   int nhfp;
-   int nhfn;
+  int nhfp, nhfp_low, nhfp_high;
+  int nhfn, nhfn_low, nhfn_high;
    float hft;
    float hftp;
    float hftm;
@@ -134,6 +135,8 @@ struct PixelEvent {
 
    // gen particles
    int process;
+   float hi_npart;
+   float hi_b;
    int npart;
    float pt[MAXPART];
    float eta[MAXPART];
@@ -192,6 +195,7 @@ class PixelPlant : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
       edm::EDGetTokenT<QIE10DigiCollection> hfqie_;
       edm::EDGetTokenT<SiPixelRecHitCollection> pixels_;
       edm::EDGetTokenT<edm::HepMCProduct> generator_;
+      edm::EDGetTokenT<edm::GenHIEvent> genhi_;
   edm::EDGetTokenT<reco::ClusterCompatibility> cluscomp_;
   
 
@@ -212,15 +216,16 @@ class PixelPlant : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
       edm::Service<TFileService> fs_;
       TTree* tpix_;
 
-  std::vector<int> deads = {};
-  // std::vector<int> deads = {352633860, 352637956, 352642052, // l5p
-  //                           352872452, 352868356, 352864260, 352859140, 352855044, 352850948, // l6p
-  //                           353170436, 353174532, 353178628, 353195012, 353199108, // l7p
-  //                           344848388, 344794116, 344798212, 344802308, // l7m
-  //                           304136224, 304119828, 304181252, 304091156, // l2
-  //                           305299468, 305270796, // l3
-  //                           306245644, 306442272, 306380820, // l4
-  // };
+  std::vector<uint32_t> deads = {
+                                 0x1220d00c, 0x1220d018, 0x1220b014, 0x1220b018, 0x1220a01c, 0x12207008, 0x12207014, 0x12207018, 0x1220701c, 0x12206008, 0x12204010, 0x12201014, 0x1221c014, 0x1221a008, 0x1221a018, 0x12217004, 0x12217008, 0x12216010, 0x12214008, 0x12214018, 0x1221300c, // l2
+                                 0x12315010, 0x12315018, 0x12311018, 0x12310008, 0x1230a010, 0x12308014, 0x12302018, 0x1232100c, 0x1231c008,  // l3
+                                 0x1241700c, 0x1240f00c, 0x1243c01c, 0x12430014, 0x1242c014, 0x12424008, 0x12424010, 0x12423004, 0x12423008, 0x1242300c, 0x12423010, 0x12422004, 0x1242200c, 0x12422010, 0x1242301c, // l4
+                                 0x14860804, 0x148804, 0x1485b804, //l5m
+                                 0x148a1804, // l6m
+                                 0x148eb804, // l7m
+                                 0x1509d404, // l6p
+                                 0x150df804, 0x150f8404, // l7p
+  };
 };
 
 //
@@ -274,6 +279,7 @@ PixelPlant::PixelPlant(const edm::ParameterSet& iConfig) {
    fillgen_ = iConfig.getParameter<bool>("fillgen");
    if (fillgen_) {
       generator_ = consumes<edm::HepMCProduct>(iConfig.getParameter<edm::InputTag>("generator_tag"));
+      genhi_ = consumes<edm::GenHIEvent>(iConfig.getParameter<edm::InputTag>("genhi_tag"));
       genvertex_ = consumes<edm::SimVertexContainer>(iConfig.getParameter<edm::InputTag>("genvertex_tag"));
    }
 }
@@ -350,14 +356,17 @@ void PixelPlant::fill_vertices(const edm::Event& iEvent) {
 
       reco::Vertex pv;
       std::size_t daughters = 0;
+      std::size_t nvtxnotfake = 0;
       for (const auto& v : *vertex) {
-         if (daughters <= v.tracksSize()) {
-            daughters = v.tracksSize();
-            pv = v;
-         }
+        if (v.isFake()) continue;
+        if (daughters <= v.tracksSize()) {
+          daughters = v.tracksSize();
+          pv = v;
+        }
+        nvtxnotfake++;
       }
 
-      if (!vertex->empty()) {
+      if (nvtxnotfake) {
          pix_.vx[pix_.nv] = pv.position().x();
          pix_.vy[pix_.nv] = pv.position().y();
          pix_.vz[pix_.nv] = pv.position().z();
@@ -381,8 +390,8 @@ void PixelPlant::fill_vertices(const edm::Event& iEvent) {
 
 void PixelPlant::fill_hf(const edm::Event& iEvent) {
 
-  int nhfn = 0;
-  int nhfp = 0;
+  int nhfn = 0, nhfn_low = 0, nhfn_high = 0;
+  int nhfp = 0, nhfp_low = 0, nhfp_high = 0;  
   
   float hftp = 0;
   float hftm = 0;
@@ -397,16 +406,20 @@ void PixelPlant::fill_hf(const edm::Event& iEvent) {
          const bool eta_minus = (pfcand.eta() < -3.0) && (pfcand.eta() > -6.0);
          if (pfcand.et() < 0.0) continue;
          if (eta_plus) {
+           if (pfcand.energy() > 3.) { nhfp_low++; }
            if (pfcand.energy() > 4.) { nhfp++; }
+           if (pfcand.energy() > 5.) { nhfp_high++; }
            hftp += pfcand.et();
          }
          if (eta_minus) {
+           if (pfcand.energy() > 3.) { nhfn_low++; }
            if (pfcand.energy() > 4.) { nhfn++; }
+           if (pfcand.energy() > 5.) { nhfn_high++; }
            hftm += pfcand.et();
          }
        }
      }
-   }// if (pfs.isValid())
+   } // if (pfs.isValid())
    else {
      edm::Handle<CaloTowerCollection> ts;
      iEvent.getByToken(towers_, ts);
@@ -418,10 +431,14 @@ void PixelPlant::fill_hf(const edm::Event& iEvent) {
          
          // https://github.com/cms-sw/cmssw/blob/master/DataFormats/Candidate/interface/LeafCandidate.h#L124-L125
          if (cal.zside() > 0) {
+           if (cal.energy() > 3.) { nhfp_low++; }
            if (cal.energy() > 4.) { nhfp++; }
+           if (cal.energy() > 5.) { nhfp_high++; }
            hftp += cal.pt();
          } else {
+           if (cal.energy() > 3.) { nhfn_low++; }
            if (cal.energy() > 4.) { nhfn++; }
+           if (cal.energy() > 5.) { nhfn_high++; }
            hftm += cal.pt();
          }
        }
@@ -429,6 +446,10 @@ void PixelPlant::fill_hf(const edm::Event& iEvent) {
    }
    pix_.nhfp = nhfp;
    pix_.nhfn = nhfn;
+   pix_.nhfp_low = nhfp_low;
+   pix_.nhfn_low = nhfn_low;
+   pix_.nhfp_high = nhfp_high;
+   pix_.nhfn_high = nhfn_high;
 
    pix_.hft = hftp + hftm;
    pix_.hftp = hftp;
@@ -497,9 +518,23 @@ void PixelPlant::fill_pixels(const edm::Event& iEvent) {
       if (detid.subdetId() == PixelSubdetector::PixelEndcap)
          layer += 4;
 
+      auto rawid = static_cast<uint32_t>(detid.rawId());
+      // uint16_t catid_z = rawid & 0xFFF;
+      uint8_t catid_m = (rawid >> 12) & 0xFF;
+      // uint16_t catid_t = (rawid >> 20) & 0xFFF;
+      // std::cout<<std::hex<<rawid<<": "<<catid_t<<" + "<<static_cast<int>(catid_m)<<" + "<<catid_z<<std::endl;
+      
+      // mask modules
       if (std::find(deads.begin(), deads.end(), detid.rawId()) != deads.end()) {
-        // std::cout<<"additional masking: "<<detid.rawId()<<std::endl;
         continue;
+      }
+      if (detid.subdetId() == PixelSubdetector::PixelEndcap) {
+        // ! mask all outer modules in forward disks <- hotspot issue found in 2025 OO
+        if ((catid_m >= 0x41 && catid_m <= 0x56) ||
+            (catid_m >= 0x81 && catid_m <= 0x96) ||
+            (catid_m >= 0xC1 && catid_m <= 0xD6)) {
+          continue;
+        }
       }
 
       const SiPixelRecHitCollection::DetSet dethits = *(pixdets->find(detid));
@@ -512,6 +547,11 @@ void PixelPlant::fill_pixels(const edm::Event& iEvent) {
          double phi = pos.phi();
          double r = pos.rho();
 
+         // if (detid.subdetId() == PixelSubdetector::PixelBarrel && layer == 1) { // ! smiling cut 
+         //   if (hit.cluster()->size() < ( 0.78235*TMath::Abs(sinh(eta))-2.8373 ))
+         //     continue;
+         // }
+      
 #define FILL(q)                                                               \
                pix_.eta##q[pix_.nhits##q] = eta;                              \
                pix_.phi##q[pix_.nhits##q] = phi;                              \
@@ -534,9 +574,16 @@ void PixelPlant::fill_particles(const edm::Event& iEvent) {
    edm::Handle<edm::HepMCProduct> gen;
    iEvent.getByToken(generator_, gen);
    const HepMC::GenEvent* generator = gen->GetEvent();
-
    pix_.process = generator->signal_process_id();
 
+   pix_.hi_npart = -1;
+   pix_.hi_b = -1;   
+   edm::Handle<edm::GenHIEvent> mchievt;
+   if(iEvent.getByToken(genhi_, mchievt)) {
+     pix_.hi_b = mchievt->b();
+     pix_.hi_npart = mchievt->Npart();
+   }
+   
    pix_.npart = 0;
    for (auto it = generator->particles_begin(); it != generator->particles_end(); ++it) {
       if ((*it)->status() != 1) { continue; }
@@ -665,6 +712,8 @@ void PixelPlant::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
    if (fillcluscomp_) { fill_cluscomp(iEvent); } else { pix_.cluscomp = 1; }
    if (fillhf_) { fill_hf(iEvent); } else {
       pix_.nhfp = 0; pix_.nhfn = 0;
+      pix_.nhfp_low = 0; pix_.nhfn_low = 0;
+      pix_.nhfp_high = 0; pix_.nhfn_high = 0;
       pix_.hft = 0; pix_.hftp = 0; pix_.hftm = 0; }
    if (fillhfadc_) { fill_hfadc(iEvent); } else {
      pix_.maxhfadcp = -2; pix_.maxhfadcn = -2; }
@@ -696,7 +745,11 @@ void PixelPlant::beginJob() {
    tpix_->Branch("cluscomp", &pix_.cluscomp, "cluscomp/I");
 
    tpix_->Branch("nhfp", &pix_.nhfp, "nhfp/I");
+   tpix_->Branch("nhfp_low", &pix_.nhfp_low, "nhfp_low/I");
+   tpix_->Branch("nhfp_high", &pix_.nhfp_high, "nhfp_high/I");
    tpix_->Branch("nhfn", &pix_.nhfn, "nhfn/I");
+   tpix_->Branch("nhfn_low", &pix_.nhfn_low, "nhfn_low/I");
+   tpix_->Branch("nhfn_high", &pix_.nhfn_high, "nhfn_high/I");
    tpix_->Branch("hft", &pix_.hft, "hft/F");
    tpix_->Branch("hftp", &pix_.hftp, "hftp/F");
    tpix_->Branch("hftm", &pix_.hftm, "hftm/F");
@@ -715,6 +768,8 @@ void PixelPlant::beginJob() {
    PIXELS1P(BRANCH)
 
    tpix_->Branch("process", &pix_.process, "process/I");
+   tpix_->Branch("hi_npart", &pix_.hi_npart, "hi_npart/F");
+   tpix_->Branch("hi_b", &pix_.hi_b, "hi_b/F");
    tpix_->Branch("npart", &pix_.npart, "npart/I");
    tpix_->Branch("pt", pix_.pt, "pt[npart]/F");
    tpix_->Branch("eta", pix_.eta, "eta[npart]/F");
@@ -752,6 +807,7 @@ void PixelPlant::fillDescriptions(edm::ConfigurationDescriptions& descriptions) 
                 false >> edm::EmptyGroupDescription());
    desc.ifValue(edm::ParameterDescription<bool>("fillgen", false, true),
       true >> (edm::ParameterDescription<edm::InputTag>("generator_tag", edm::InputTag("generatorSmeared"), true) and
+               edm::ParameterDescription<edm::InputTag>("genhi_tag", edm::InputTag("heavyIon"), true) and
                edm::ParameterDescription<edm::InputTag>("genvertex_tag", edm::InputTag("g4SimHits"), true)) or
       false >> edm::EmptyGroupDescription());
 

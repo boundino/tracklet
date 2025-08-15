@@ -57,7 +57,7 @@ Error        = $LOGDIR/log-${infn}.err
 Log          = $LOGDIR/log-${infn}.log
 # Rank         = Mips
 +AccountingGroup = "group_u_CMST3.all"
-+JobFlavour = "longlunch"
++JobFlavour = "espresso"
 # Requirements = ( OpSysAndVer =?= "CentOS8" )
 should_transfer_files = YES
 use_x509userproxy = True

@@ -23,7 +23,7 @@
 
 #define NSAMPLES  1
 static const float vzpar[NSAMPLES][2] = { // for reweight
-   {0.199548, 5.2814},    /* private Jul18 */
+   {0.175361, 5.29697},    /* private Jul31 */
 };
 
 #define BKG_ARG(q)   , float add_bkg_l##q = 0
@@ -280,6 +280,10 @@ int transmute_trees(const char* input,
       trkltdata##q##w.cluscomp   = par.cluscomp;                              \
       trkltdata##q##w.nhfp       = par.nhfp;                                  \
       trkltdata##q##w.nhfn       = par.nhfn;                                  \
+      trkltdata##q##w.nhfp_low   = par.nhfp_low;                              \
+      trkltdata##q##w.nhfn_low   = par.nhfn_low;                              \
+      trkltdata##q##w.nhfp_high  = par.nhfp_high;                             \
+      trkltdata##q##w.nhfn_high  = par.nhfn_high;                             \
       trkltdata##q##w.hft        = hftsum;                                    \
       trkltdata##q##w.weight     = event_weight;                              \
                                                                               \
