@@ -4,9 +4,9 @@ make assess_acceps || exit 1
 
 . tool.shinc 
 
-recreate=1
-maxdr2=0.16
-tag="0p4" # 0p5
+recreate=0
+maxdr2=0.25
+tag="0p5" # 0p5
 ver=""
 
 # TYPES=(12 13 14 23 24 34 56 57 67 11 22 33 44 55 66 77)

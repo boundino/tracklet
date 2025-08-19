@@ -16,9 +16,9 @@ tagverdefault="v1"
 mcdefault=epos
 #
 TYPES=(12 13 14 23 24 34 56 57 67)
-# CENTS=(0 20)
-# for i in {20..7} ; do CENTS+=($((i-1)) $i) ; done ;
-CENTS=(18 20)
+CENTS=(0 20)
+for i in {20..7} ; do CENTS+=($((i-1)) $i) ; done ;
+CENTS+=(18 20)
 
 ##
 INPUTS_MC=/eos/cms/store/group/phys_heavyions/wangj/tracklet2025/tt_250810_weight_pixel_250810_MINI_0731_Hijing_OO_5362GeV_pf_realistic_maskf.root,hijing,7
