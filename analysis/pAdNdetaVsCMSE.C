@@ -21,7 +21,7 @@
 
 // pp, pA, AA points from Constantin Loizides
 // INEL pp points from Jan Fiete's compilation
-float new_result = 4.872095;
+float new_result = 5.12045, new_err = 0.131944;
 int pAdNdetaVsCMSE(bool onlyAA=false) {
     TCanvas* c = new TCanvas("c", "", 600, 600);
     gStyle->SetOptStat(0);
@@ -88,7 +88,7 @@ int pAdNdetaVsCMSE(bool onlyAA=false) {
     lprelim->SetTextFont(53);
     lprelim->SetTextSize(18);
     lprelim->SetTextAlign(32);
-    // lprelim->DrawLatexNDC(0.90, 0.84, "Preliminary");
+    lprelim->DrawLatexNDC(0.90, 0.84, "Preliminary");
 
     /******************************************************
     pp NSD data points
@@ -427,7 +427,9 @@ int pAdNdetaVsCMSE(bool onlyAA=false) {
     // 2.5-5.0%     9.9  +/- 0.3
     Double_t v_AA_502_ALICE = (10.2 + 9.9) / 2.0;
     Double_t e_AA_502_ALICE = 0.3 / TMath::Sqrt(2.0);
-    TGraphErrors* Graph_AA_ALICE = new TGraphErrors(2);
+    Double_t v_AA_536_ALICE = 10.7;
+    Double_t e_AA_536_ALICE = 0.3;
+    TGraphErrors* Graph_AA_ALICE = new TGraphErrors();
     Graph_AA_ALICE->SetName("Graph_AA_ALICE");
     Graph_AA_ALICE->SetMarkerStyle(26);
     Graph_AA_ALICE->SetMarkerSize(size_m);
@@ -437,6 +439,8 @@ int pAdNdetaVsCMSE(bool onlyAA=false) {
     Graph_AA_ALICE->SetPointError(0, 0, 0.4);
     Graph_AA_ALICE->SetPoint(1, 5020, v_AA_502_ALICE);
     Graph_AA_ALICE->SetPointError(1, 0, e_AA_502_ALICE);
+    Graph_AA_ALICE->SetPoint(2, 5360/1.01, v_AA_536_ALICE);
+    Graph_AA_ALICE->SetPointError(1, 0, e_AA_536_ALICE);
     Graph_AA_ALICE->Draw("E1P");
 
     // ATLAS A+A (0-6%)
@@ -464,24 +468,31 @@ int pAdNdetaVsCMSE(bool onlyAA=false) {
     //  0.0-0.5 8.45 +/- 0.29
     Double_t v_AA_CMS = (8.47 + 8.45) / 2.0;
     Double_t e_AA_CMS = 0.29 / TMath::Sqrt(2.0);
-    TGraphErrors* Graph_AA_CMS = new TGraphErrors(1);
+    TGraphErrors* Graph_AA_CMS = new TGraphErrors(3);
     Graph_AA_CMS->SetName("Graph_AA_CMS");
     Graph_AA_CMS->SetMarkerStyle(21);
     Graph_AA_CMS->SetMarkerSize(size_s);
-    Graph_AA_CMS->SetMarkerColor(_HIGHLIGHT_COLOUR);
-    Graph_AA_CMS->SetLineColor(_HIGHLIGHT_COLOUR);
+    Graph_AA_CMS->SetMarkerColor(_AA_COLOUR);
+    Graph_AA_CMS->SetLineColor(_AA_COLOUR);
     Graph_AA_CMS->SetPoint(0, 2760.0, v_AA_CMS);
     Graph_AA_CMS->SetPointError(0, 0.0, e_AA_CMS);
-    // !! change here
-    // Graph_AA_CMS->SetPoint(1, 5360.0, 5.30042*2);
-    // Graph_AA_CMS->SetPointError(1, 0.0, 0.234662*2);
-    // Graph_AA_CMS->SetPoint(1, 5362.0, 5.186796*2);
-    // Graph_AA_CMS->SetPointError(1, 0.0, 0.075918*2);
-    Graph_AA_CMS->SetPoint(1, 5362.0, new_result*2);
-    Graph_AA_CMS->SetPointError(1, 0.0, 0.138508*2);
+    Graph_AA_CMS->SetPoint(1, 5360.0*1.01, 5.30042*2);
+    Graph_AA_CMS->SetPointError(1, 0.0, 0.234662*2);
+    Graph_AA_CMS->SetPoint(2, 5440.0, 5.02*2);
+    Graph_AA_CMS->SetPointError(2, 0.0, 0.15*2);
     Graph_AA_CMS->Draw("E1P");
 
-    TLegend* leg_AA = new TLegend(0.34, 0.56, 0.47, 0.92, NULL, "brNDC");
+    TGraphErrors* Graph_AA_CMS_NEW = new TGraphErrors(1);
+    Graph_AA_CMS_NEW->SetName("Graph_AA_CMS_NEW");
+    Graph_AA_CMS_NEW->SetMarkerStyle(21);
+    Graph_AA_CMS_NEW->SetMarkerSize(size_s);
+    Graph_AA_CMS_NEW->SetMarkerColor(_HIGHLIGHT_COLOUR);
+    Graph_AA_CMS_NEW->SetLineColor(_HIGHLIGHT_COLOUR);
+    Graph_AA_CMS_NEW->SetPoint(1, 5362.0, new_result*2);
+    Graph_AA_CMS_NEW->SetPointError(1, 0.0, new_err*2);
+    Graph_AA_CMS_NEW->Draw("E1P");
+
+    TLegend* leg_AA = new TLegend(0.34, 0.92-0.045*9, 0.47, 0.92, NULL, "brNDC");
     leg_AA->SetBorderSize(0);
     leg_AA->SetTextFont(43);
     leg_AA->SetTextSize(15);
@@ -496,6 +507,7 @@ int pAdNdetaVsCMSE(bool onlyAA=false) {
     leg_AA->AddEntry(Graph_AA_STAR, "STAR", "P");
     leg_AA->AddEntry(Graph_AA_PHOBOS, "PHOBOS", "P");
     leg_AA->AddEntry(Graph_AA_NA50, "NA50", "P");
+    leg_AA->AddEntry(Graph_AA_CMS_NEW, "OO 0-5\%", "P");
     leg_AA->Draw();
 
     // AA fit, log function

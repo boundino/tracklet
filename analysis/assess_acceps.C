@@ -134,7 +134,7 @@ int assess_acceps(bool recreate, int type, float maxdr2,
   pdf.prepare();
   hratio->Draw("colz");
   xjjroot::drawtex(0.5, 0.8, Form("#frac{%s (MC)}{%s (data)}", mc_tag, data_tag), 0.038, 23);
-  xjjana::drawhoutline(h2amapxev, kRed);
+  xjjana::drawhoutline(h2amapxev, kRed, 1, 2);
   watermark();
   // pdf.write(Form("figs/corrections/geometric-%s-%i.png", label, type));
   pdf.write(Form("figs/geometric/geometric-%s-%i.png", label, type));

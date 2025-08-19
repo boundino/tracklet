@@ -11,12 +11,12 @@ asels=(
     "(vz[1]>0&&vz[1]<5),vz3"
     "(vz[1]>5&&vz[1]<10),vz4"
 
-    "(lumi>=52&&lumi<=99),lumi0"
-    "(lumi>=100&&lumi<=163),lumi1"
-    "(lumi>=52&&lumi<=74),lumi2"
-    "(lumi>=75&&lumi<=99),lumi3"
-    "(lumi>=100&&lumi<=129),lumi4"
-    "(lumi>=130&&lumi<=163),lumi5"
+    # "(lumi>=52&&lumi<=99),lumi0"
+    # "(lumi>=100&&lumi<=163),lumi1"
+    # "(lumi>=52&&lumi<=74),lumi2"
+    # "(lumi>=75&&lumi<=99),lumi3"
+    # "(lumi>=100&&lumi<=129),lumi4"
+    # "(lumi>=130&&lumi<=163),lumi5"
 )
 maxdr2s=(
     "0.25 drlt0p5"

@@ -9,21 +9,21 @@ tagver="v1" ; defaultsdf="epos" ; corrtagver=$tagver
 
 TYPES=(12 13 14 23 24 34 56 57 67)
 # TYPES=(11 22 33 44 55 66 77) ; tagver=$tagver"-clus" ; corrtagver=$corrtagver"-clus" ;
-CENTS=(0 20)
-# CENTS=(6 20) # 0-70%
-for i in {20..7} ; do CENTS+=($((i-1)) $i) ; done ; 
+# CENTS=(0 20) # 0-100%
+# for i in {20..7} ; do CENTS+=($((i-1)) $i) ; done ; 
+# CENTS+=(18 20) # 0-10%
 
 ##
 INPUTS_MC=(
     # fix maskf
     /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/tt_250810_weight_pixel_250810_MINI_0731_Hijing_OO_5362GeV_pf_realistic_maskf.root,hijing,7
     # after maskf
-    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/tt_250809_weight_pixel_250809_MINI_0731_Hijing_OO_5362GeV_pf_realistic_maskf.root,hijing,7
-    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/tt_250809_weight_pixel_250809_MINI_0731_AMPT_NoStringMelting_OO_5362GeV_pf_realistic_maskf.root,amptnm,5
-    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/tt_250809_weight_pixel_250809_MINI_0731_EposLHC_ReggeGribovParton_OO_5362GeV_pf_realistic_maskf.root,epos,3
-    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/tt_250809_weight_pixel_250809_MINI_0715_Pythia_Angantyr_OO_5362GeV_pf_realistic_maskf.root,angantyr,9
-    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/tt_250809_weight_pixel_250809_MINI_0731_AMPT_StringMelting_OO_5362GeV_pf_realistic_maskf.root,amptsm,6
-    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/tt_250809_weight_pixel_250809_MINI_0731_Hydjet_Cello_OO_5362GeV_pf_realistic_maskf.root,hydjet,4
+    /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/tt_250809_weight_pixel_250809_MINI_0731_AMPT_NoStringMelting_OO_5362GeV_pf_realistic_maskf.root,amptnm,5
+    /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/tt_250809_weight_pixel_250809_MINI_0731_EposLHC_ReggeGribovParton_OO_5362GeV_pf_realistic_maskf.root,epos,3
+    /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/tt_250809_weight_pixel_250809_MINI_0715_Pythia_Angantyr_OO_5362GeV_pf_realistic_maskf.root,angantyr,9
+    /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/tt_250809_weight_pixel_250809_MINI_0731_AMPT_StringMelting_OO_5362GeV_pf_realistic_maskf.root,amptsm,6
+    /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/tt_250809_weight_pixel_250809_MINI_0731_Hydjet_Cello_OO_5362GeV_pf_realistic_maskf.root,hydjet,4
+    # # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/tt_250809_weight_pixel_250809_MINI_0731_Hijing_OO_5362GeV_pf_realistic_maskf.root,hijing,7
     # clus
     # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/tt_250809_weight_pixel_250809_MINI_0731_EposLHC_ReggeGribovParton_OO_5362GeV_pf_realistic_maskf_clus.root,epos,3
     
@@ -131,11 +131,11 @@ do
 
         tcgm=m # correction, geometric, acceptance map
         cgm=$(getcgm $tcgm)
+        # ==> tag name
         # tages=$defaultsdf".m."$tagver".s."$cmin"."$cmax ;
         tages=$defaultsdf".m."$corrtagver".s."$cmin"."$cmax ;
         # tages=$TAG_MC"."$tcgm"."$tagver".s."$cmin"."$cmax
         [[ ${2:-0} -eq 2 ]] && {
-            # ==> tag name
             tages=$TAG_MC"."$tcgm"."$tagver".s."$cmin"."$cmax
             # [[ $cmin -eq 0 && $cmax -eq 20 ]] && tages="incl."$TAG_MC"."$tcgm"."$tagver
             echo $tages
@@ -152,14 +152,14 @@ do
                 done # for t in ${TYPES[@]}
                 wait
             }
-
-            trash figs/acceptance/accep-$tages-*.png
-            [[ $cmin -eq 0 && $cmax -eq 20 ]] || {
-                trash figs/corrections/alpha-$tages-*.png \
-                      figs/corrections/sdfrac-$tages-*.png \
-                      figs/corrections/trigger-$tages-*.png \
-                      figspdf/fits/alphafit-$tages-*.pdf
-            }
+        }
+        
+        trash figs/acceptance/accep-$tages-*.png
+        [[ $cmin -eq 0 && $cmax -eq 20 ]] || {
+            trash figs/corrections/alpha-$tages-*.png \
+                  figs/corrections/sdfrac-$tages-*.png \
+                  figs/corrections/trigger-$tages-*.png \
+                  figspdf/fits/alphafit-$tages-*.pdf
         }
 
         ##############################################

@@ -26,8 +26,8 @@
 // std::string sel_ = "(1)";
 std::string sel_ = "(fabs(vz[1]) < 15 && cluscomp && nhfp > 1 && nhfn > 1)";
 std::string sfcs = "ceil(0.78235*TMath::Abs(sinh(x))-2.8373)";
-bool labelid = true;
-bool recreate = false;
+bool labelid = false;
+bool recreate = true;
 bool test = false;
 
 #define OPT(val)  options[opt].val
@@ -205,14 +205,6 @@ static const std::vector<varinfo_t> options_tracklet_1d = {
       {{100, 0, 0.5}},
       {600, 600}, 0x11, "abs(dr2)<0.25", "", 1000
    }, {
-      "vz", {"v_{z}"}, {"vz[1]"},
-      {{100, -15, 15}},
-      {600, 600}, 0x10, sel_, "", TTree::kMaxEntries
-   }, {
-      "vz-unw", {"v_{z}"}, {"vz[1]"},
-      {{100, -15, 15}},
-      {600, 600}, 0x110, sel_, "", TTree::kMaxEntries
-   }, {
       "ntracklet", {"number of tracklets"}, {"ntracklet"},
       {{100, 0, 4000}},
       {600, 600}, 0x01, sel_, "", TTree::kMaxEntries
@@ -220,6 +212,15 @@ static const std::vector<varinfo_t> options_tracklet_1d = {
      "dr-wide", {"#Deltar"}, {"sqrt(dr2)"},
      {{100, 0, 2.0}},
      {600, 600}, 0x11, "abs(dr2)<4.0", "", 1000
+   },
+   {
+      "vz", {"v_{z}"}, {"vz[1]"},
+      {{100, -15, 15}},
+      {600, 600}, 0x10, sel_, "", TTree::kMaxEntries
+   }, {
+      "vz-unw", {"v_{z}"}, {"vz[1]"},
+      {{100, -15, 15}},
+      {600, 600}, 0x110, sel_, "", TTree::kMaxEntries
    },
 };
 
@@ -362,8 +363,25 @@ static const std::vector<varinfo_t> options_pixel_2d = {
       "eta-cs", {"#eta", "cluster size"},
       {"eta@", "cs@"},
       {{200, -4, 4}, {40, 0, 40}},
-      {600, 600}, 0x1003, sel_, "colz", (test?5000:50000)
+      {600, 600}, 0x03, sel_, "colz", (test?5000:50000)
    },
+   // {
+   //    "z-phi", {"z", "#phi"},
+   //    {"r@/tan(2*atan(exp(-eta@)))", "phi@"},
+   //    {{1000, -30, 30}, {1000, -4, 4}},
+   //    {600, 2400}, 0x01, sel_, "colz", (test?5000:50000)
+   // },
+   // {
+   //    "fpix-x-y-plus", {"x", "y"},
+   //    {"r@*cos(phi@)", "r@*sin(phi@)"},
+   //    {{1000, -20, 20}, {1000, -20, 20}},
+   //    {600, 600}, 0x02, "(eta@>0)", "colz", (test?5000:100000)
+   // }, {
+   //    "fpix-x-y-minus", {"x", "y"},
+   //    {"r@*cos(phi@)", "r@*sin(phi@)"},
+   //    {{1000, -20, 20}, {1000, -20, 20}},
+   //    {600, 600}, 0x02, "(eta@<0)", "colz", (test?5000:100000)
+   // },
    // {
    //    "eta-phi", {"#eta", "#phi"},
    //    {"eta@", "phi@"},
@@ -380,25 +398,10 @@ static const std::vector<varinfo_t> options_pixel_2d = {
    //    {{1000, -20, 20}, {1000, -20, 20}},
    //    {600, 600}, 0x11, sel_, "colz", 5000
    // }, {
-   //    "z-phi", {"z", "#phi"},
-   //    {"r@/tan(2*atan(exp(-eta@)))", "phi@"},
-   //    {{1000, -30, 30}, {1000, -4, 4}},
-   //    {600, 2400}, 0x01, sel_, "colz", (test?5000:50000)
-   // }, {
    //    "z-r", {"z", "r"},
    //    {"r@/tan(2*atan(exp(-eta@)))", "r@"},
    //    {{1000, -60, 60}, {1000, 0, 20}},
    //    {1200, 600}, 0x33, sel_, "colz", 5000
-   // }, {
-   //    "fpix-x-y-plus", {"x", "y"},
-   //    {"r@*cos(phi@)", "r@*sin(phi@)"},
-   //    {{1000, -20, 20}, {1000, -20, 20}},
-   //    {600, 600}, 0x02, "(eta@>0)", "colz", (test?5000:100000)
-   // }, {
-   //    "fpix-x-y-minus", {"x", "y"},
-   //    {"r@*cos(phi@)", "r@*sin(phi@)"},
-   //    {{1000, -20, 20}, {1000, -20, 20}},
-   //    {600, 600}, 0x02, "(eta@<0)", "colz", (test?5000:100000)
    // }, {
    //    "fpix-z-phi", {"z", "#phi"},
    //    {"r@/tan(2*atan(exp(-eta@)))", "phi@"},
@@ -526,7 +529,7 @@ int compare_map_pixels(std::vector<varinfo_t> const& options,
   auto tags = conf->get<std::vector<std::string>>("tags");
   std::size_t nfiles = tags.size();
 
-  pixgeo geo("output/hh/pixelGeo.root");
+  pixgeo geo("data/pixelGeo.root");
 
   TFile* f[nfiles];
   for (std::size_t j = 0; j < nfiles; ++j)

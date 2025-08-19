@@ -10,6 +10,7 @@ group="394153.cgm.hijing.m.v1"
 
 CENTS=(0 20)
 for i in {20..7} ; do CENTS+=($((i-1)) $i) ; done ;
+# CENTS+=(18 20)
 
 ##
 c=0
@@ -17,6 +18,7 @@ c=0
 while [ $c -lt $((${#CENTS[@]}-1)) ] ; do
     cmin=${CENTS[c]}
     cmax=${CENTS[c+1]}
+    echo "centrality: "$cmin" - "$cmax
 
     CONFIGS=(
         "${group}.s.$cmin.$cmax&-15 < v_{z} < 15","${group}-vz1.s.$cmin.$cmax&-10 < v_{z} < -5&000000011111111111111111111111100000","${group}-vz2.s.$cmin.$cmax&-5 < v_{z} < 0&000001111111111111111111111110000000","${group}-vz3.s.$cmin.$cmax&0 < v_{z} < 5&000000111111111111111111111100000000","${group}-vz4.s.$cmin.$cmax&5 < v_{z} < 10&000001111111111111111111111000000000"%"vz-${group}.s.$cmin.$cmax"%"394153 corr. w. ${taglabel[$mcdefault]}"%"1"%"event v_{z}"
