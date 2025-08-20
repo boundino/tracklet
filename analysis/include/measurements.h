@@ -67,8 +67,22 @@ TGraphErrors* MSRMNT##_nnpart_x_npart2a() {                                   \
       g##MSRMNT##_nnpart_x_npart2a->SetPointError(i,                          \
          MSRMNT##_nparterr[i]/MSRMNT##_2a,                                    \
          MSRMNT##_rawerr[i]/MSRMNT##_npart[i]); }                             \
-   return g##MSRMNT##_nnpart_x_npart2a; }
-
+   return g##MSRMNT##_nnpart_x_npart2a; }                                     \
+ TGraphErrors* MSRMNT##_nnpart_x_ncollnpart() {                         \
+   TGraphErrors* g##MSRMNT##_nnpart_x_ncollnpart =                      \
+     new TGraphErrors(MSRMNT##_size);                                   \
+   g##MSRMNT##_nnpart_x_ncollnpart->SetName("g" #MSRMNT "_nnpart_x_ncollnpart"); \
+   for (std::size_t i=0; i<MSRMNT##_size; ++i) {                        \
+     g##MSRMNT##_nnpart_x_ncollnpart->SetPoint(i,                       \
+                                               MSRMNT##_ncoll[i]/MSRMNT##_npart[i], \
+                                               MSRMNT##_raw[i]/MSRMNT##_npart[i]); \
+     auto ncollnparterr = ((MSRMNT##_ncoll[i] + MSRMNT##_ncollerr[i]) / (MSRMNT##_npart[i] - MSRMNT##_nparterr[i]) \
+                           - (MSRMNT##_ncoll[i] - MSRMNT##_ncollerr[i]) / (MSRMNT##_npart[i] + MSRMNT##_nparterr[i])) / 2.; \
+     g##MSRMNT##_nnpart_x_ncollnpart->SetPointError(i,                  \
+                                                    ncollnparterr,      \
+                                                    MSRMNT##_rawerr[i]/MSRMNT##_npart[i]); } \
+   return g##MSRMNT##_nnpart_x_ncollnpart; }                            \
+ 
 std::vector<float> cms_pbpb_2p76_raw = {
    11.05, 18.49, 28.12, 44.46, 65.42, 93.55, 130.3, 176.1, 233.0,
    299.9, 383.9, 482.3, 596.8, 731.6, 893.9, 1082, 1313, 1612};
@@ -84,6 +98,12 @@ std::vector<float> cms_pbpb_2p76_npart = {
 std::vector<float> cms_pbpb_2p76_nparterr = {
    0.24, 0.56, 0.9, 1.2, 1.6, 2.0, 2.3, 2.7, 2.7,
    3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 2.0};
+std::vector<float> cms_pbpb_2p76_ncoll = { // ! placeholder 
+   5.71, 8.64, 12.8, 18.5, 25.8, 35.3, 46.7, 60.4, 76.8,
+   95.8, 117, 142, 171, 203, 240, 283, 329, 381};
+std::vector<float> cms_pbpb_2p76_ncollerr = {
+   0.24, 0.56, 0.9, 1.2, 1.6, 2.0, 2.3, 2.7, 2.7,
+   3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 2.0};
 auto cms_pbpb_2p76_2a = 416.;
 auto cms_pbpb_2p76_size = cms_pbpb_2p76_raw.size();
 
@@ -97,6 +117,10 @@ std::vector<float> alice_pbpb_2p76_npart = {
    15.8, 30.0, 52.8, 85.0, 128.9, 186.4, 260.5, 329.7, 382.8};
 std::vector<float> alice_pbpb_2p76_nparterr = {
    0.6, 1.3, 2.0, 2.6, 3.3, 3.9, 4.4, 4.6, 3.1};
+std::vector<float> alice_pbpb_2p76_ncoll = { // ! placeholder
+   15.8, 30.0, 52.8, 85.0, 128.9, 186.4, 260.5, 329.7, 382.8};
+std::vector<float> alice_pbpb_2p76_ncollerr = {
+   0.6, 1.3, 2.0, 2.6, 3.3, 3.9, 4.4, 4.6, 3.1};
 auto alice_pbpb_2p76_2a = 416.;
 auto alice_pbpb_2p76_size = alice_pbpb_2p76_raw.size();
 
@@ -109,6 +133,10 @@ std::vector<float> alice_pbpb_5p02_cent = {
 std::vector<float> alice_pbpb_5p02_npart = {
    15.6, 30.4, 53.6, 86.3, 131, 188, 263, 320, 346, 372, 398};
 std::vector<float> alice_pbpb_5p02_nparterr = {
+   0.5, 0.8, 1.2, 1.7, 2, 3, 4, 4, 4, 3, 2};
+std::vector<float> alice_pbpb_5p02_ncoll = { // ! placeholder
+   15.6, 30.4, 53.6, 86.3, 131, 188, 263, 320, 346, 372, 398};
+std::vector<float> alice_pbpb_5p02_ncollerr = {
    0.5, 0.8, 1.2, 1.7, 2, 3, 4, 4, 4, 3, 2};
 auto alice_pbpb_5p02_2a = 416.;
 auto alice_pbpb_5p02_size = alice_pbpb_5p02_raw.size();
@@ -128,6 +156,12 @@ std::vector<float> phobos_auau_0p2_npart = {
 std::vector<float> phobos_auau_0p2_nparterr = {
    3, 3, 4, 5, 6, 6, 6, 6,
    6, 7, 7, 8, 9, 10, 11};
+std::vector<float> phobos_auau_0p2_ncoll = { // ! placeholder
+   20, 28, 37, 49, 65, 82, 101, 124,
+   150, 180, 215, 255, 297, 331, 361};
+std::vector<float> phobos_auau_0p2_ncollerr = {
+   3, 3, 4, 5, 6, 6, 6, 6,
+   6, 7, 7, 8, 9, 10, 11};
 auto phobos_auau_0p2_2a = 394.;
 auto phobos_auau_0p2_size = phobos_auau_0p2_raw.size();
 
@@ -140,6 +174,10 @@ std::vector<float> phobos_auau_0p13_cent = {
 std::vector<float> phobos_auau_0p13_npart = {
    63, 80, 100, 122, 148, 179, 214, 254, 295, 330, 355};
 std::vector<float> phobos_auau_0p13_nparterr = {
+   4, 5, 5, 6, 6, 7, 8, 8, 9, 10, 12};
+std::vector<float> phobos_auau_0p13_ncoll = { // ! placeholder
+   63, 80, 100, 122, 148, 179, 214, 254, 295, 330, 355};
+std::vector<float> phobos_auau_0p13_ncollerr = {
    4, 5, 5, 6, 6, 7, 8, 8, 9, 10, 12};
 auto phobos_auau_0p13_2a = 394.;
 auto phobos_auau_0p13_size = phobos_auau_0p13_raw.size();
@@ -159,6 +197,12 @@ std::vector<float> phobos_auau_0p0624_npart = {
 std::vector<float> phobos_auau_0p0624_nparterr = {
    3, 3, 4, 5, 6, 6, 7, 7,
    7, 7, 7, 8, 9, 10, 11};
+std::vector<float> phobos_auau_0p0624_ncoll = { // ! placeholder
+   19, 27, 36, 48, 62, 78, 98, 119,
+   145, 174, 209, 248, 288, 325, 356};
+std::vector<float> phobos_auau_0p0624_ncollerr = {
+   3, 3, 4, 5, 6, 6, 7, 7,
+   7, 7, 7, 8, 9, 10, 11};
 auto phobos_auau_0p0624_2a = 394.;
 auto phobos_auau_0p0624_size = phobos_auau_0p0624_raw.size();
 
@@ -171,6 +215,10 @@ std::vector<float> phobos_auau_0p0196_cent = {
 std::vector<float> phobos_auau_0p0196_npart = {
    95, 117, 142, 171, 206, 247, 286, 322, 351};
 std::vector<float> phobos_auau_0p0196_nparterr = {
+   7, 7, 7, 7, 8, 8, 9, 10, 11};
+std::vector<float> phobos_auau_0p0196_ncoll = { // ! placeholder
+   95, 117, 142, 171, 206, 247, 286, 322, 351};
+std::vector<float> phobos_auau_0p0196_ncollerr = {
    7, 7, 7, 7, 8, 8, 9, 10, 11};
 auto phobos_auau_0p0196_2a = 394.;
 auto phobos_auau_0p0196_size = phobos_auau_0p0196_raw.size();
@@ -185,6 +233,10 @@ std::vector<float> phobos_cucu_0p2_npart = {
    22, 27, 33, 40, 48, 57, 67, 79, 91, 101, 108};
 std::vector<float> phobos_cucu_0p2_nparterr = {
    3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4};
+std::vector<float> phobos_cucu_0p2_ncoll = { // ! placeholder
+   22, 27, 33, 40, 48, 57, 67, 79, 91, 101, 108};
+std::vector<float> phobos_cucu_0p2_ncollerr = {
+   3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4};
 auto phobos_cucu_0p2_2a = 128.;
 auto phobos_cucu_0p2_size = phobos_cucu_0p2_raw.size();
 
@@ -197,6 +249,10 @@ std::vector<float> phobos_cucu_0p0624_cent = {
 std::vector<float> phobos_cucu_0p0624_npart = {
    21, 26, 32, 38, 47, 55, 65, 76, 88, 97, 106};
 std::vector<float> phobos_cucu_0p0624_nparterr = {
+   3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3};
+std::vector<float> phobos_cucu_0p0624_ncoll = { // ! placeholder
+   21, 26, 32, 38, 47, 55, 65, 76, 88, 97, 106};
+std::vector<float> phobos_cucu_0p0624_ncollerr = {
    3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3};
 auto phobos_cucu_0p0624_2a = 128.;
 auto phobos_cucu_0p0624_size = phobos_cucu_0p0624_raw.size();
@@ -211,6 +267,10 @@ std::vector<float> phobos_cucu_0p0224_npart = {
    20, 24, 30, 37, 44, 53, 63, 74, 86, 95, 103};
 std::vector<float> phobos_cucu_0p0224_nparterr = {
    3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3};
+std::vector<float> phobos_cucu_0p0224_ncoll = { // ! placeholder
+   20, 24, 30, 37, 44, 53, 63, 74, 86, 95, 103};
+std::vector<float> phobos_cucu_0p0224_ncollerr = {
+   3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3};
 auto phobos_cucu_0p0224_2a = 128.;
 auto phobos_cucu_0p0224_size = phobos_cucu_0p0224_raw.size();
 
@@ -223,6 +283,10 @@ std::vector<float> brahms_auau_0p2_cent = {
 std::vector<float> brahms_auau_0p2_npart = {
    73, 114, 168, 239, 306, 357};
 std::vector<float> brahms_auau_0p2_nparterr = {
+   8, 9, 9, 10, 11, 8};
+std::vector<float> brahms_auau_0p2_ncoll = { // ! placeholder
+   73, 114, 168, 239, 306, 357};
+std::vector<float> brahms_auau_0p2_ncollerr = {
    8, 9, 9, 10, 11, 8};
 auto brahms_auau_0p2_2a = 394.;
 auto brahms_auau_0p2_size = brahms_auau_0p2_raw.size();
@@ -237,9 +301,14 @@ std::vector<float> alice_xexe_5p44_npart = {
    5.13, 10.4, 19.7, 34.1, 54.6, 82.2, 118, 165, 199, 214, 225, 231, 236, 241, 246};
 std::vector<float> alice_xexe_5p44_nparterr = {
    0.46, 1.1, 2.1, 3.0, 3.6, 3.9, 4, 3, 2, 3, 3, 2, 3, 2, 2};
+std::vector<float> alice_xexe_5p44_ncoll = { // ! placeholder
+   5.13, 10.4, 19.7, 34.1, 54.6, 82.2, 118, 165, 199, 214, 225, 231, 236, 241, 246};
+std::vector<float> alice_xexe_5p44_ncollerr = {
+   0.46, 1.1, 2.1, 3.0, 3.6, 3.9, 4, 3, 2, 3, 3, 2, 3, 2, 2};
 auto alice_xexe_5p44_2a = 258.;
 auto alice_xexe_5p44_size = alice_xexe_5p44_raw.size();
 
+// https://twiki.cern.ch/twiki/bin/viewauth/CMS/XeXeGlauber
 std::vector<float> cms_xexe_5p44_raw = {
   18.8, 29.2, 43.7, 63.2, 89, 121, 162, 212,
   273, 344, 430, 532, 653, 798, 977, 1187};
@@ -255,9 +324,16 @@ std::vector<float> cms_xexe_5p44_npart = {
 std::vector<float> cms_xexe_5p44_nparterr = {
    0.66, 1.0, 1.5, 1.9, 2.4, 2.6, 3.0,
    3.1, 3.1, 3.0, 2.9, 2.6, 2.3, 1.9, 1.5, 1.7};
+std::vector<float> cms_xexe_5p44_ncoll = { 
+  7.522, 11.61, 17.63, 26.38, 38.38, 55.2, 77.91, 107.6,
+  145.9, 195.2, 257.9, 337.3, 438.7, 563.8, 724.1, 922};
+std::vector<float> cms_xexe_5p44_ncollerr = {
+   0.998, 1.72, 2.92, 4.46, 6.6, 9.03, 12.7,
+   16.1, 20.1, 24.6, 29.1, 34.2, 38.5, 42.4, 48.3, 57.1};
 auto cms_xexe_5p44_2a = 258.;
 auto cms_xexe_5p44_size = cms_xexe_5p44_raw.size();
 
+// https://twiki.cern.ch/twiki/bin/viewauth/CMS/Glauber5360GeVPbPb
 std::vector<float> cms_pbpb_5p36_raw = {
    31.6, 48.4, 73.1, 106.2, 150.9, 206.9, 277.2, 358.9,
    462.6, 584.4, 724.5, 886.8, 1093.2, 1337.5, 1636.4, 2031.8};
@@ -273,6 +349,12 @@ std::vector<float> cms_pbpb_5p36_npart = {
 std::vector<float> cms_pbpb_5p36_nparterr = {
    0.4, 0.6, 0.8, 0.9, 1.2, 1.2, 1.3, 1.3,
    1.4, 1.5, 1.5, 1.5, 1.4, 1.4, 1.3, 1.6};
+std::vector<float> cms_pbpb_5p36_ncoll = { 
+   12.89, 20.59, 32.51, 49.82, 74.60, 109.0, 155.4, 216.5,
+   295.0, 394.4, 518.3, 671.1, 859.4, 1094, 1388, 1770};
+std::vector<float> cms_pbpb_5p36_ncollerr = {
+   0.59, 1.14, 1.83, 2.69, 4.08, 5.1, 6.6, 8.3,
+   10.4, 12.6, 15.3, 18.3, 22.3, 27., 34., 42.};
 auto cms_pbpb_5p36_2a = 416.;
 auto cms_pbpb_5p36_size = cms_pbpb_5p36_raw.size();
 
@@ -286,6 +368,10 @@ std::vector<float> alice_pbpb_5p36_cent = {
 std::vector<float> alice_pbpb_5p36_npart = {
    6.8, 15.4, 30.5, 53.7, 86.5, 130.6, 188.4, 263.1, 332.4, 383.6};
 std::vector<float> alice_pbpb_5p36_nparterr = {
+   0.2, 0.4, 0.8, 1.1, 1.5, 1.4, 1.3, 1.3, 1.7, 0.8};
+std::vector<float> alice_pbpb_5p36_ncoll = { // ! placeholder
+   6.8, 15.4, 30.5, 53.7, 86.5, 130.6, 188.4, 263.1, 332.4, 383.6};
+std::vector<float> alice_pbpb_5p36_ncollerr = {
    0.2, 0.4, 0.8, 1.1, 1.5, 1.4, 1.3, 1.3, 1.7, 0.8};
 auto alice_pbpb_5p36_2a = 416.;
 auto alice_pbpb_5p36_size = alice_pbpb_5p36_raw.size();

@@ -13,6 +13,7 @@
 #define COLOUR7   TColor::GetColor("#db2d20") // sat red
 #define COLOUR8   TColor::GetColor("#01a252") // sat green
 #define COLOUR9   TColor::GetColor("#5C76DA") // sat blue
+#define COLOUR10  TColor::GetColor("#8EBDC3") // cyan
 
 static const std::vector<int> colours = {
    COLOUR1, COLOUR2, COLOUR3,

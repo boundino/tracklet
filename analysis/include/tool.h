@@ -12,6 +12,7 @@ std::string _t_eta0p5 = "#lower[0.05]{#scale[1.5]{#kern[-0.6]{#cbar}}}#lower[0.6
 std::string _t_2a = "#lower[-0.05]{(}1/#kern[0.05]{2#it{A}}#lower[-0.05]{)}";
 std::string _t_1npart = "#lower[-0.05]{(}1/#kern[0.1]{#scale[1.2]{#LT}}#lower[0.1]{#it{N}}#lower[0.5]{#scale[0.6]{#kern[-0.08]{part}}}#scale[1.2]{#GT}#lower[-0.05]{)}";
 std::string _t_npart = "#scale[1.2]{#LT}#it{N}#lower[0.4]{#scale[0.7]{#kern[-0.05]{part}}}#scale[1.2]{#GT}";
+std::string _t_ncoll = "#scale[1.2]{#LT}#it{N}#lower[0.4]{#scale[0.7]{#kern[-0.05]{coll}}}#scale[1.2]{#GT}";
 std::string _t_hep_dNdeta = "\\mathrm{d}N_{\\mathrm{ch}}/\\mathrm{d}\\eta";
 
 std::string _t_dNdetatitle = ";#it{#eta};d#it{N}_{ch}/d#kern[-0.08]{#it{#eta}}";
@@ -23,6 +24,27 @@ std::string _t_truth = "hijing&H#scale[0.9]{IJING}&2"
   ",amptsm&A#scale[0.9]{MPT}#scale[0.5]{ }#scale[0.9]{(string melting)}&4"
   ",hydjet&H#scale[0.9]{YDJET}&9"
   ",epos&E#scale[0.9]{POS}#scale[0.5]{ }#scale[0.8]{LHC}&10";
+
+Style_t get_mc_line_style(std::string tag) {
+  Style_t lstyle = 2;
+  for (auto t : xjjc::str_divide(_t_truth, ",")) {
+    if (!xjjc::str_contains(t, tag)) continue;
+    auto properties = xjjc::str_divide(t, "&");
+    if (properties.size() > 2)
+      lstyle = (Style_t)atoi(properties[2].c_str());
+  }
+  return lstyle;
+}
+std::string get_mc_tex(std::string tag) {
+  std::string tex = tag;
+  for (auto t : xjjc::str_divide(_t_truth, ",")) {
+    if (!xjjc::str_contains(t, tag)) continue;
+    auto properties = xjjc::str_divide(t, "&");
+    if (properties.size() > 1)
+      tex = properties[1];
+  }
+  return tex;
+}
 
 static const int goodrange[] = { 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0 };
 void goodresult(TH1* h, const int* goodbin = goodrange) {

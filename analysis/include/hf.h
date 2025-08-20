@@ -2,6 +2,7 @@
 #define HF_H
 
 // ####### *hiHF_pf* not hiHF ####### //
+#define NBIN_CENT 20
 
 static const float hfofficial[21] = {
                                      0., 7.17572, 12.5071, 16.954, 22.3333,
@@ -90,20 +91,20 @@ static const float hfangantyr[21] = {
                                      20000
 };
 
-int hfbin(float hft) {
-  for (int i=0; i<20; ++i) {
-    if (hft < hfofficial[i+1])
-      return i;
-  }
-
-  __builtin_unreachable();
-}
-
 const float* hftables[10] = {
                              hfofficial, hfeffup, hfeffdown,
                              hfepos, hfhydjet, hfamptnm, hfamptsm,
                              hfhijing, hfamptnm2, hfangantyr
 };
+
+int hfbin(float hft, int ctable=0) {
+  for (int i=0; i<20; ++i) {
+    if (hft < hftables[ctable][i+1])
+      return i;
+  }
+  return -1;
+  // __builtin_unreachable();
+}
 
 float hftval(int hfb, int sample) {
   return hftables[sample][hfb];
