@@ -28,14 +28,14 @@ while [ $c -lt $((${#CENTS[@]}-1)) ] ; do
         "${group}.s.$cmin.$cmax&nominal","${group}-hfeffup.s.$cmin.$cmax&centrality up","${group}-hfeffdown.s.$cmin.$cmax&centrality down"%"ctable-${group}.s.$cmin.$cmax"%"394153 corr. w. ${taglabel[$mcdefault]}"%"1"%"centrality table"
         "${group}.s.$cmin.$cmax&$(ftaglabel epos)","${group}-sdf1.s.$cmin.$cmax&$(ftaglabel angantyr)"%"sdf-${group}.s.$cmin.$cmax"%"Single diffractive correction"%"1"%"single diffraction fraction"
         "${group}.s.$cmin.$cmax&HFCoin2Th4","${group}-evtsel1.s.$cmin.$cmax&HFCoinc3Th3","${group}-evtsel2.s.$cmin.$cmax&HFCoinc2Th5"%"evtsel-${group}.s.$cmin.$cmax"%"394153 corr. w. ${taglabel[$mcdefault]}"%"1"%"event selection"
-        # "${group}.s.$cmin.$cmax&nominal","${group}-split.s.$cmin.$cmax&pixel splitting"%"split-${group}.s.$cmin.$cmax"%"394153 corr. w. ${taglabel[$mcdefault]}"%"1"%"pixel splitting"
+        # # "${group}.s.$cmin.$cmax&nominal","${group}-split.s.$cmin.$cmax&pixel splitting"%"split-${group}.s.$cmin.$cmax"%"394153 corr. w. ${taglabel[$mcdefault]}"%"1"%"pixel splitting"
     )
     [[ $cmin -eq 0 && $cmax -eq 20 ]] && {
         CONFIGS+=(
             "${group}.s.$cmin.$cmax&tracklet count.","${group/cgm/cm}-clus.s.$cmin.$cmax&cluster count."%"method-${group}.s.$cmin.$cmax"%"394153 corr. w. ${taglabel[${mcdefault}]}"%"0"%"-"
             "${group}.s.$cmin.$cmax&all lumi","${group}-lumi2.s.$cmin.$cmax&52 <= lumi < 75","${group}-lumi3.s.$cmin.$cmax&75 <= lumi < 100","${group}-lumi4.s.$cmin.$cmax&100 <= lumi < 130","${group}-lumi5.s.$cmin.$cmax&130 <= lumi < 164"%"lumi-${group}.s.$cmin.$cmax"%"394153 corr. w. ${taglabel[${mcdefault}]}"%"0"%"-"            
             "${group}.s.$cmin.$cmax&${taglabel[$mcdefault]}","${group/$mcdefault/amptnm}.s.$cmin.$cmax&$(ftaglabel amptnm)","${group/$mcdefault/amptsm}.s.$cmin.$cmax&$(ftaglabel amptsm)","${group/$mcdefault/epos}.s.$cmin.$cmax&$(ftaglabel epos)","${group/$mcdefault/hydjet}.s.$cmin.$cmax&$(ftaglabel hydjet)"%"mcall-${group}.s.$cmin.$cmax"%"394153 corr. w. different MC"%"0"%"-"
-            # "${group}.s.$cmin.$cmax&$(ftaglabel amptnm)","${group/$(ftaglabel amptnm)/362318}.s.$cmin.$cmax&362318"%"run-cgm.${mcdefault}.m.v3.s.$cmin.$cmax"%"Different run corr. w. ${taglabel[${mcdefault}]}"%"0"%"-"
+            # # "${group}.s.$cmin.$cmax&$(ftaglabel amptnm)","${group/$(ftaglabel amptnm)/362318}.s.$cmin.$cmax&362318"%"run-cgm.${mcdefault}.m.v3.s.$cmin.$cmax"%"Different run corr. w. ${taglabel[${mcdefault}]}"%"0"%"-"
         )
     }
 
