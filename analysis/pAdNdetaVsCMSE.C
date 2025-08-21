@@ -228,7 +228,7 @@ int pAdNdetaVsCMSE(bool onlyAA=false) {
     leg_pp_NSD->AddEntry(Graph_pp_STAR, "STAR", "P");
     leg_pp_NSD->Draw();
 
-    TLatex* pp_nsd_fit_label = new TLatex(1500, 5.2, "#propto #font[52]{s}_{_{NN}}^{0.110}");
+    TLatex* pp_nsd_fit_label = new TLatex(1500, 5.2, "#propto#scale[0.2]{ }#font[52]{s}_{_{NN}}^{0.110}");
     pp_nsd_fit_label->SetTextColor(_PP_NSD_COLOUR);
     pp_nsd_fit_label->SetTextFont(43);
     pp_nsd_fit_label->SetTextSize(25);
@@ -335,7 +335,7 @@ int pAdNdetaVsCMSE(bool onlyAA=false) {
     fit_pp_inel->SetParLimits(1, 0, 0);
     fit_pp_inel->Draw("same");
 
-    TLatex* pp_inel_fit_label = new TLatex(2500, 3.25, "#propto #font[52]{s}_{_{NN}}^{0.103}");
+    TLatex* pp_inel_fit_label = new TLatex(2500, 3.25, "#propto#scale[0.2]{ }#font[52]{s}_{_{NN}}^{0.103}");
     pp_inel_fit_label->SetTextColor(_PP_INEL_COLOUR);
     pp_inel_fit_label->SetTextFont(43);
     pp_inel_fit_label->SetTextSize(25);
@@ -531,7 +531,7 @@ int pAdNdetaVsCMSE(bool onlyAA=false) {
     fit_AA->SetParLimits(2, 0, 0);
     fit_AA->Draw("same");
 
-    TLatex* AA_fit_label = new TLatex(2500, 7.5, "#propto #font[52]{s}_{_{NN}}^{0.158}");
+    TLatex* AA_fit_label = new TLatex(2500, 7.5, "#propto#scale[0.2]{ }#font[52]{s}_{_{NN}}^{0.158}");
     AA_fit_label->SetTextColor(_AA_COLOUR);
     AA_fit_label->SetTextFont(43);
     AA_fit_label->SetTextSize(25);

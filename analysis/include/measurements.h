@@ -82,6 +82,20 @@ TGraphErrors* MSRMNT##_nnpart_x_npart2a() {                                   \
                                                     ncollnparterr,      \
                                                     MSRMNT##_rawerr[i]/MSRMNT##_npart[i]); } \
    return g##MSRMNT##_nnpart_x_ncollnpart; }                            \
+ TGraphErrors* MSRMNT##_nnpart_x_ncollnpartnpart() {                    \
+ TGraphErrors* g##MSRMNT##_nnpart_x_ncollnpartnpart =                   \
+   new TGraphErrors(MSRMNT##_size);                                     \
+ g##MSRMNT##_nnpart_x_ncollnpartnpart->SetName("g" #MSRMNT "_nnpart_x_ncollnpartnpart"); \
+ for (std::size_t i=0; i<MSRMNT##_size; ++i) {                          \
+   g##MSRMNT##_nnpart_x_ncollnpartnpart->SetPoint(i,                    \
+                                                  MSRMNT##_ncoll[i]/MSRMNT##_npart[i]/MSRMNT##_npart[i], \
+                                                  MSRMNT##_raw[i]/MSRMNT##_npart[i]); \
+   auto ncollnpartnparterr = ((MSRMNT##_ncoll[i] + MSRMNT##_ncollerr[i]) / (MSRMNT##_npart[i] - MSRMNT##_nparterr[i]) / (MSRMNT##_npart[i] - MSRMNT##_nparterr[i]) \
+                              - (MSRMNT##_ncoll[i] - MSRMNT##_ncollerr[i]) / (MSRMNT##_npart[i] + MSRMNT##_nparterr[i]) / (MSRMNT##_npart[i] + MSRMNT##_nparterr[i])) / 2.; \
+   g##MSRMNT##_nnpart_x_ncollnpartnpart->SetPointError(i,               \
+                                                       ncollnpartnparterr, \
+                                                       MSRMNT##_rawerr[i]/MSRMNT##_npart[i]); } \
+ return g##MSRMNT##_nnpart_x_ncollnpartnpart; }                         \
  
 std::vector<float> cms_pbpb_2p76_raw = {
    11.05, 18.49, 28.12, 44.46, 65.42, 93.55, 130.3, 176.1, 233.0,
