@@ -492,7 +492,7 @@ int pAdNdetaVsCMSE(bool onlyAA=false) {
     Graph_AA_CMS_NEW->SetPointError(1, 0.0, new_err*2);
     Graph_AA_CMS_NEW->Draw("E1P");
 
-    TLegend* leg_AA = new TLegend(0.34, 0.92-0.045*9, 0.47, 0.92, NULL, "brNDC");
+    TLegend* leg_AA = new TLegend(0.34, 0.92-0.045*10, 0.47, 0.92, NULL, "brNDC");
     leg_AA->SetBorderSize(0);
     leg_AA->SetTextFont(43);
     leg_AA->SetTextSize(15);
@@ -508,6 +508,7 @@ int pAdNdetaVsCMSE(bool onlyAA=false) {
     leg_AA->AddEntry(Graph_AA_PHOBOS, "PHOBOS", "P");
     leg_AA->AddEntry(Graph_AA_NA50, "NA50", "P");
     leg_AA->AddEntry(Graph_AA_CMS_NEW, "OO 0-5\%", "P");
+    leg_AA->AddEntry((TObject*)0, "#lower[-0.3]{(This work)}", NULL);
     leg_AA->Draw();
 
     // AA fit, log function

@@ -32,7 +32,7 @@ while [ $c -lt $((${#CENTS[@]}-1)) ] ; do
     )
     [[ $cmin -eq 0 && $cmax -eq 20 ]] && {
         CONFIGS+=(
-            "${group}.s.$cmin.$cmax&tracklet count.","${group/cgm/cm}-clus.s.$cmin.$cmax&cluster count."%"method-${group}.s.$cmin.$cmax"%"394153 corr. w. ${taglabel[${mcdefault}]}"%"0"%"-"
+            "${group}.s.$cmin.$cmax&tracklet count.","${group/cgm/cm}-clus.s.$cmin.$cmax&cluster count.&000000111111111111111111111111000000"%"method-${group}.s.$cmin.$cmax"%"394153 corr. w. ${taglabel[${mcdefault}]}"%"0"%"-"
             "${group}.s.$cmin.$cmax&all lumi","${group}-lumi2.s.$cmin.$cmax&52 <= lumi < 75","${group}-lumi3.s.$cmin.$cmax&75 <= lumi < 100","${group}-lumi4.s.$cmin.$cmax&100 <= lumi < 130","${group}-lumi5.s.$cmin.$cmax&130 <= lumi < 164"%"lumi-${group}.s.$cmin.$cmax"%"394153 corr. w. ${taglabel[${mcdefault}]}"%"0"%"-"            
             "${group}.s.$cmin.$cmax&${taglabel[$mcdefault]}","${group/$mcdefault/amptnm}.s.$cmin.$cmax&$(ftaglabel amptnm)","${group/$mcdefault/amptsm}.s.$cmin.$cmax&$(ftaglabel amptsm)","${group/$mcdefault/epos}.s.$cmin.$cmax&$(ftaglabel epos)","${group/$mcdefault/hydjet}.s.$cmin.$cmax&$(ftaglabel hydjet)"%"mcall-${group}.s.$cmin.$cmax"%"394153 corr. w. different MC"%"0"%"-"
             # # "${group}.s.$cmin.$cmax&$(ftaglabel amptnm)","${group/$(ftaglabel amptnm)/362318}.s.$cmin.$cmax&362318"%"run-cgm.${mcdefault}.m.v3.s.$cmin.$cmax"%"Different run corr. w. ${taglabel[${mcdefault}]}"%"0"%"-"
