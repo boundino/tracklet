@@ -8,7 +8,7 @@
 
 std::string _t_slash = "#kern[0.1]{#lower[0.15]{#scale[1.25]{/}}}";
 std::string _t_dNdeta = "#scale[1.2]{#LT}d#it{N}_{ch}/d#kern[-0.08]{#it{#eta}}#scale[1.2]{#GT}";
-std::string _t_eta0p5 = "#lower[0.05]{#scale[1.5]{#kern[-0.6]{#cbar}}}#lower[0.6]{#scale[0.6]{#kern[0.15]{#cbar}#it{#eta}#kern[-0.4]{#cbar}#scale[0.5]{ }#kern[0.2]{<}#kern[0.2]{0.5}}}";
+std::string _t_eta0p5 = "#lower[0.05]{#scale[1.5]{#kern[-0.6]{#cbar}}}#lower[0.2]{#scale[0.8]{#kern[0.15]{#cbar}#it{#eta}#kern[-0.4]{#cbar}#scale[0.2]{ }#kern[0.2]{<}#scale[0.2]{ }#kern[0.2]{0.5}}}";
 std::string _t_2a = "#lower[-0.05]{(}1/#kern[0.05]{2#it{A}}#lower[-0.05]{)}";
 std::string _t_1npart = "#lower[-0.05]{(}1/#kern[0.1]{#scale[1.2]{#LT}}#lower[0.1]{#it{N}}#lower[0.5]{#scale[0.6]{#kern[-0.08]{part}}}#scale[1.2]{#GT}#lower[-0.05]{)}";
 std::string _t_npart = "#scale[1.2]{#LT}#it{N}#lower[0.4]{#scale[0.7]{#kern[-0.05]{part}}}#scale[1.2]{#GT}";
@@ -20,10 +20,21 @@ std::string _t_dNdetatitle = ";#it{#eta};d#it{N}_{ch}/d#kern[-0.08]{#it{#eta}}";
 // std::string _t_truth = "hijing&H#scale[0.9]{IJING}&2,amptnm&A#scale[0.9]{MPT}&6,amptnm2&A#scale[0.9]{MPT}#scale[0.5]{ }#scale[0.9]{(varied params)}&4,hydjet&H#scale[0.8]{YDJET}&9";
 std::string _t_truth = "hijing&H#scale[0.9]{IJING}&2"
   ",angantyr&A#scale[0.9]{NGANTYR}&8"
-  ",amptnm&A#scale[0.9]{MPT}&6"
-  ",amptsm&A#scale[0.9]{MPT}#scale[0.5]{ }#scale[0.9]{(string melting)}&4"
-  ",hydjet&H#scale[0.9]{YDJET}&9"
-  ",epos&E#scale[0.9]{POS}#scale[0.5]{ }#scale[0.8]{LHC}&10";
+  ",amptnm&A#scale[0.9]{MPT}&3"
+  ",amptsm&A#scale[0.9]{MPT}#scale[0.5]{ }#scale[0.9]{(string melting)}&5"
+  ",epos&E#scale[0.9]{POS}#scale[0.5]{ }#scale[0.8]{LHC}&9";
+  // ",hydjet&H#scale[0.9]{YDJET}&10"
+
+std::map<std::string, int> _color_truth = {
+  {"hijing", COLOUR10},
+  {"angantyr", COLOUR6},
+  {"amptnm", COLOUR5},
+  {"amptsm", COLOUR2},
+  {"hydjet", COLOUR1},
+  {"epos", COLOUR3},
+  {"nleft", COLOUR9},
+  {"pgcm", COLOUR7},
+};
 
 Style_t get_mc_line_style(std::string tag) {
   Style_t lstyle = 2;
@@ -44,6 +55,16 @@ std::string get_mc_tex(std::string tag) {
       tex = properties[1];
   }
   return tex;
+}
+
+int get_mc_color(std::string tag) {
+  int lcolor = kBlack;
+  for (const auto &c : _color_truth) {
+    if (xjjc::str_contains(tag, c.first)) {
+      lcolor = c.second;
+    }
+  }
+  return lcolor;
 }
 
 static const int goodrange[] = { 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0 };
@@ -200,6 +221,17 @@ T* makehempty(T* horg, std::string title=_t_dNdetatitle.c_str(), float ymax=1.5,
   return hempty;
 }
 
+template <class T>
+void cleangrzero(T* gr) {
+  for (int i=0; i<gr->GetN();) {
+    if (gr->GetPointY(i) < 1.e-8) {
+      gr->RemovePoint(i);
+      continue;
+    }
+    i++;
+  }
+}
+
 std::vector<TH1D*> combh1WEfinal(std::string filename,
                                  TLegend* legPIX = 0,
                                  std::string input_comb="12,13,14,23,24,34,56,57,67") {
@@ -211,7 +243,7 @@ std::vector<TH1D*> combh1WEfinal(std::string filename,
   std::vector<TH1D*> h1WEfinal(icomb.n(), 0);
   for(int j=0; j<icomb.n(); j++)
     {
-      h1WEfinal[j] = xjjroot::gethist<TH1D>(filename + "::h1WEfinal-"+icomb.value[j][0]);
+      h1WEfinal[j] = xjjana::getobj<TH1D>(filename + "::h1WEfinal-"+icomb.value[j][0]);
       xjjroot::setthgrstyle(h1WEfinal[j], colours[j], xjjroot::markerlist_open[j], 0.8, colours[j]);
 
       legPIX->AddEntry(h1WEfinal[j], Form("%s", tcomb(icomb.value[j][0]).c_str()), "p");
@@ -231,10 +263,11 @@ std::vector<TGraphErrors*> combgh1WGhadron(std::string filename,
   gStyle->SetLineStyleString(9,"40 20");
   for(int i=0; i<itruth.n(); i++) {
     std::cout<<filename<<std::endl;
-    auto gr = xjjroot::gethist<TGraphErrors>(filename + "::gh1WGhadron-"+itruth.value[i][0]);
+    auto gr = xjjana::getobj<TGraphErrors>(filename + "::gh1WGhadron-"+itruth.value[i][0]);
     if(!gr) continue;
     if (itruth.value[i].size() > 2)
       gr->SetLineStyle(atoi(itruth.value[i][2].c_str()));
+    gr->SetLineWidth(3);
     gh1WGhadron.push_back(gr);
     legTRUTH->AddEntry(gr, Form("%s", itruth.value[i][1].c_str()), "l");
   }
@@ -259,7 +292,7 @@ public:
       n_ = 0;
       for(int i=0; i<itruth.n(); i++) {
         auto key = itruth.value[i][0];
-        auto h = xjjroot::gethist<TH1D>("output/correction-"+key+"-12.root::h1WGhadron");
+        auto h = xjjana::getobj<TH1D>("output/correction-"+key+"-12.root::h1WGhadron");
         if (!h) continue;
         h1_.push_back({key, h});
         auto gh = xjjana::shifthistcenter(h, "gh1WGhadron-"+xjjc::str_erasestar(key, ".*"), 0x10);
@@ -361,7 +394,7 @@ private:
 //       xjjroot::setleg(legTRUTH, 0.028);
 //     }
 //     for(int i=0; i<itruth.n(); i++) {
-//       auto h = xjjroot::gethist<TH1D>("output/correction-"+itruth.value[i][0]+"-12.root::h1WGhadron");
+//       auto h = xjjana::getobj<TH1D>("output/correction-"+itruth.value[i][0]+"-12.root::h1WGhadron");
 //       if (!h) continue;
 //       auto gh = xjjana::shifthistcenter(h, "gh1WGhadron-"+xjjc::str_erasestar(itruth.value[i][0], ".*"), 0x10);
 //       xjjroot::setthgrstyle(gh, kBlack, 20, 0.8, kBlack, atoi(itruth.value[i][2].c_str()), 1);

@@ -111,35 +111,47 @@ std::vector<float> angantyr_oo_5p36_ncollerr = angantyr_oo_5p36_nparterr;
 auto angantyr_oo_5p36_2a = 32.;
 auto angantyr_oo_5p36_size = angantyr_oo_5p36_raw.size();
 
-std::vector<float> nleft_oo_6p8_raw = {
-   170.402, 154.196, 145.891, 139.613, 134.288, 129.583, 125.259, 121.209, 117.384, 113.749, 103.754, 88.9027, 75.9675, 64.6397, 54.7359, 46.0614, 38.4848, 31.9369, 26.2742};
-std::vector<float> nleft_oo_6p8_rawerr = {
-   13.9617, 11.8379, 10.9571, 10.3878, 9.91606, 9.5301, 9.20657, 8.89295, 8.61532, 8.35227, 7.65961, 6.6449, 5.75939, 4.99502, 4.33577, 3.74253, 3.21058, 2.76594, 2.36722};
-std::vector<float> nleft_oo_6p8_cent = {
-   99.5, 98.5, 97.5, 96.5, 95.5, 94.5, 93.5, 92.5, 91.5, 90.5, 87.5, 82.5, 77.5, 72.5, 67.5, 62.5, 57.5, 52.5, 47.5};
-std::vector<float> nleft_oo_6p8_npart = {
-   32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32};
-std::vector<float> nleft_oo_6p8_nparterr = {
-   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-std::vector<float> nleft_oo_6p8_ncoll = nleft_oo_6p8_npart;
-std::vector<float> nleft_oo_6p8_ncollerr = nleft_oo_6p8_nparterr;
-auto nleft_oo_6p8_2a = 32.;
-auto nleft_oo_6p8_size = nleft_oo_6p8_raw.size();
+std::vector<float> nleft_oo_5p36_raw =
+  {//0.5,   1.5,     2.5,   3.5,     4.5,     7.5,     12.5,    17.5,    22.5,    27.5,    32.5,    37.5,    42.5,    47.5,    52.5,    57.5,    62.5,    67.5,    72.5,    77.5,    82.5,    87.5
+   // 153.834, 138.624, 130.9, 125.012, 120.055, 108.179, 92.0628, 78.6803, 67.0746, 56.9938, 48.2659, 40.6549, 33.9441, 28.1407, 23.0904, 18.7436, 15.1051, 11.9863, 9.31269, 7.02533, 4.99804, 3.26491 };
+   153.834, 138.624, 130.9, 125.012, 120.055, 108.179, 92.0628, 78.6803, 67.0746, 56.9938, 48.2659, 40.6549, 33.9441, 28.1407, 23.0904, 18.7436, 0,    0,    0,    0,    0,    0 };
+std::vector<float> nleft_oo_5p36_rawerr =
+  {
+   9.26886, 8.45095, 8.06591, 7.73995, 7.47824, 6.81874, 5.90056, 5.15352, 4.51879, 3.96379, 3.4676, 3.01573, 2.61673, 2.26394, 1.96877, 1.70386, 1.47981, 1.28129, 1.0976, 0.92452, 0.751261, 0.581132 };
+std::vector<float> nleft_oo_5p36_cent =
+  {//0.5, 1.5, 2.5,  3.5,  4.5,  7.5,  12.5, 17.5, 22.5, 27.5, 32.5, 37.5, 42.5, 47.5, 52.5, 57.5, 62.5, 67.5, 72.5, 77.5, 82.5, 87.5
+   99.5, 98.5, 97.5, 96.5, 95.5, 92.5, 87.5, 82.5, 77.5, 72.5, 67.5, 62.5, 57.5, 52.5, 47.5, 42.5, 37.5, 32.5, 27.5, 22.5, 17.5, 12.5 };
+std::vector<float> nleft_oo_5p36_npart =
+  {//0.5,   1.5,     2.5,     3.5,     4.5,     7.5,     12.5,    17.5,    22.5,    27.5,    32.5,    37.5,    42.5,    47.5,   52.5,   57.5,   62.5, 67.5, 72.5, 77.5, 82.5, 87.5
+   29.3181, 28.3132, 27.6359, 27.0542, 26.5150, 24.9947, 22.5608, 20.1950, 17.9327, 15.8293, 13.9037, 12.1538, 10.5752, 9.1793, 7.9305, 6.8005, 0,    0,    0,    0,    0,    0 };
+std::vector<float> nleft_oo_5p36_nparterr =
+  {//0.5,   1.5,     2.5,     3.5,     4.5,     7.5,     12.5,    17.5,    22.5,    27.5,    32.5,    37.5,    42.5,    47.5,   52.5,   57.5,   62.5, 67.5, 72.5, 77.5, 82.5, 87.5
+   0.3407,  0.3064,  0.2802,  0.2566,  0.2366,  0.1905,  0.1476,  0.1271,  0.1154,  0.1172,  0.1074,  0.1011,  0.0970,  0.0985, 0.0963, 0.0886, 0,    0,    0,    0,    0,    0 };
+std::vector<float> nleft_oo_5p36_ncoll = nleft_oo_5p36_npart;
+std::vector<float> nleft_oo_5p36_ncollerr = nleft_oo_5p36_nparterr;
+auto nleft_oo_5p36_2a = 32.;
+auto nleft_oo_5p36_size = nleft_oo_5p36_raw.size();
 
-std::vector<float> pgcm_oo_6p8_raw = {
-   169.103, 153.372, 145.267, 139.077, 133.807, 129.092, 124.728, 120.631, 116.751, 113.019, 102.761, 87.5014, 74.3336, 62.8953, 52.9574, 44.3523, 36.9097, 30.5249, 25.069, };
-std::vector<float> pgcm_oo_6p8_rawerr = {
-   14.3372, 12.1747, 11.2659, 10.676, 10.1961, 9.80706, 9.44681, 9.1293, 8.84523, 8.57576, 7.82087, 6.73974, 5.80674, 5.01503, 4.31134, 3.70975, 3.18325, 2.72384, 2.31959, };
-std::vector<float> pgcm_oo_6p8_cent = {
-   99.5, 98.5, 97.5, 96.5, 95.5, 94.5, 93.5, 92.5, 91.5, 90.5, 87.5, 82.5, 77.5, 72.5, 67.5, 62.5, 57.5, 52.5, 47.5, };
-std::vector<float> pgcm_oo_6p8_npart = {
-   32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, };
-std::vector<float> pgcm_oo_6p8_nparterr = {
-   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, };
-std::vector<float> pgcm_oo_6p8_ncoll = pgcm_oo_6p8_npart;
-std::vector<float> pgcm_oo_6p8_ncollerr = pgcm_oo_6p8_nparterr;
-auto pgcm_oo_6p8_2a = 32.;
-auto pgcm_oo_6p8_size = pgcm_oo_6p8_raw.size();
+std::vector<float> pgcm_oo_5p36_raw =
+  {//0.5,   1.5,     2.5,     3.5,     4.5,     7.5,     12.5,    17.5,    22.5,    27.5,   32.5,    37.5,    42.5,    47.5,    52.5,    57.5,    62.5,    67.5,    72.5,    77.5,   82.5,    87.5
+   // 152.736, 137.878, 130.291, 124.625, 119.721, 107.896, 91.4613, 77.7573, 65.9914, 55.816, 46.9526, 39.3082, 32.7359, 27.0592, 22.2047, 18.1067, 14.6379, 11.6953, 9.17214, 6.9983, 5.06722, 3.34409 };
+   152.736, 137.878, 130.291, 124.625, 119.721, 107.896, 91.4613, 77.7573, 65.9914, 55.816, 46.9526, 39.3082, 32.7359, 27.0592, 22.2047, 18.1067, 0,    0,    0,    0,    0,    0 };
+std::vector<float> pgcm_oo_5p36_rawerr =
+  {
+   9.65182, 8.76726, 8.33419, 8.03427, 7.74305, 7.06907, 6.10891, 5.28382, 4.56653, 3.95519, 3.43849, 2.98583, 2.59146, 2.23803, 1.93033, 1.67354, 1.45693, 1.26889, 1.09027, 0.92399, 0.770138, 0.594804 };
+std::vector<float> pgcm_oo_5p36_cent =
+  {//0.5, 1.5, 2.5,  3.5,  4.5,  7.5,  12.5, 17.5, 22.5, 27.5, 32.5, 37.5, 42.5, 47.5, 52.5, 57.5, 62.5, 67.5, 72.5, 77.5, 82.5, 87.5
+   99.5, 98.5, 97.5, 96.5, 95.5, 92.5, 87.5, 82.5, 77.5, 72.5, 67.5, 62.5, 57.5, 52.5, 47.5, 42.5, 37.5, 32.5, 27.5, 22.5, 17.5, 12.5 };
+std::vector<float> pgcm_oo_5p36_npart =
+  {//0.5,   1.5,     2.5,     3.5,     4.5,     7.5,     12.5,    17.5,    22.5,    27.5,    32.5,    37.5,    42.5,    47.5,   52.5,   57.5,   62.5, 67.5, 72.5, 77.5, 82.5, 87.5
+   29.0364, 28.0797, 27.4362, 26.8793, 26.3508, 24.8209, 22.2889, 19.8464, 17.5675, 15.4445, 13.5005, 11.7487, 10.1807, 8.7911, 7.5546, 6.4615, 0,    0,    0,    0,    0,    0 };
+std::vector<float> pgcm_oo_5p36_nparterr =
+  {//0.5,   1.5,     2.5,     3.5,     4.5,     7.5,     12.5,    17.5,    22.5,    27.5,    32.5,    37.5,    42.5,    47.5,   52.5,   57.5,   62.5, 67.5, 72.5, 77.5, 82.5, 87.5
+   0.3953,  0.3648,  0.3475,  0.3411,  0.3309,  0.3064,  0.2762,  0.2616,  0.2536,  0.2351,  0.2134,  0.1935,  0.1717,  0.1488, 0.1242, 0.1089, 0,    0,    0,    0,    0,    0 };
+std::vector<float> pgcm_oo_5p36_ncoll = pgcm_oo_5p36_npart;
+std::vector<float> pgcm_oo_5p36_ncollerr = pgcm_oo_5p36_nparterr;
+auto pgcm_oo_5p36_2a = 32.;
+auto pgcm_oo_5p36_size = pgcm_oo_5p36_raw.size();
 
 GENERATE(hijing_oo_5p36)
 GENERATE(amptnm_oo_5p36)
@@ -147,8 +159,8 @@ GENERATE(amptsm_oo_5p36)
 GENERATE(hydjet_oo_5p36)
 GENERATE(angantyr_oo_5p36)
 GENERATE(epos_oo_5p36)
-GENERATE(nleft_oo_6p8)
-GENERATE(pgcm_oo_6p8)
+GENERATE(nleft_oo_5p36)
+GENERATE(pgcm_oo_5p36)
 
 struct mccent {
   TGraphErrors* g;
@@ -181,7 +193,6 @@ void print_mc_cent(const mccent &m) {
 }
 
 
-
 #define MAKE_SET_MC(OBS)                                                \
   auto* ghijing_oo_5p36##OBS = hijing_oo_5p36##OBS();                   \
   auto* gamptnm_oo_5p36##OBS = amptnm_oo_5p36##OBS();                   \
@@ -189,16 +200,18 @@ void print_mc_cent(const mccent &m) {
   auto* ghydjet_oo_5p36##OBS = hydjet_oo_5p36##OBS();                   \
   auto* gepos_oo_5p36##OBS = epos_oo_5p36##OBS();                       \
   auto* gangantyr_oo_5p36##OBS = angantyr_oo_5p36##OBS();               \
-  auto* gpgcm_oo_6p8##OBS = pgcm_oo_6p8##OBS();                         \
-  auto* gnleft_oo_6p8##OBS = nleft_oo_6p8##OBS();                       \
-  xjjroot::setlinestyle(ghijing_oo_5p36##OBS, COLOUR10, get_mc_line_style("hijing"), 3); \
-  xjjroot::setlinestyle(gangantyr_oo_5p36##OBS, COLOUR2, get_mc_line_style("angantyr"), 3); \
-  xjjroot::setlinestyle(gamptnm_oo_5p36##OBS, COLOUR5, get_mc_line_style("amptnm"), 3); \
-  xjjroot::setlinestyle(gamptsm_oo_5p36##OBS, COLOUR6, get_mc_line_style("amptsm"), 3); \
-  xjjroot::setlinestyle(ghydjet_oo_5p36##OBS, COLOUR3, get_mc_line_style("hydjet"), 3); \
-  xjjroot::setlinestyle(gepos_oo_5p36##OBS, COLOUR1, get_mc_line_style("epos"), 3); \
-  xjjroot::setthgrstyle(gnleft_oo_6p8##OBS, -1, -1, -1, COLOUR9, 1, 3, COLOUR9, 0.5, 3345); \
-  xjjroot::setthgrstyle(gpgcm_oo_6p8##OBS, -1, -1, -1, COLOUR7, 9, 3, COLOUR7, 0.5, 3354); \
+  auto* gpgcm_oo_5p36##OBS = pgcm_oo_5p36##OBS();                         \
+  auto* gnleft_oo_5p36##OBS = nleft_oo_5p36##OBS();                       \
+  cleangrzero(gnleft_oo_5p36##OBS); \
+  cleangrzero(gpgcm_oo_5p36##OBS); \
+  xjjroot::setlinestyle(ghijing_oo_5p36##OBS, get_mc_color("hijing"), get_mc_line_style("hijing"), 5); \
+  xjjroot::setlinestyle(gangantyr_oo_5p36##OBS, get_mc_color("angantyr"), get_mc_line_style("angantyr"), 5); \
+  xjjroot::setlinestyle(gamptnm_oo_5p36##OBS, get_mc_color("amptnm"), get_mc_line_style("amptnm"), 5); \
+  xjjroot::setlinestyle(gamptsm_oo_5p36##OBS, get_mc_color("amptsm"), get_mc_line_style("amptsm"), 5); \
+  xjjroot::setlinestyle(ghydjet_oo_5p36##OBS, get_mc_color("hydjet"), get_mc_line_style("hydjet"), 5); \
+  xjjroot::setlinestyle(gepos_oo_5p36##OBS, get_mc_color("epos"), get_mc_line_style("epos"), 4); \
+  xjjroot::setthgrstyle(gnleft_oo_5p36##OBS, -1, -1, -1, get_mc_color("nleft"), 1, 3, get_mc_color("nleft"), 0.7, 3354); \
+  xjjroot::setthgrstyle(gpgcm_oo_5p36##OBS, -1, -1, -1, get_mc_color("pgcm"), 9, 3, get_mc_color("pgcm"), 0.7, 3345); \
 
 #define DRAW_MC(OBS)                            \
   ghijing_oo_5p36##OBS->Draw("c same");         \

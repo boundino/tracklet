@@ -41,10 +41,10 @@ const char* _t_collision = "OO (5.36 TeV)";
 
 #include "xjjrootuti.h"
 
-void watermark(bool ismc = false, float xshift=0, float yshift=0, float tsize=0.04) {
+void watermark(bool ismc = false, float xshift=0, float yshift=0, float tsize=0.04, float yshift_right = 0) {
   auto t_left = ismc ? xjjroot::CMS::simulation : xjjroot::CMS::preliminary;
   xjjroot::drawCMSleft(t_left, xshift, yshift, tsize);
-  xjjroot::drawCMSright(_t_collision, 0, 0, tsize);
+  xjjroot::drawCMSright(_t_collision, 0, yshift_right, tsize);
 }
 
 void watermark_inner(bool ismc = false) {
@@ -52,7 +52,7 @@ void watermark_inner(bool ismc = false) {
 }
 
 void watermark_inner_2p(bool ismc = false) {
-  watermark(ismc, 0.05, -0.15, 0.065);
+  watermark(ismc, 0.05, -0.15, 0.065, 0.005);
 }
 
 template<typename T>

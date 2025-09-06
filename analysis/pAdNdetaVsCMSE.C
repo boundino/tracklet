@@ -22,8 +22,8 @@
 // pp, pA, AA points from Constantin Loizides
 // INEL pp points from Jan Fiete's compilation
 float new_result = 5.12045, new_err = 0.131944;
-int pAdNdetaVsCMSE(bool onlyAA=false) {
-    TCanvas* c = new TCanvas("c", "", 600, 600);
+int pAdNdetaVsCMSE(bool onlyAA = false, bool nonewr = false) {
+    auto* c = new TCanvas("c", "", 600, 600);
     gStyle->SetOptStat(0);
     c->Range(0.6363689, -1.758823, 4.003324, 11.77059);
     c->SetFillColor(10);
@@ -41,14 +41,14 @@ int pAdNdetaVsCMSE(bool onlyAA=false) {
     c->SetTickx();
     c->SetTicky();
 
-    TH2D* frame = new TH2D("frame", "", 1, 5.0, 20000.0, 240, 0.0, 14.0);
+    auto* frame = new TH2D("frame", "", 1, 5.0, 20000.0, 240, 0.0, 14.0);
     frame->SetStats(0);
     frame->SetFillColor(10);
     frame->SetFillStyle(0);
 
     frame->Draw("A");
 
-    TGaxis* gaX = new TGaxis(5.0, 0.0, 20000.0, 0.0, 5.0, 20000.0, 506, "G");
+    auto* gaX = new TGaxis(5.0, 0.0, 20000.0, 0.0, 5.0, 20000.0, 506, "G");
     gaX->SetTitle("#sqrt{#font[52]{s}_{NN}}  (GeV)");
     gaX->SetNdivisions(506);
     gaX->CenterTitle();
@@ -59,12 +59,18 @@ int pAdNdetaVsCMSE(bool onlyAA=false) {
     gaX->SetLabelSize(20);
     gaX->Draw();
 
-    TGaxis* gaXT = new TGaxis(5.0, 14.0, 20000.0, 14.0, 5.0, 20000.0, 506, "G-U");
+    auto* gaXT = new TGaxis(5.0, 14.0, 20000.0, 14.0, 5.0, 20000.0, 506, "G-U");
     gaXT->Draw();
 
-    TGaxis* gaY = new TGaxis(5.0, 0.0, 5.0, 14.0, 0.0, 7.0, 510);
+    auto* gaY = new TGaxis(5.0, 0.0, 5.0, 14.0, 0.0, 7.0, 510);
     // gaY->SetTitle("(d#font[52]{N}_{ch}/d#eta)/#LT#font[52]{N}_{part}#GT");
-    gaY->SetTitle("#lower[-0.05]{(}1/#kern[0.1]{#scale[1.2]{#LT}}#lower[0.1]{#it{N}}#lower[0.5]{#scale[0.6]{#kern[-0.08]{part}}}#scale[1.2]{#GT}#lower[-0.05]{)}#kern[-0.1]{ }#scale[1.2]{#LT}d#it{N}_{ch}/d#kern[-0.08]{#it{#eta}}#scale[1.2]{#GT}#lower[0.05]{#scale[1.5]{#kern[-0.6]{#cbar}}}#lower[0.6]{#scale[0.6]{#it{#eta}_{cm}#kern[0.2]{#approx}#kern[0.2]{0}}}");
+    const char* ytitle = "#lower[-0.05]{(}1/#kern[0.1]{#scale[1.2]{#LT}}#lower[0.1]{#it{N}}#lower[0.5]{#scale[0.6]{#kern[-0.08]{part}}}#scale[1.2]{#GT}#lower[-0.05]{)}"
+      "#scale[0.5]{ }"
+      "#scale[1.2]{#LT}d#it{N}_{ch}/d#kern[-0.08]{#it{#eta}}#scale[1.2]{#GT}"
+      "#scale[0.5]{ }"
+      "#lower[0.05]{#scale[1.5]{#kern[-0.6]{#cbar}}}"
+      "#lower[0.2]{#scale[0.95]{#it{#eta}_{cm}#kern[0.2]{#approx}#kern[0.2]{0}}}";
+    gaY->SetTitle(ytitle);
     gaY->SetNdivisions(510);
     gaY->CenterTitle();
     gaY->SetTitleFont(43);
@@ -75,16 +81,16 @@ int pAdNdetaVsCMSE(bool onlyAA=false) {
     gaY->SetLabelOffset(0.01);
     gaY->Draw();
 
-    TGaxis* gaYR = new TGaxis(20000.0, 0.0, 20000.0, 14.0, 0.0, 7.0, 510, "+U");
+    auto* gaYR = new TGaxis(20000.0, 0.0, 20000.0, 14.0, 0.0, 7.0, 510, "+U");
     gaYR->Draw();
 
-    TLatex* lcms = new TLatex();
+    auto* lcms = new TLatex();
     lcms->SetTextFont(63);
     lcms->SetTextSize(25);
     lcms->SetTextAlign(32);
     lcms->DrawLatexNDC(0.90, 0.88, "CMS");
 
-    TLatex* lprelim = new TLatex();
+    auto* lprelim = new TLatex();
     lprelim->SetTextFont(53);
     lprelim->SetTextSize(18);
     lprelim->SetTextAlign(32);
@@ -98,7 +104,7 @@ int pAdNdetaVsCMSE(bool onlyAA=false) {
 
     if (!onlyAA) {
     
-    TGraphAsymmErrors* Graph_pp_UA1 = new TGraphAsymmErrors(7);
+      auto* Graph_pp_UA1 = new TGraphAsymmErrors(7);
     Graph_pp_UA1->SetName("Graph_pp_UA1");
     Graph_pp_UA1->SetMarkerStyle(33);
     Graph_pp_UA1->SetMarkerSize(size_l);
@@ -120,7 +126,7 @@ int pAdNdetaVsCMSE(bool onlyAA=false) {
     Graph_pp_UA1->SetPointError(6, 0, 0, 0.1, 0.1);
     Graph_pp_UA1->Draw("E1P");
 
-    TGraphAsymmErrors* Graph_pp_UA5 = new TGraphAsymmErrors(4);
+    auto* Graph_pp_UA5 = new TGraphAsymmErrors(4);
     Graph_pp_UA5->SetName("Graph_pp_UA5");
     Graph_pp_UA5->SetMarkerStyle(23);
     Graph_pp_UA5->SetMarkerSize(size_m);
@@ -136,7 +142,7 @@ int pAdNdetaVsCMSE(bool onlyAA=false) {
     Graph_pp_UA5->SetPointError(3, 0, 0, 0.05, 0.05);
     Graph_pp_UA5->Draw("E1P");
 
-    TGraphAsymmErrors* Graph_pp_CDF = new TGraphAsymmErrors(2);
+    auto* Graph_pp_CDF = new TGraphAsymmErrors(2);
     Graph_pp_CDF->SetName("Graph_pp_CDF");
     Graph_pp_CDF->SetMarkerStyle(20);
     Graph_pp_CDF->SetMarkerSize(size_s);
@@ -148,7 +154,7 @@ int pAdNdetaVsCMSE(bool onlyAA=false) {
     Graph_pp_CDF->SetPointError(1, 0, 0, 0.16, 0.16);
     Graph_pp_CDF->Draw("E1P");
 
-    TGraphAsymmErrors* Graph_pp_CMS = new TGraphAsymmErrors(3);
+    auto* Graph_pp_CMS = new TGraphAsymmErrors(3);
     Graph_pp_CMS->SetName("Graph_pp_CMS");
     Graph_pp_CMS->SetMarkerStyle(21);
     Graph_pp_CMS->SetMarkerSize(size_s);
@@ -162,7 +168,7 @@ int pAdNdetaVsCMSE(bool onlyAA=false) {
     Graph_pp_CMS->SetPointError(2, 0, 0, 0.23, 0.23);
     Graph_pp_CMS->Draw("E1P");
 
-    TGraphAsymmErrors* Graph_pp_ALICE = new TGraphAsymmErrors(2);
+    auto* Graph_pp_ALICE = new TGraphAsymmErrors(2);
     Graph_pp_ALICE->SetName("Graph_pp_ALICE");
     Graph_pp_ALICE->SetMarkerStyle(22);
     Graph_pp_ALICE->SetMarkerSize(size_m);
@@ -174,7 +180,7 @@ int pAdNdetaVsCMSE(bool onlyAA=false) {
     Graph_pp_ALICE->SetPointError(1, 0, 0, 0.12, 0.17);
     Graph_pp_ALICE->Draw("E1P");
 
-    TGraphAsymmErrors* Graph_pp_STAR = new TGraphAsymmErrors(1);
+    auto* Graph_pp_STAR = new TGraphAsymmErrors(1);
     Graph_pp_STAR->SetName("Graph_pp_STAR");
     Graph_pp_STAR->SetMarkerStyle(29);
     Graph_pp_STAR->SetMarkerSize(size_l);
@@ -198,7 +204,7 @@ int pAdNdetaVsCMSE(bool onlyAA=false) {
     // fit_nsd->SetParLimits(1,0,0);
     // fit_nsd->Draw("same");
 
-    TF1* fit_pp_nsd = new TF1("fit_pp_nsd", "[0]*pow(x*x/abs([1]),[2])", 40, 9000);
+    auto* fit_pp_nsd = new TF1("fit_pp_nsd", "[0]*pow(x*x/abs([1]),[2])", 40, 9000);
     fit_pp_nsd->SetLineWidth(1);
     fit_pp_nsd->SetLineColor(_PP_NSD_COLOUR);
     fit_pp_nsd->SetLineStyle(2);
@@ -213,7 +219,7 @@ int pAdNdetaVsCMSE(bool onlyAA=false) {
     fit_pp_nsd->SetParLimits(2, 0, 0);
     fit_pp_nsd->Draw("same");
 
-    TLegend* leg_pp_NSD = new TLegend(0.17, 0.64, 0.3, 0.92, NULL, "brNDC");
+    auto* leg_pp_NSD = new TLegend(0.17, 0.64, 0.3, 0.92, NULL, "brNDC");
     leg_pp_NSD->SetBorderSize(0);
     leg_pp_NSD->SetTextFont(43);
     leg_pp_NSD->SetTextSize(15);
@@ -228,7 +234,7 @@ int pAdNdetaVsCMSE(bool onlyAA=false) {
     leg_pp_NSD->AddEntry(Graph_pp_STAR, "STAR", "P");
     leg_pp_NSD->Draw();
 
-    TLatex* pp_nsd_fit_label = new TLatex(1500, 5.2, "#propto#scale[0.2]{ }#font[52]{s}_{_{NN}}^{0.110}");
+    auto* pp_nsd_fit_label = new TLatex(1500, 5.2, "#propto#scale[0.2]{ }#font[52]{s}_{_{NN}}^{0.110}");
     pp_nsd_fit_label->SetTextColor(_PP_NSD_COLOUR);
     pp_nsd_fit_label->SetTextFont(43);
     pp_nsd_fit_label->SetTextSize(25);
@@ -238,7 +244,7 @@ int pAdNdetaVsCMSE(bool onlyAA=false) {
     pp INEL data points
     ******************************************************/
 
-    TGraphAsymmErrors* Graph_pp_INEL_ISR = new TGraphAsymmErrors(5);
+    auto* Graph_pp_INEL_ISR = new TGraphAsymmErrors(5);
     Graph_pp_INEL_ISR->SetName("Graph_pp_INEL_ISR");
     Graph_pp_INEL_ISR->SetMarkerStyle(20);
     Graph_pp_INEL_ISR->SetMarkerSize(size_s);
@@ -256,7 +262,7 @@ int pAdNdetaVsCMSE(bool onlyAA=false) {
     Graph_pp_INEL_ISR->SetPointError(4, 0, 0, 0.1, 0.1);
     Graph_pp_INEL_ISR->Draw("E1P");
 
-    TGraphAsymmErrors* Graph_pp_INEL_UA5 = new TGraphAsymmErrors(4);
+    auto* Graph_pp_INEL_UA5 = new TGraphAsymmErrors(4);
     Graph_pp_INEL_UA5->SetName("Graph_pp_INEL_UA5");
     Graph_pp_INEL_UA5->SetMarkerStyle(23);
     Graph_pp_INEL_UA5->SetMarkerSize(size_m);
@@ -272,7 +278,7 @@ int pAdNdetaVsCMSE(bool onlyAA=false) {
     Graph_pp_INEL_UA5->SetPointError(3, 0, 0, 0.05, 0.05);
     Graph_pp_INEL_UA5->Draw("E1P");
 
-    TGraphErrors* Graph_pp_INEL_PHOBOS = new TGraphErrors(1);
+    auto* Graph_pp_INEL_PHOBOS = new TGraphErrors(1);
     Graph_pp_INEL_PHOBOS->SetName("Graph_pp_INEL_PHOBOS");
     Graph_pp_INEL_PHOBOS->SetMarkerStyle(33);
     Graph_pp_INEL_PHOBOS->SetMarkerSize(size_l);
@@ -282,7 +288,7 @@ int pAdNdetaVsCMSE(bool onlyAA=false) {
     Graph_pp_INEL_PHOBOS->SetPointError(0, 0, 0.117);
     Graph_pp_INEL_PHOBOS->Draw("E1P");
 
-    TGraphAsymmErrors* Graph_pp_INEL_ALICE = new TGraphAsymmErrors(3);
+    auto* Graph_pp_INEL_ALICE = new TGraphAsymmErrors(3);
     Graph_pp_INEL_ALICE->SetName("Graph_pp_INEL_ALICE");
     Graph_pp_INEL_ALICE->SetMarkerStyle(22);
     Graph_pp_INEL_ALICE->SetMarkerSize(size_m);
@@ -296,7 +302,7 @@ int pAdNdetaVsCMSE(bool onlyAA=false) {
     Graph_pp_INEL_ALICE->SetPointError(2, 0, 0, 0.18, 0.18);
     Graph_pp_INEL_ALICE->Draw("E1P");
 
-    TGraphErrors* Graph_pp_INEL_CMS = new TGraphErrors(1);
+    auto* Graph_pp_INEL_CMS = new TGraphErrors(1);
     Graph_pp_INEL_CMS->SetName("Graph_pp_INEL_CMS");
     Graph_pp_INEL_CMS->SetMarkerStyle(21);
     Graph_pp_INEL_CMS->SetMarkerSize(size_s);
@@ -306,7 +312,7 @@ int pAdNdetaVsCMSE(bool onlyAA=false) {
     Graph_pp_INEL_CMS->SetPointError(0, 0, 0.18);
     Graph_pp_INEL_CMS->Draw("E1P");
 
-    TLegend* leg_pp_INEL = new TLegend(0.17, 0.40, 0.30, 0.64, NULL, "brNDC");
+    auto* leg_pp_INEL = new TLegend(0.17, 0.40, 0.30, 0.64, NULL, "brNDC");
     leg_pp_INEL->SetBorderSize(0);
     leg_pp_INEL->SetTextFont(43);
     leg_pp_INEL->SetTextSize(15);
@@ -321,7 +327,7 @@ int pAdNdetaVsCMSE(bool onlyAA=false) {
     leg_pp_INEL->Draw();
 
     // pp INEL fit from Jan Fiete's compilation
-    TF1* fit_pp_inel = new TF1("fit_pp_inel", "[0]*(x*x)^[1]", 15, 18000);
+    auto* fit_pp_inel = new TF1("fit_pp_inel", "[0]*(x*x)^[1]", 15, 18000);
     fit_pp_inel->SetLineWidth(1);
     fit_pp_inel->SetLineColor(_PP_INEL_COLOUR);
     fit_pp_inel->SetLineStyle(2);
@@ -335,7 +341,7 @@ int pAdNdetaVsCMSE(bool onlyAA=false) {
     fit_pp_inel->SetParLimits(1, 0, 0);
     fit_pp_inel->Draw("same");
 
-    TLatex* pp_inel_fit_label = new TLatex(2500, 3.25, "#propto#scale[0.2]{ }#font[52]{s}_{_{NN}}^{0.103}");
+    auto* pp_inel_fit_label = new TLatex(2500, 3., "#propto#scale[0.2]{ }#font[52]{s}_{_{NN}}^{0.103}");
     pp_inel_fit_label->SetTextColor(_PP_INEL_COLOUR);
     pp_inel_fit_label->SetTextFont(43);
     pp_inel_fit_label->SetTextSize(25);
@@ -346,7 +352,7 @@ int pAdNdetaVsCMSE(bool onlyAA=false) {
     AA data points
     ******************************************************/
 
-    TGraphErrors* Graph_AA_NA50 = new TGraphErrors(1);
+    auto* Graph_AA_NA50 = new TGraphErrors(1);
     Graph_AA_NA50->SetName("Graph");
     Graph_AA_NA50->SetMarkerStyle(47);
     Graph_AA_NA50->SetMarkerSize(size_m);
@@ -356,7 +362,7 @@ int pAdNdetaVsCMSE(bool onlyAA=false) {
     Graph_AA_NA50->SetPointError(0, 0, 0.17);
     Graph_AA_NA50->Draw("E1P");
 
-    TGraphErrors* Graph_AA_STAR = new TGraphErrors(1);
+    auto* Graph_AA_STAR = new TGraphErrors(1);
     Graph_AA_STAR->SetName("Graph_AA_STAR");
     Graph_AA_STAR->SetLineWidth(1);
     Graph_AA_STAR->SetMarkerStyle(29);
@@ -367,7 +373,7 @@ int pAdNdetaVsCMSE(bool onlyAA=false) {
     Graph_AA_STAR->SetPointError(0, 0, 0.2209302);
     Graph_AA_STAR->Draw("E1P");
 
-    TGraphErrors* Graph_AA_PHENIX = new TGraphErrors(2);
+    auto* Graph_AA_PHENIX = new TGraphErrors(2);
     Graph_AA_PHENIX->SetName("Graph");
     Graph_AA_PHENIX->SetMarkerStyle(34);
     Graph_AA_PHENIX->SetMarkerSize(size_m);
@@ -391,7 +397,7 @@ int pAdNdetaVsCMSE(bool onlyAA=false) {
     Graph_AA_PHENIX->SetPointError(7, 0, 0.22);
     Graph_AA_PHENIX->Draw("E1P");
 
-    TGraphErrors* Graph_AA_BRAHMS = new TGraphErrors(2);
+    auto* Graph_AA_BRAHMS = new TGraphErrors(2);
     Graph_AA_BRAHMS->SetName("Graph");
     Graph_AA_BRAHMS->SetMarkerStyle(23);
     Graph_AA_BRAHMS->SetMarkerSize(size_m);
@@ -403,7 +409,7 @@ int pAdNdetaVsCMSE(bool onlyAA=false) {
     Graph_AA_BRAHMS->SetPointError(1, 0, 0.32);
     Graph_AA_BRAHMS->Draw("E1P");
 
-    TGraphErrors* Graph_AA_PHOBOS = new TGraphErrors(5);
+    auto* Graph_AA_PHOBOS = new TGraphErrors(5);
     Graph_AA_PHOBOS->SetName("Graph_AA_PHOBOS");
     Graph_AA_PHOBOS->SetMarkerStyle(33);
     Graph_AA_PHOBOS->SetMarkerSize(size_l);
@@ -429,7 +435,7 @@ int pAdNdetaVsCMSE(bool onlyAA=false) {
     Double_t e_AA_502_ALICE = 0.3 / TMath::Sqrt(2.0);
     Double_t v_AA_536_ALICE = 10.7;
     Double_t e_AA_536_ALICE = 0.3;
-    TGraphErrors* Graph_AA_ALICE = new TGraphErrors();
+    auto* Graph_AA_ALICE = new TGraphErrors();
     Graph_AA_ALICE->SetName("Graph_AA_ALICE");
     Graph_AA_ALICE->SetMarkerStyle(26);
     Graph_AA_ALICE->SetMarkerSize(size_m);
@@ -451,7 +457,7 @@ int pAdNdetaVsCMSE(bool onlyAA=false) {
     // 4-6%          8.2 +/- 0.4
     Double_t v_AA_ATLAS = (8.8 + 8.4 + 8.2) / 3.0;
     Double_t e_AA_ATLAS = 0.4 / TMath::Sqrt(3.0);
-    TGraphErrors* Graph_AA_ATLAS = new TGraphErrors(1);
+    auto* Graph_AA_ATLAS = new TGraphErrors(1);
     Graph_AA_ATLAS->SetName("Graph_AA_ATLAS");
     Graph_AA_ATLAS->SetMarkerStyle(24);
     Graph_AA_ATLAS->SetMarkerSize(size_s);
@@ -468,7 +474,7 @@ int pAdNdetaVsCMSE(bool onlyAA=false) {
     //  0.0-0.5 8.45 +/- 0.29
     Double_t v_AA_CMS = (8.47 + 8.45) / 2.0;
     Double_t e_AA_CMS = 0.29 / TMath::Sqrt(2.0);
-    TGraphErrors* Graph_AA_CMS = new TGraphErrors(3);
+    auto* Graph_AA_CMS = new TGraphErrors(3);
     Graph_AA_CMS->SetName("Graph_AA_CMS");
     Graph_AA_CMS->SetMarkerStyle(21);
     Graph_AA_CMS->SetMarkerSize(size_s);
@@ -482,7 +488,7 @@ int pAdNdetaVsCMSE(bool onlyAA=false) {
     Graph_AA_CMS->SetPointError(2, 0.0, 0.15*2);
     Graph_AA_CMS->Draw("E1P");
 
-    TGraphErrors* Graph_AA_CMS_NEW = new TGraphErrors(1);
+    auto* Graph_AA_CMS_NEW = new TGraphErrors(1);
     Graph_AA_CMS_NEW->SetName("Graph_AA_CMS_NEW");
     Graph_AA_CMS_NEW->SetMarkerStyle(21);
     Graph_AA_CMS_NEW->SetMarkerSize(size_s);
@@ -490,9 +496,11 @@ int pAdNdetaVsCMSE(bool onlyAA=false) {
     Graph_AA_CMS_NEW->SetLineColor(_HIGHLIGHT_COLOUR);
     Graph_AA_CMS_NEW->SetPoint(1, 5362.0, new_result*2);
     Graph_AA_CMS_NEW->SetPointError(1, 0.0, new_err*2);
-    Graph_AA_CMS_NEW->Draw("E1P");
+    if (!nonewr)
+      Graph_AA_CMS_NEW->Draw("E1P");
 
-    TLegend* leg_AA = new TLegend(0.34, 0.92-0.045*10, 0.47, 0.92, NULL, "brNDC");
+    int nline = nonewr?9:11;
+    auto* leg_AA = new TLegend(0.34, 0.92-0.04*nline, 0.47, 0.92, NULL, "brNDC");
     leg_AA->SetBorderSize(0);
     leg_AA->SetTextFont(43);
     leg_AA->SetTextSize(15);
@@ -507,8 +515,10 @@ int pAdNdetaVsCMSE(bool onlyAA=false) {
     leg_AA->AddEntry(Graph_AA_STAR, "STAR", "P");
     leg_AA->AddEntry(Graph_AA_PHOBOS, "PHOBOS", "P");
     leg_AA->AddEntry(Graph_AA_NA50, "NA50", "P");
-    leg_AA->AddEntry(Graph_AA_CMS_NEW, "OO 0-5\%", "P");
-    leg_AA->AddEntry((TObject*)0, "#lower[-0.3]{(This work)}", NULL);
+    if (!nonewr) {
+      leg_AA->AddEntry(Graph_AA_CMS_NEW, "OO 0-5\%", "P");
+      leg_AA->AddEntry((TObject*)0, "(This work)", NULL);
+    }
     leg_AA->Draw();
 
     // AA fit, log function
@@ -517,7 +527,7 @@ int pAdNdetaVsCMSE(bool onlyAA=false) {
     // fit_AA_log->SetLineStyle(9);
     // fit_AA_log->Draw("same");
 
-    TF1* fit_AA = new TF1("fit_AA", "[0]*pow(x*x/abs([1]),[2])", 5, 9000);
+    auto* fit_AA = new TF1("fit_AA", "[0]*pow(x*x/abs([1]),[2])", 5, 7000);
     fit_AA->SetLineWidth(1);
     fit_AA->SetLineColor(_AA_COLOUR);
     fit_AA->SetLineStyle(2);
@@ -532,13 +542,13 @@ int pAdNdetaVsCMSE(bool onlyAA=false) {
     fit_AA->SetParLimits(2, 0, 0);
     fit_AA->Draw("same");
 
-    TLatex* AA_fit_label = new TLatex(2500, 7.5, "#propto#scale[0.2]{ }#font[52]{s}_{_{NN}}^{0.158}");
+    auto* AA_fit_label = new TLatex(2500, 7.2, "#propto#scale[0.2]{ }#font[52]{s}_{_{NN}}^{0.158}");
     AA_fit_label->SetTextColor(_AA_COLOUR);
     AA_fit_label->SetTextFont(43);
     AA_fit_label->SetTextSize(25);
     AA_fit_label->Draw();
 
-    TLatex* AA_label = new TLatex(450, 5.0, "#font[62]{Central AA}");
+    auto* AA_label = new TLatex(450, 5.0, "#font[62]{Central AA}");
     AA_label->SetTextColor(_AA_COLOUR);
     AA_label->SetTextFont(43);
     AA_label->SetTextSize(18);
@@ -560,7 +570,7 @@ int pAdNdetaVsCMSE(bool onlyAA=false) {
     Double_t et2_PHOBOS = v_dAu_PHOBOS / (v_meanNPart_200 * v_meanNPart_200) * e_meanNPart_200; // term 2 in error propagation
     v_dAu_PHOBOS /= (0.5 * v_meanNPart_200);
     e_dAu_PHOBOS = TMath::Sqrt(et1_PHOBOS * et1_PHOBOS + et2_PHOBOS * et2_PHOBOS);
-    TGraphErrors* Graph_dAu_PHOBOS = new TGraphErrors(1);
+    auto* Graph_dAu_PHOBOS = new TGraphErrors(1);
     Graph_dAu_PHOBOS->SetName("Graph_dAu_PHOBOS");
     Graph_dAu_PHOBOS->SetMarkerStyle(27);
     Graph_dAu_PHOBOS->SetMarkerSize(size_l);
@@ -579,7 +589,7 @@ int pAdNdetaVsCMSE(bool onlyAA=false) {
     v_pA_ALICE *= 2.0;
     e_pA_ALICE *= 2.0;
 
-    TGraphErrors* Graph_pA_ALICE = new TGraphErrors(1);
+    auto* Graph_pA_ALICE = new TGraphErrors(1);
     Graph_pA_ALICE->SetName("Graph_pA_ALICE");
     Graph_pA_ALICE->SetMarkerStyle(22);
     Graph_pA_ALICE->SetMarkerSize(size_m);
@@ -592,7 +602,7 @@ int pAdNdetaVsCMSE(bool onlyAA=false) {
     Double_t v_pA_CMS_5020 = 2.23319 * 2; // 17.3072/7.75
     Double_t v_pA_CMS_8160 = 2.47493 * 2; // 20.0964/8.12
 
-    TGraphErrors* Graph_pA_CMS = new TGraphErrors(2);
+    auto* Graph_pA_CMS = new TGraphErrors(2);
     Graph_pA_CMS->SetName("Graph_pA_CMS");
     Graph_pA_CMS->SetMarkerStyle(21);
     Graph_pA_CMS->SetMarkerSize(size_s);
@@ -604,7 +614,7 @@ int pAdNdetaVsCMSE(bool onlyAA=false) {
     Graph_pA_CMS->SetPointError(1, 0.0, 0.068 * 2);
     Graph_pA_CMS->Draw("E1P");
 
-    TLegend* leg_pA = new TLegend(0.51, 0.76, 0.64, 0.92, NULL, "brNDC");
+    auto* leg_pA = new TLegend(0.51, 0.76, 0.64, 0.92, NULL, "brNDC");
     leg_pA->SetBorderSize(0);
     leg_pA->SetTextFont(43);
     leg_pA->SetTextSize(15);
@@ -633,7 +643,7 @@ int pAdNdetaVsCMSE(bool onlyAA=false) {
     // 0.807607 factor from HIJING simulation, 2.0 for h-
     Double_t e_pA_NA35 = hijcorr * 2. * TMath::Sqrt(0.0580 * 0.0580 + 0.0557 * 0.0557 + 0.0507 * 0.0507) / 3.0 / (0.5 * 4.623);
     e_pA_NA35 = e_pA_NA35 * (1 + hijrele);
-    TGraphErrors* Graph_pA_NA35 = new TGraphErrors(1);
+    auto* Graph_pA_NA35 = new TGraphErrors(1);
     Graph_pA_NA35->SetName("Graph_pA_NA35");
     Graph_pA_NA35->SetMarkerStyle(20);
     Graph_pA_NA35->SetMarkerSize(size_s);
@@ -661,7 +671,7 @@ int pAdNdetaVsCMSE(bool onlyAA=false) {
     e_pA_E178[1] = TMath::Sqrt(0.06 * 0.06 + 0.06 * 0.06) / 2;
     v_pA_E178[2] = 2 * gen_corr * ((0.18 + 0.43 * nu - 0.04 * nu * nu) / (3.08 - 2.76) + (0.08 + 0.51 * nu - 0.07 * nu * nu) / (3.38 - 3.08)) / 2 / (nu + 1);
     e_pA_E178[2] = TMath::Sqrt(0.06 * 0.06 + 0.06 * 0.06) / 2;
-    TGraphErrors* Graph_pA_E178 = new TGraphErrors(3);
+    auto* Graph_pA_E178 = new TGraphErrors(3);
     Graph_pA_E178->SetName("Graph_pA_E178");
     Graph_pA_E178->SetMarkerStyle(23);
     Graph_pA_E178->SetMarkerSize(size_m);
@@ -675,7 +685,7 @@ int pAdNdetaVsCMSE(bool onlyAA=false) {
     Graph_pA_E178->SetPointError(2, 0.0, e_pA_E178[2] * 0.06);
     Graph_pA_E178->Draw("E1P");
 
-    TLegend* leg_pA_INEL = new TLegend(0.51, 0.64, 0.64, 0.76, NULL, "brNDC");
+    auto* leg_pA_INEL = new TLegend(0.51, 0.64, 0.64, 0.76, NULL, "brNDC");
     leg_pA_INEL->SetBorderSize(0);
     leg_pA_INEL->SetTextFont(43);
     leg_pA_INEL->SetTextSize(15);
@@ -728,12 +738,15 @@ int pAdNdetaVsCMSE(bool onlyAA=false) {
     c->Modified();
     c->cd();
     c->SetSelected(c);
-    if(!onlyAA) {
-    c->SaveAs("figspdf/results/dNdeta_vs_CMSE.pdf");
-    c->SaveAs("figs/results/dNdeta_vs_CMSE.pdf");
-    } else {
-    c->SaveAs("figs/results/dNdeta_vs_CMSE-onlyAA.pdf");
-    }
+    std::string outputname = "figs/results/dNdeta_vs_CMSE";
+    if (nonewr) outputname += "-nonewresult";
+    if (onlyAA) outputname += "-onlyAA";
+    outputname += ".pdf";
+    c->SaveAs(outputname.c_str());
+
+    delete c;
+    delete frame;
+    
     return 0;
 }
 
@@ -758,6 +771,7 @@ CGC: http://arxiv.org/pdf/1209.2001v2.pdf
 int main() {
     pAdNdetaVsCMSE();
     pAdNdetaVsCMSE(true);
+    pAdNdetaVsCMSE(false, true);
 
     return 0;
 }

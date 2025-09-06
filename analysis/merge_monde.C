@@ -65,7 +65,7 @@ int macro(std::string input_corr,
   std::vector<TH1D*> h1WEfinal(icomb.n(), 0), h1WEratio(icomb.n(), 0);
   for(int j=0; j<icomb.n(); j++)
     {
-      h1WEfinal[j] = xjjroot::gethist<TH1D>("output/correction-"+input_corr+"-"+icomb.value[j][0]+".root::h1WEfinal");
+      h1WEfinal[j] = xjjana::getobj<TH1D>("output/correction-"+input_corr+"-"+icomb.value[j][0]+".root::h1WEfinal");
       h1WEfinal[j]->SetName(Form("%s-%s", h1WEfinal[j]->GetName(), icomb.value[j][0].c_str()));
       setzero(h1WEfinal[j], icomb.value[j][0]);
       goodresult(h1WEfinal[j]);

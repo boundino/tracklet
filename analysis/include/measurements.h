@@ -23,9 +23,9 @@ TGraphErrors* MSRMNT##_nnpart() {                                             \
    g##MSRMNT##_nnpart->SetName("g" #MSRMNT "_nnpart");                        \
    for (std::size_t i=0; i<MSRMNT##_size; ++i) {                              \
       g##MSRMNT##_nnpart->SetPoint(i, MSRMNT##_cent[i],                       \
-         MSRMNT##_raw[i]/MSRMNT##_npart[i]);                                  \
+         MSRMNT##_npart[i]?MSRMNT##_raw[i]/MSRMNT##_npart[i]: 0);             \
       g##MSRMNT##_nnpart->SetPointError(i, 0,                                 \
-         MSRMNT##_rawerr[i]/MSRMNT##_npart[i]); }                             \
+         MSRMNT##_npart[i]?MSRMNT##_rawerr[i]/MSRMNT##_npart[i]: 0); }        \
    return g##MSRMNT##_nnpart; }                                               \
 TGraphErrors* MSRMNT##_n2a_x_npart() {                                        \
    TGraphErrors* g##MSRMNT##_n2a_x_npart = new TGraphErrors(MSRMNT##_size);   \
@@ -41,9 +41,9 @@ TGraphErrors* MSRMNT##_nnpart_x_npart() {                                     \
    g##MSRMNT##_nnpart_x_npart->SetName("g" #MSRMNT "_nnpart_x_npart");        \
    for (std::size_t i=0; i<MSRMNT##_size; ++i) {                              \
       g##MSRMNT##_nnpart_x_npart->SetPoint(i, MSRMNT##_npart[i],              \
-         MSRMNT##_raw[i]/MSRMNT##_npart[i]);                                  \
+         MSRMNT##_npart[i]?MSRMNT##_raw[i]/MSRMNT##_npart[i]: 0);             \
       g##MSRMNT##_nnpart_x_npart->SetPointError(i, MSRMNT##_nparterr[i],      \
-         MSRMNT##_rawerr[i]/MSRMNT##_npart[i]); }                             \
+         MSRMNT##_npart[i]?MSRMNT##_rawerr[i]/MSRMNT##_npart[i]: 0); }        \
    return g##MSRMNT##_nnpart_x_npart; }                                       \
 TGraphErrors* MSRMNT##_n2a_x_npart2a() {                                      \
    TGraphErrors* g##MSRMNT##_n2a_x_npart2a =                                  \
@@ -63,10 +63,10 @@ TGraphErrors* MSRMNT##_nnpart_x_npart2a() {                                   \
    for (std::size_t i=0; i<MSRMNT##_size; ++i) {                              \
       g##MSRMNT##_nnpart_x_npart2a->SetPoint(i,                               \
          MSRMNT##_npart[i]/MSRMNT##_2a,                                       \
-         MSRMNT##_raw[i]/MSRMNT##_npart[i]);                                  \
+         MSRMNT##_npart[i]?MSRMNT##_raw[i]/MSRMNT##_npart[i]: 0);             \
       g##MSRMNT##_nnpart_x_npart2a->SetPointError(i,                          \
          MSRMNT##_nparterr[i]/MSRMNT##_2a,                                    \
-         MSRMNT##_rawerr[i]/MSRMNT##_npart[i]); }                             \
+         MSRMNT##_npart[i]?MSRMNT##_rawerr[i]/MSRMNT##_npart[i]: 0); }        \
    return g##MSRMNT##_nnpart_x_npart2a; }                                     \
  TGraphErrors* MSRMNT##_nnpart_x_ncollnpart() {                         \
    TGraphErrors* g##MSRMNT##_nnpart_x_ncollnpart =                      \
@@ -74,13 +74,13 @@ TGraphErrors* MSRMNT##_nnpart_x_npart2a() {                                   \
    g##MSRMNT##_nnpart_x_ncollnpart->SetName("g" #MSRMNT "_nnpart_x_ncollnpart"); \
    for (std::size_t i=0; i<MSRMNT##_size; ++i) {                        \
      g##MSRMNT##_nnpart_x_ncollnpart->SetPoint(i,                       \
-                                               MSRMNT##_ncoll[i]/MSRMNT##_npart[i], \
-                                               MSRMNT##_raw[i]/MSRMNT##_npart[i]); \
+         MSRMNT##_npart[i]?MSRMNT##_ncoll[i]/MSRMNT##_npart[i]: 0, \
+         MSRMNT##_npart[i]?MSRMNT##_raw[i]/MSRMNT##_npart[i]: 0);             \
      auto ncollnparterr = ((MSRMNT##_ncoll[i] + MSRMNT##_ncollerr[i]) / (MSRMNT##_npart[i] - MSRMNT##_nparterr[i]) \
                            - (MSRMNT##_ncoll[i] - MSRMNT##_ncollerr[i]) / (MSRMNT##_npart[i] + MSRMNT##_nparterr[i])) / 2.; \
      g##MSRMNT##_nnpart_x_ncollnpart->SetPointError(i,                  \
-                                                    ncollnparterr,      \
-                                                    MSRMNT##_rawerr[i]/MSRMNT##_npart[i]); } \
+         ncollnparterr,      \
+         MSRMNT##_npart[i]?MSRMNT##_rawerr[i]/MSRMNT##_npart[i]: 0); }        \
    return g##MSRMNT##_nnpart_x_ncollnpart; }                            \
  TGraphErrors* MSRMNT##_nnpart_x_ncollnpartnpart() {                    \
  TGraphErrors* g##MSRMNT##_nnpart_x_ncollnpartnpart =                   \
@@ -88,13 +88,13 @@ TGraphErrors* MSRMNT##_nnpart_x_npart2a() {                                   \
  g##MSRMNT##_nnpart_x_ncollnpartnpart->SetName("g" #MSRMNT "_nnpart_x_ncollnpartnpart"); \
  for (std::size_t i=0; i<MSRMNT##_size; ++i) {                          \
    g##MSRMNT##_nnpart_x_ncollnpartnpart->SetPoint(i,                    \
-                                                  MSRMNT##_ncoll[i]/MSRMNT##_npart[i]/MSRMNT##_npart[i], \
-                                                  MSRMNT##_raw[i]/MSRMNT##_npart[i]); \
+         MSRMNT##_ncoll[i]/MSRMNT##_npart[i]/MSRMNT##_npart[i], \
+         MSRMNT##_npart[i]?MSRMNT##_raw[i]/MSRMNT##_npart[i]: 0);             \
    auto ncollnpartnparterr = ((MSRMNT##_ncoll[i] + MSRMNT##_ncollerr[i]) / (MSRMNT##_npart[i] - MSRMNT##_nparterr[i]) / (MSRMNT##_npart[i] - MSRMNT##_nparterr[i]) \
                               - (MSRMNT##_ncoll[i] - MSRMNT##_ncollerr[i]) / (MSRMNT##_npart[i] + MSRMNT##_nparterr[i]) / (MSRMNT##_npart[i] + MSRMNT##_nparterr[i])) / 2.; \
    g##MSRMNT##_nnpart_x_ncollnpartnpart->SetPointError(i,               \
-                                                       ncollnpartnparterr, \
-                                                       MSRMNT##_rawerr[i]/MSRMNT##_npart[i]); } \
+         ncollnpartnparterr, \
+         MSRMNT##_npart[i]?MSRMNT##_rawerr[i]/MSRMNT##_npart[i]: 0); }        \
  return g##MSRMNT##_nnpart_x_ncollnpartnpart; }                         \
  
 std::vector<float> cms_pbpb_2p76_raw = {

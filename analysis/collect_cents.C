@@ -75,7 +75,6 @@ const float ncollerr[NCENT] = {
 };
 
 void printnpart();
-template <class T> void cleangrzero(T* gr);
 void drawdNdeta(xjjroot::mypdf& pdf, std::string tag);
 void moveleg_and_draw(TLegend* leg, float x1=-1, float y2=-1);
 
@@ -248,7 +247,7 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
   xjjroot::setleg(lcms, 0.034);
   lcms->AddEntry((TObject*)0, "#bf{CMS}", NULL);
   lcms->AddEntry(g_nnpart_x_npart, "OO 5.36 TeV", "p");
-  lcms->AddEntry((TObject*)0, "(This analysis)", NULL);
+  lcms->AddEntry((TObject*)0, "(This work)", NULL);
   lcms->AddEntry(gcms_pbpb_5p36, "PbPb 5.36 TeV", "p");
   // lcms->AddEntry(gcms_pbpb_2p76, "PbPb 2.76 TeV", "p");
   lcms->AddEntry(gcms_xexe_5p44, "XeXe 5.44 TeV", "p");
@@ -285,17 +284,22 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
   lmc->AddEntry(gangantyr_oo_5p36, get_mc_tex("angantyr").c_str(), "l");
   lmc->AddEntry(gamptnm_oo_5p36, get_mc_tex("amptnm").c_str(), "l");
   lmc->AddEntry(gamptsm_oo_5p36, get_mc_tex("amptsm").c_str(), "l");
-  // lmc->AddEntry(ghydjet_oo_5p36, get_mc_tex("hydjet").c_str(), "l");
   lmc->AddEntry(gepos_oo_5p36, get_mc_tex("epos").c_str(), "l");
+  // lmc->AddEntry(ghydjet_oo_5p36, get_mc_tex("hydjet").c_str(), "l");
   lmc->Draw();
+
+  auto* ldata = new TLegend(0., 0., 0.3, hline);
+  xjjroot::setleg(ldata, 0.037);
+  ldata->AddEntry(g_nnpart_x_npart, "Data", "p");
+  ldata->Draw();
   
   auto* lmodel = new TLegend(0., 0., 0.3, hline*4.1);
   xjjroot::setleg(lmodel, 0.037);
-  lmodel->AddEntry(g_nnpart_x_npart, "Data", "p");
-  lmodel->AddEntry((TObject*)0, "#it{Trajectum} 6.8 TeV", NULL);
-  lmodel->AddEntry(gnleft_oo_6p8, "#scale[0.9]{NLEFT}", "lf");
-  lmodel->AddEntry(gpgcm_oo_6p8, "#scale[0.9]{PGCM}", "lf");
+  lmodel->AddEntry((TObject*)0, "", NULL);
+  lmodel->AddEntry(gnleft_oo_5p36, "#scale[0.9]{NLEFT}", "lf");
+  lmodel->AddEntry(gpgcm_oo_5p36, "#scale[0.9]{PGCM}", "lf");
   lmodel->Draw();
+  auto ttraj = xjjroot::drawtex(0, 0, "#bf{#it{Trajectum}}", 0.037, 13);  
   
   xjjroot::setgstyle(1);
   
@@ -327,8 +331,6 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
 
   watermark_inner(ismc);  
 
-  // moveleg_and_draw(lcms, 0.58, 0.42);
-  // moveleg_and_draw(lalice, 0.22, 0.76);
   moveleg_and_draw(lcms, 0.55, 0.4);
   moveleg_and_draw(lalice, 0.25, lcms->GetY2NDC()-hline);
   
@@ -367,28 +369,58 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
   watermark_inner(ismc);
 
   xjjroot::rewidthleg(lmc, 1);
-  xjjroot::autolegndraw(lmc, 0.25, 0.80);
+  xjjroot::autoleg_n_draw(lmc, 0.25, 0.80);
 
   pdf.write(Form("figs/results/merged-%s-midy-int1-mc.pdf", label.c_str()), "Q");
  
+  auto* hframe_zoom = new TH1F("hframe_zoom", "", 1, 25, 100);
+  xjjroot::sethempty(hframe_zoom, 0, 0.2);
+  htitle(hframe_zoom, ";Centrality (%);" + _t_dNdeta + "#scale[0.5]{ }" + _t_eta0p5);
+  hrange(hframe_zoom, 0.1, 200);
+  auto* axis_zoom = new TGaxis(hframe_zoom->GetXaxis()->GetXmax(), hframe_zoom->GetYaxis()->GetXmin(), hframe_zoom->GetXaxis()->GetXmin(), hframe_zoom->GetYaxis()->GetXmin(),
+                               100 - hframe_zoom->GetXaxis()->GetXmax(), 100 - hframe_zoom->GetXaxis()->GetXmin(), 510, "-"); axis_zoom->SetLabelFont(42);
+  // axis_zoom->SetLabelOffset(hframe_zoom->GetXaxis()->GetLabelOffset());
+  axis_zoom->SetLabelOffset(-0.042);
+  axis_zoom->SetLabelSize(hframe_zoom->GetXaxis()->GetLabelSize());
+  axis_zoom->SetTitleSize(hframe_zoom->GetXaxis()->GetTitleSize());
+  hframe_zoom->SetLabelOffset(999, "X"); hframe_zoom->SetTickLength(0, "X");
+
   gStyle->SetHatchesSpacing(1);
   gStyle->SetHatchesLineWidth(2);
-  hframe->Draw();
-  axis->Draw();
-  gnleft_oo_6p8->Draw("3 same");
-  gpgcm_oo_6p8->Draw("3 same");
-  gnleft_oo_6p8->Draw("cX same");
-  gpgcm_oo_6p8->Draw("cX same");
+  hframe_zoom->Draw();
+  axis_zoom->Draw();
+  DRAW_MC();
+  gnleft_oo_5p36->Draw("3 same");
+  gpgcm_oo_5p36->Draw("3 same");
+  gnleft_oo_5p36->Draw("cX same");
+  gpgcm_oo_5p36->Draw("cX same");
   g->Draw("3 same");
   g->Draw("pX same");
   watermark_inner(ismc);
 
-  // xjjroot::rewidthleg(lmc, 1);
-  // xjjroot::autolegndraw(lmc, 0.25, 0.80);
-  // xjjroot::autolegndraw(lmodel, 0.25, lmc->GetY1NDC()-0.01);
-  xjjroot::autolegndraw(lmodel, 0.25, 0.75);
+  xjjroot::autoleg_n_draw(lmc, 0.25, 0.80);
+  xjjroot::autoleg_n_draw(lmodel, 0.25, lmc->GetY1NDC()-0.01);
+  xjjroot::movetex_n_draw(ttraj, 0.255, lmc->GetY1NDC()-0.01);
 
-  pdf.write(Form("figs/results/merged-%s-midy-int1-tra.pdf", label.c_str()), "Q");
+  pdf.write(Form("figs/results/merged-%s-midy-int1-theory.pdf", label.c_str()), "Q");
+ 
+  gStyle->SetHatchesSpacing(1);
+  gStyle->SetHatchesLineWidth(2);
+  hframe_zoom->Draw();
+  axis_zoom->Draw();
+  gnleft_oo_5p36->Draw("3 same");
+  gpgcm_oo_5p36->Draw("3 same");
+  gnleft_oo_5p36->Draw("cX same");
+  gpgcm_oo_5p36->Draw("cX same");
+  g->Draw("3 same");
+  g->Draw("pX same");
+  watermark_inner(ismc);
+
+  xjjroot::autoleg_n_draw(ldata, 0.25, 0.70);
+  xjjroot::autoleg_n_draw(lmodel, 0.25, ldata->GetY1NDC()-0.01);
+  xjjroot::movetex_n_draw(ttraj, 0.255, ldata->GetY1NDC()-0.01);
+
+  pdf.write(Form("figs/results/merged-%s-midy-int1-traj.pdf", label.c_str()), "Q");
  
   
   //
@@ -440,10 +472,9 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
 
   watermark_inner(ismc);
 
-  moveleg_and_draw(lcms, 0.22, 0.75);
-  moveleg_and_draw(lalice, 0.22, lcms->GetY1NDC() - 0.5*hline);
+  moveleg_and_draw(lcms, 0.25, 0.75);
+  moveleg_and_draw(lalice, lcms->GetX1NDC(), lcms->GetY1NDC() - 0.5*hline);
   
-  // Figure 2b
   pdf.write(Form("figs/results/merged-%s-midy2a-int1.pdf", label.c_str()), "Q");
   auto* h_g_n2a = new TH1F("h_g_n2a", ";;", 20, 0, 100);
   for (int i=0; i<g_n2a->GetN(); i++) {
@@ -468,13 +499,19 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
   axis2->Draw();
   MAKE_SET_MC(_n2a);
   DRAW_MC(_n2a);
+  gnleft_oo_5p36_n2a->Draw("3 same");
+  gpgcm_oo_5p36_n2a->Draw("3 same");
+  gnleft_oo_5p36_n2a->Draw("cX same");
+  gpgcm_oo_5p36_n2a->Draw("cX same");
   g_n2a->Draw("3 same"); g_n2a->Draw("pX same");
   watermark_inner(ismc);
 
   xjjroot::rewidthleg(lmc, 1);
-  xjjroot::autolegndraw(lmc, 0.25, 0.80);
+  xjjroot::autoleg_n_draw(lmc, 0.25, 0.80);
+  xjjroot::autoleg_n_draw(lmodel, 0.25, lmc->GetY1NDC()-0.01);
+  xjjroot::movetex_n_draw(ttraj, 0.255, lmc->GetY1NDC()-0.01);
 
-  pdf.write(Form("figs/results/merged-%s-midy2a-int1-mc.pdf", label.c_str()), "Q");
+  pdf.write(Form("figs/results/merged-%s-midy2a-int1-theory.pdf", label.c_str()), "Q");
   
   //  
   auto* gcms_pbpb_2p76_nnpart_x_npart = cms_pbpb_2p76_nnpart_x_npart();
@@ -551,13 +588,19 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
   g_nnpart_x_npart->Draw("3 same");
   xjjana::drawgroutline(g_nnpart_x_npart, COLOUR0, 2, 1);
   MAKE_SET_MC(_nnpart_x_npart);
+  gnleft_oo_5p36_nnpart_x_npart->Draw("3 same");
+  gpgcm_oo_5p36_nnpart_x_npart->Draw("3 same");
   DRAW_MC(_nnpart_x_npart);
+  gnleft_oo_5p36_nnpart_x_npart->Draw("cX same");
+  gpgcm_oo_5p36_nnpart_x_npart->Draw("cX same");
   g_nnpart_x_npart->Draw("pX same");
   watermark_inner(ismc);
   
   moveleg_and_draw(lnpart, 0.23, 0.78);
   xjjroot::rewidthleg(lmc, 2);
-  xjjroot::autolegndraw(lmc, 0.28, 0.35);
+  xjjroot::autoleg_n_draw(lmc, 0.28, 0.35);
+  xjjroot::autoleg_n_draw(lmodel, 0.23, lnpart->GetY1NDC()-0.03);
+  xjjroot::movetex_n_draw(ttraj, 0.235, lnpart->GetY1NDC()-0.03);
 
   pdf.write(Form("figs/results/merged-%s-midynorm-int1-mc.pdf", label.c_str()), "Q");
   
@@ -637,7 +680,7 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
   watermark_inner(ismc);
   
   moveleg_and_draw(lnpart, 0.23, 0.78);
-  xjjroot::autolegndraw(lmc, 0.28, 0.35);
+  xjjroot::autoleg_n_draw(lmc, 0.28, 0.35);
 
   pdf.write(Form("figs/results/merged-%s-midynorm2a-int1-mc.pdf", label.c_str()), "Q");
   
@@ -794,8 +837,8 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
 
   watermark_inner(ismc);
 
-  moveleg_and_draw(lcms, 0.22, 0.75);
-  moveleg_and_draw(lalice, 0.22, lcms->GetY1NDC() - 0.5*hline);
+  moveleg_and_draw(lcms, 0.25, 0.75);
+  moveleg_and_draw(lalice, lcms->GetX1NDC(), lcms->GetY1NDC() - 0.5*hline);
   
   pdf.write(Form("figs/results/merged-%s-midynorm2a2a-int1.pdf", label.c_str()), "Q");
   
@@ -809,7 +852,7 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
   watermark_inner(ismc);
   
   xjjroot::rewidthleg(lmc, 1);
-  xjjroot::autolegndraw(lmc, 0.25, 0.80);
+  xjjroot::autoleg_n_draw(lmc, 0.25, 0.80);
 
   pdf.write("", "Q");
 
@@ -843,10 +886,11 @@ public:
   // 0x[ncol]
   spectrum(std::string filename, std::string title, float xleg, float yleg, float wcol=0.2, uint8_t option=0x01);
   void style(int color, Style_t ms);
-  void setgcolor(std::vector<int> color);
+  void setgcolor(std::vector<int> color = {});
   void draw_leg() { resize_leg(); leg->Draw(); }
   void set_tleg(float tleg) { resize_leg(-1, -1, tleg); }
   void move_leg(float xleg=-1, float yleg=-1) { resize_leg(xleg, yleg); }
+  void reset_fhleg(float fhleg = 1.1) { if (fhleg > 0) { fhleg_ = fhleg; } resize_leg(); }
   TH1D* hsym;
   TGraphErrors* gsyst;
   std::vector<TGraphErrors*> gh1WGhadron;
@@ -867,7 +911,7 @@ void spectrum::resize_leg(float xleg, float yleg, float tleg) {
   if (yleg > 0) yleg_ = yleg;
   leg->SetTextSize(tleg_);  
   auto ng = gh1WGhadron.size();
-  float hleg = tleg_*fhleg_*std::min((int)std::ceil((ng+2)/ncol_), 6);
+  float hleg = tleg_ * fhleg_ * std::min((int)std::ceil((ng+2)/ncol_), 6);
   leg->SetY2NDC(yleg_);
   leg->SetY1NDC(yleg_-hleg);
   leg->SetX1NDC(xleg_);
@@ -875,10 +919,10 @@ void spectrum::resize_leg(float xleg, float yleg, float tleg) {
 }
 
 spectrum::spectrum(std::string filename, std::string title, float xleg, float yleg, float wcol, uint8_t option) :
-  xleg_(xleg), yleg_(yleg), wcol_(wcol), tleg_(0.038), fhleg_(1.05) {
+  xleg_(xleg), yleg_(yleg), wcol_(wcol), tleg_(0.038), fhleg_(1.1) {
   auto* f = new TFile(filename.c_str());
-  hsym = xjjroot::gethist<TH1D>(filename + "::hsym");
-  gsyst = xjjroot::gethist<TGraphErrors>(filename + "::gsyst");
+  hsym = xjjana::getobj<TH1D>(filename + "::hsym");
+  gsyst = xjjana::getobj<TGraphErrors>(filename + "::gsyst");
   ncol_ = (option & 0xF);
   leg = new TLegend(xleg_, yleg_-0.24, xleg_+wcol_*ncol_, yleg_);
   xjjroot::setleg(leg, tleg_);
@@ -924,8 +968,10 @@ spectrum::spectrum(std::string filename, std::string title, float xleg, float yl
 void spectrum::style(int color, Style_t ms) {
   hsym->SetMarkerStyle(ms);
   hsym->SetMarkerColor(color);
+  hsym->SetMarkerSize(1.2);
   gsyst->SetMarkerStyle(ms);
   gsyst->SetMarkerColor(color);
+  gsyst->SetMarkerSize(1.2);
   gsyst->SetFillColor(color);
   gsyst->SetFillColorAlpha(color, 0.4);
   gsyst->SetLineStyle(0);
@@ -939,43 +985,49 @@ void spectrum::style(int color, Style_t ms) {
 }
 
 void spectrum::setgcolor(std::vector<int> color) {
-  for (int i=0; i<color.size(); i++) {
-    if (color[i] >= 0) { 
+  for (int i=0; i<gh1WGhadron.size(); i++) {
+    if (i < color.size()) { 
       gh1WGhadron[i]->SetLineColor(color[i]);
       gratio[i]->SetLineColor(color[i]);
     } else {
-      gh1WGhadron[i]->SetLineColor(abs(color[i]));
-      gratio[i]->SetLineColor(abs(color[i]));
-      gh1WGhadron[i]->SetLineColorAlpha(abs(color[i]), 0.3);
-      gratio[i]->SetLineColorAlpha(abs(color[i]), 0.3);
+      auto cc = get_mc_color(gh1WGhadron[i]->GetName());
+      gh1WGhadron[i]->SetLineColor(cc);
+      gratio[i]->SetLineColor(cc);
+      // gh1WGhadron[i]->SetLineColorAlpha(cc, 0.3);
+      // gratio[i]->SetLineColorAlpha(cc, 0.3);
     }
   }
 }
 
 void drawNormtext() {
-  xjjroot::drawtex(0.23, 0.85, "Normalized to unity at #eta = 0", 0.09);  
+  xjjroot::drawtex(xjjroot::getccenter(), 0.85, "Normalized to unity at#scale[0.5]{ }#eta = 0", 0.09, 22);  
 }
 
 void drawdNdeta(xjjroot::mypdf& pdf, std::string tag) {
   bool ismc = xjjc::str_contains(tag, "CLOSE");
-  spectrum sp_0_20(Form("results/results-%s.s.%i.%i.root", tag.c_str(), 0, 20), "Cent. 0 - 100\%", 0.3, 0.4, 0.3, 0x02),
+  spectrum sp_0_20(Form("results/results-%s.s.%i.%i.root", tag.c_str(), 0, 20), "Cent. 0 - 100\%", 0.27, 0.4, 0.3, 0x02 /*2-col leg*/),
     sp_19_20(Form("results/results-%s.s.%i.%i.root", tag.c_str(), 19, 20), "Cent. 0 - 5\%", 0.23, 0.62),
     sp_9_10(Form("results/results-%s.s.%i.%i.root", tag.c_str(), 9, 10), "Cent. 50 - 55\%", 0.59, 0.62);
+
+  sp_0_20.reset_fhleg(1.4);
+  
   sp_0_20.style(COLOUR0, 21);
   sp_19_20.style(COLOUR1, 21);
   sp_9_10.style(COLOUR5, 21);
 
-  sp_0_20.setgcolor({COLOR_PbPb_53_1, COLOUR2, COLOUR5, COLOUR6, COLOUR3, COLOUR1});
+  // sp_0_20.setgcolor({COLOR_PbPb_53_1, COLOUR2, COLOUR5, COLOUR6, COLOUR3, COLOUR1});
+  sp_0_20.setgcolor();
   
   auto hempty = makehempty(sp_0_20.hsym, ";#it{#eta};" + _t_dNdeta + "", 1.7);
   hempty->SetAxisRange(-3.0, 2.9, "X");
   auto hemptyp1 = makehempty(sp_0_20.hsym, ";#it{#eta};" + _t_dNdeta + "", 1.7);
   hemptyp1->SetAxisRange(-3.0, 2.9, "X");
   hemptyp1->SetMinimum(0.1);
+  hemptyp1->SetMaximum(80); // !! Not auto-adjust yaxis range 
   auto hempty_ratio = (TH1F*)hemptyp1->Clone("hempty_ratio");
-  hempty_ratio->GetYaxis()->SetTitle("MC / data");
-  hempty_ratio->SetMinimum(0.7); hempty_ratio->SetMaximum(1.3);
-  // hempty_ratio->SetAxisRange(-3.0, 2.9, "X");
+  hempty_ratio->GetYaxis()->SetTitle("MC / Data");
+  hempty_ratio->SetMinimum(0.75); hempty_ratio->SetMaximum(1.25);
+  hempty_ratio->SetAxisRange(-3.0, 2.9, "X");
   auto hempty2 = makehempty(sp_19_20.hsym, ";#it{#eta};" + _t_dNdeta + "", 3, 0.1);
   hempty2->SetAxisRange(-3.0, 2.9, "X");
   auto hempty2p1 = makehempty(sp_19_20.hsym, ";#it{#eta};" + _t_dNdeta + "", 3, 0.1);
@@ -1005,6 +1057,9 @@ void drawdNdeta(xjjroot::mypdf& pdf, std::string tag) {
   pdf.prepare();
   TPad *p1, *p2;
   xjjroot::twopads(pdf.getc(), p1, p2, hemptyp1, hempty_ratio);
+  hempty_ratio->GetYaxis()->SetNdivisions(205);
+  p2->Modified();
+  p2->Update();
   p1->cd();
   for(auto& hh : sp_0_20.gh1WGhadron)
     hh->Draw("c same");
@@ -1013,6 +1068,9 @@ void drawdNdeta(xjjroot::mypdf& pdf, std::string tag) {
   sp_0_20.leg->Draw();
   watermark_inner_2p(ismc);
   p2->cd();
+  xjjroot::drawline(hempty_ratio->GetBinLowEdge(hempty->GetXaxis()->GetFirst()), 1,
+                    hempty_ratio->GetBinLowEdge(hempty->GetXaxis()->GetLast()) + hempty_ratio->GetBinWidth(hempty->GetXaxis()->GetLast()), 1,
+                    kBlack, 1, 1, 0.2);
   drawNormtext();
   sp_0_20.gsyst_ratio->Draw("2 same");
   for(auto& gg : sp_0_20.gratio) {
@@ -1112,17 +1170,6 @@ void printnpart() {
     auto c = (ncoll[i]>10? Form("%.1f", ncoll[i]) : Form("%.1f", ncoll[i]));
     auto cerr = (ncoll[i]>10? Form("%.1f", ncollerr[i]) : Form("%.1f", ncollerr[i]));
     std::cout<<(NCENT-i-1)*5<<"--"<<(NCENT-i)*5<<" & $"<<t<<" \\pm "<<terr<<"$ & $"<<c<<" \\pm "<<cerr<< "$ \\\\"<<std::endl;
-  }
-}
-
-template <class T>
-void cleangrzero(T* gr) {
-  for (int i=0; i<gr->GetN();) {
-    if (gr->GetPointY(i) < 1.e-8) {
-      gr->RemovePoint(i);
-      continue;
-    }
-    i++;
   }
 }
 

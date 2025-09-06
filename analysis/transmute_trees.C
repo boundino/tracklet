@@ -20,10 +20,13 @@
 #include "include/rechit.h"
 #include "include/tracklet.h"
 #include "include/hf.h"
+#include "include/vz.h"
 
 #define NSAMPLES  1
-static const float vzpar[NSAMPLES][2] = { // for reweight
-   {0.175361, 5.29697},    /* private Jul31 */
+static const float vzpar[NSAMPLES][2] =
+  { // for reweight
+   // {0.175361, 5.29697},    /* private Jul31 PV */
+   {0.170949, 5.30314},    /* private Jul31 tracklet */
 };
 
 #define BKG_ARG(q)   , float add_bkg_l##q = 0
@@ -101,6 +104,8 @@ int transmute_trees(const char* input,
    } else {
       printf("$ tracklet vertex\n");
    }
+
+   auto* f = truncated_gaussian("f");
 
    PixelEvent par;
    set_pixel_data(t, par);
@@ -246,8 +251,10 @@ int transmute_trees(const char* input,
            event_weight = 0;
          else
            {
-             /* run 362294 + bad private MC */
-             double data_pdf = TMath::Gaus(event_vz, 0.465915, 5.44665, 1);
+             /* run 394153 */
+             f->SetParameters(1, 0.472044, 5.80893, 0.0170828);
+             // double data_pdf = TMath::Gaus(event_vz, 0.465915, 5.44665, 1);
+             double data_pdf = f->Eval(event_vz);
              double mc_pdf = TMath::Gaus(event_vz, vzpar[sample][0], vzpar[sample][1], 1);
              
              event_weight = event_weight * data_pdf / mc_pdf;
