@@ -215,9 +215,9 @@ void print_mc_cent(const mccent &m) {
 
 #define DRAW_MC(OBS)                            \
   ghijing_oo_5p36##OBS->Draw("c same");         \
-  gangantyr_oo_5p36##OBS->Draw("c same");       \
   gamptnm_oo_5p36##OBS->Draw("c same");         \
   gamptsm_oo_5p36##OBS->Draw("c same");         \
   gepos_oo_5p36##OBS->Draw("c same");
+  // gangantyr_oo_5p36##OBS->Draw("c same");       \
   // ghydjet_oo_5p36##OBS->Draw("c same");
 

@@ -19,7 +19,8 @@ std::string _t_dNdetatitle = ";#it{#eta};d#it{N}_{ch}/d#kern[-0.08]{#it{#eta}}";
 
 // std::string _t_truth = "hijing&H#scale[0.9]{IJING}&2,amptnm&A#scale[0.9]{MPT}&6,amptnm2&A#scale[0.9]{MPT}#scale[0.5]{ }#scale[0.9]{(varied params)}&4,hydjet&H#scale[0.8]{YDJET}&9";
 std::string _t_truth = "hijing&H#scale[0.9]{IJING}&2"
-  ",angantyr&A#scale[0.9]{NGANTYR}&8"
+  // ",angantyr&A#scale[0.9]{NGANTYR}&8"
+  ",&&"
   ",amptnm&A#scale[0.9]{MPT}&3"
   ",amptsm&A#scale[0.9]{MPT}#scale[0.5]{ }#scale[0.9]{(string melting)}&5"
   ",epos&E#scale[0.9]{POS}#scale[0.5]{ }#scale[0.8]{LHC}&9";
@@ -263,6 +264,10 @@ std::vector<TGraphErrors*> combgh1WGhadron(std::string filename,
   gStyle->SetLineStyleString(9,"40 20");
   for(int i=0; i<itruth.n(); i++) {
     std::cout<<filename<<std::endl;
+    if (itruth.value[i][0] == "") {
+      legTRUTH->AddEntry((TObject*)0, "",NULL);
+      continue;
+    }
     auto gr = xjjana::getobj<TGraphErrors>(filename + "::gh1WGhadron-"+itruth.value[i][0]);
     if(!gr) continue;
     if (itruth.value[i].size() > 2)

@@ -390,6 +390,24 @@ std::vector<float> alice_pbpb_5p36_ncollerr = {
 auto alice_pbpb_5p36_2a = 416.;
 auto alice_pbpb_5p36_size = alice_pbpb_5p36_raw.size();
 
+// https://indico.cern.ch/event/1479384/contributions/6663047/attachments/3131557/5555439/IS_mult_v3.pdf
+std::vector<float> alice_oo_5p36_raw =
+  // 60-90, 50-60, 40-50, 30-40,  20-30,  10-20,  5-10,   0-5
+  { 10.231, 26.851,   37.822, 51.075, 67.082, 87.105, 106.833, 129.450 };
+std::vector<float> alice_oo_5p36_rawerr =
+  // { 0.23, 0.39, 0.57, 0.81, 1.13, 1.55, 2.08, 2.76, 3.44, 4.23 } ;
+  {1.451, 2.303, 2.909, 3.498, 4.070, 4.318, 4.299, 4.897 };
+std::vector<float> alice_oo_5p36_cent =
+  { 25, 45, 55, 65, 75, 85, 92.5, 97.5 };
+std::vector<float> alice_oo_5p36_npart =
+  // 80-90, 70-80, 60-70, 50-60, 40-50, 30-40,  20-30,  10-20,  5-10,   0-5
+  {  4.276, 7.371, 9.874, 13.060, 16.884, 21.025, 24.075, 26.328 }; // alice
+  // {  0,     0,     6.271, 8.24,  10.82, 14.02,  17.70,  21.51,  24.251, 26.419 }; // cms
+std::vector<float> alice_oo_5p36_nparterr = std::vector<float>(alice_oo_5p36_raw.size(), 0);
+std::vector<float> alice_oo_5p36_ncoll = alice_oo_5p36_npart;
+std::vector<float> alice_oo_5p36_ncollerr = std::vector<float>(alice_oo_5p36_raw.size(), 0);
+auto alice_oo_5p36_2a = 32.;
+auto alice_oo_5p36_size = alice_oo_5p36_raw.size();
 
 GENERATE(cms_pbpb_2p76)
 GENERATE(alice_pbpb_2p76)
@@ -406,4 +424,19 @@ GENERATE(alice_xexe_5p44)
 GENERATE(cms_xexe_5p44)
 GENERATE(cms_pbpb_5p36)
 GENERATE(alice_pbpb_5p36)
+GENERATE(alice_oo_5p36)
 
+std::vector<float> alice_oo_5p36_eta_raw =
+  { 39.9, 39.7, 39.7, 39.4, 39.1, 38.9, 38.7, 38.6, 38.4, 38.3, 38.3, 38.4, 38.5, 38.7, 38.9, 39.1, 39.3, 39.6, 39.9, 40.1 };
+std::vector<float> alice_oo_5p36_eta_rawerr =
+  { 4.0, 4.1, 4.0, 4.0, 4.0, 4.0, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9, 4.0, 4.0, 4.1, 4.1 };
+std::vector<float> alice_oo_5p36_eta_cent =
+  { -0.95, -0.85, -0.75, -0.65, -0.55, -0.45, -0.35, -0.25, -0.15, -0.05, 0.05, 0.15, 0.25, 0.35, 0.45, 0.55, 0.65, 0.75, 0.85, 0.95 };
+std::vector<float> alice_oo_5p36_eta_npart = std::vector<float>(alice_oo_5p36_eta_cent.size(), 0);
+std::vector<float> alice_oo_5p36_eta_nparterr = std::vector<float>(alice_oo_5p36_eta_raw.size(), 0);
+std::vector<float> alice_oo_5p36_eta_ncoll = alice_oo_5p36_eta_npart;
+std::vector<float> alice_oo_5p36_eta_ncollerr = std::vector<float>(alice_oo_5p36_eta_raw.size(), 0);
+auto alice_oo_5p36_eta_2a = 32.;
+auto alice_oo_5p36_eta_size = alice_oo_5p36_eta_raw.size();
+
+GENERATE(alice_oo_5p36_eta)

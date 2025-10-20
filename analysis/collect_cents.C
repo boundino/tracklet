@@ -29,28 +29,29 @@
 #define COLOR_CuCu_2 COLOUR9
 
 const float _2a = 32;
-// https://indico.cern.ch/event/1578825/contributions/6652811/attachments/3118529/5529753/o_cent_15aug25.pdf#page=15
-const float npart[NCENT] = {
-  //95-100,  90-95,   85-90,   80-85,   75-80
-  0,         0,       0,       0,       4.537,
-  //70-75,   65-70,   60-65,   55-60,   50-55,
-  5.142,     5.858,   6.685,   7.671,   8.813,
-  //45-50,   40-45,   35-40,   30-35,   25-30,
-  10.096,    11.553,  13.152,  14.890,  16.743,
-  //20-25,   15-20,   10-15,   5-10,    0-5
-  18.660,    20.582,  22.447,  24.251,  26.419
-};
+// // approval
+// // https://indico.cern.ch/event/1578825/contributions/6652811/attachments/3118529/5529753/o_cent_15aug25.pdf#page=15
+// const float npart[NCENT] = {
+//   //95-100,  90-95,   85-90,   80-85,   75-80
+//   0,         0,       0,       0,       4.537,
+//   //70-75,   65-70,   60-65,   55-60,   50-55,
+//   5.142,     5.858,   6.685,   7.671,   8.813,
+//   //45-50,   40-45,   35-40,   30-35,   25-30,
+//   10.096,    11.553,  13.152,  14.890,  16.743,
+//   //20-25,   15-20,   10-15,   5-10,    0-5
+//   18.660,    20.582,  22.447,  24.251,  26.419
+// };
 
-const float nparterr[NCENT] = {
-  //95-100,  90-95,  85-90,  80-85,  75-80
-  0,         0,      0,      0,      0.240,
-  //70-75,   65-70,  60-65,  55-60,  50-55,
-  0.270,     0.303,  0.312,  0.320,  0.326,
-  //45-50,   40-45,  35-40,  30-35,  25-30,
-  0.353,     0.379,  0.379,  0.360,  0.345,
-  //20-25,   15-20,  10-15,  5-10,   0-5
-  0.349,     0.356,  0.359,  0.369,  0.397
-};
+// const float nparterr[NCENT] = {
+//   //95-100,  90-95,  85-90,  80-85,  75-80
+//   0,         0,      0,      0,      0.240,
+//   //70-75,   65-70,  60-65,  55-60,  50-55,
+//   0.270,     0.303,  0.312,  0.320,  0.326,
+//   //45-50,   40-45,  35-40,  30-35,  25-30,
+//   0.353,     0.379,  0.379,  0.360,  0.345,
+//   //20-25,   15-20,  10-15,  5-10,   0-5
+//   0.349,     0.356,  0.359,  0.369,  0.397
+// };
 
 const float ncoll[NCENT] = {
   //95-100,  90-95,   85-90,   80-85,   75-80
@@ -74,8 +75,52 @@ const float ncollerr[NCENT] = {
   0.727,     0.801,  0.860,  0.939,  1.096
 };
 
+// fix noise in Glauber fit, use average of fits
+const float npart[NCENT] = {
+  //95-100,  90-95,   85-90,   80-85,   75-80
+  0,         0,       0,       0,       3.996,
+  //70-75,   65-70,   60-65,   55-60,   50-55,
+  4.572,     5.258,   6.057,   7.014,   8.130,
+  //45-50,   40-45,   35-40,   30-35,   25-30,
+  9.389,     10.827,  12.418,  14.163,  16.038,
+  //20-25,   15-20,   10-15,   5-10,    0-5
+  17.985,    19.926,  21.795,  23.606,  25.880
+};
+const float nparterr[NCENT] = {
+  //95-100,  90-95,  85-90,  80-85,  75-80
+  0,         0,      0,      0,      0.247,
+  //70-75,   65-70,  60-65,  55-60,  50-55,
+  0.280,     0.318,  0.335,  0.353,  0.370,
+  //45-50,   40-45,  35-40,  30-35,  25-30,
+  0.405,     0.440,  0.450,  0.441,  0.435,
+  //20-25,   15-20,  10-15,  5-10,   0-5
+  0.446,     0.464,  0.484,  0.507,  0.509
+};
+
+// // fix noise in Glauber fit, use best chi2 fit
+// const float npart[NCENT] = {
+//   //95-100,  90-95,   85-90,   80-85,   75-80
+//   0,         0,       0,       0,       4.072,
+//   //70-75,   65-70,   60-65,   55-60,   50-55,
+//   4.670,     5.380,   6.206,   7.192,   8.336,
+//   //45-50,   40-45,   35-40,   30-35,   25-30,
+//   9.621,     11.080,  12.685,  14.440,  16.328,
+//   //20-25,   15-20,   10-15,   5-10,    0-5
+//   18.300,    20.291,  22.231,  24.106,  26.354
+// };
+// const float nparterr[NCENT] = {
+//   //95-100,  90-95,  85-90,  80-85,  75-80
+//   0,         0,      0,      0,      0.247,
+//   //70-75,   65-70,  60-65,  55-60,  50-55,
+//   0.280,     0.318,  0.335,  0.353,  0.370,
+//   //45-50,   40-45,  35-40,  30-35,  25-30,
+//   0.405,     0.440,  0.450,  0.441,  0.435,
+//   //20-25,   15-20,  10-15,  5-10,   0-5
+//   0.446,     0.464,  0.484,  0.507,  0.509
+// };
+
 void printnpart();
-void drawdNdeta(xjjroot::mypdf& pdf, std::string tag);
+void drawdNdeta(xjjroot::mypdf& pdf, std::string tag, TFile* fout);
 void moveleg_and_draw(TLegend* leg, float x1=-1, float y2=-1);
 
 int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
@@ -83,9 +128,6 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
   bool ismc = xjjc::str_contains(tag, "CLOSE");
 
   constexpr int ntotal = NCENT - OFFSET;
-
-  // TFile* fout = new TFile(Form("output/centrality-%s.root", label),
-  //                         "recreate");
 
   init_mc_cent();
   
@@ -96,22 +138,22 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
   gstyle(g_n2a, 21, COLOUR0, 1.4); g_n2a->SetFillColorAlpha(COLOUR0, 0.3);
   auto* g_nnpart_x_npart = (TGraphErrors*)g->Clone("g_nnpart_x_npart"); 
   gstyle(g_nnpart_x_npart, 21, COLOUR0, 1.4); g_nnpart_x_npart->SetFillColorAlpha(COLOUR0, 0.3);
-  auto* g_nnpart_x_npart_err = new TGraph(2 * ntotal + 2);
+  auto* g_nnpart_x_npart_err = new TGraph(2 * ntotal + 2); g_nnpart_x_npart_err->SetName("g_nnpart_x_npart_err");
   xjjana::grzero(g_nnpart_x_npart_err);
   gstyle(g_nnpart_x_npart_err, 21, COLOUR0, 1.4); g_nnpart_x_npart_err->SetFillColorAlpha(COLOUR0, 0.2);
   auto* g_nnpart_x_npart2a = (TGraphErrors*)g->Clone("g_nnpart_x_npart2a"); 
   gstyle(g_nnpart_x_npart2a, 21, COLOUR0, 1.4); g_nnpart_x_npart2a->SetFillColorAlpha(COLOUR0, 0.3);
-  auto* g_nnpart_x_npart2a_err = new TGraph(2 * ntotal + 2);
+  auto* g_nnpart_x_npart2a_err = new TGraph(2 * ntotal + 2); g_nnpart_x_npart2a_err->SetName("g_nnpart_x_npart2a_err");
   xjjana::grzero(g_nnpart_x_npart2a_err);
   gstyle(g_nnpart_x_npart2a_err, 21, COLOUR0, 1.4); g_nnpart_x_npart2a_err->SetFillColorAlpha(COLOUR0, 0.2);
   auto* g_nnpart_x_ncollnpart = (TGraphErrors*)g->Clone("g_nnpart_x_ncollnpart"); 
   gstyle(g_nnpart_x_ncollnpart, 21, COLOUR0, 1.4); g_nnpart_x_ncollnpart->SetFillColorAlpha(COLOUR0, 0.3);
-  auto* g_nnpart_x_ncollnpart_err = new TGraph(2 * ntotal + 2);
+  auto* g_nnpart_x_ncollnpart_err = new TGraph(2 * ntotal + 2); g_nnpart_x_ncollnpart_err->SetName("g_nnpart_x_ncollnpart_err");
   xjjana::grzero(g_nnpart_x_ncollnpart_err);
   gstyle(g_nnpart_x_ncollnpart_err, 21, COLOUR0, 1.4); g_nnpart_x_ncollnpart_err->SetFillColorAlpha(COLOUR0, 0.2);
   auto* g_nnpart_x_ncollnpartnpart = (TGraphErrors*)g->Clone("g_nnpart_x_ncollnpartnpart"); 
   gstyle(g_nnpart_x_ncollnpartnpart, 21, COLOUR0, 1.4); g_nnpart_x_ncollnpartnpart->SetFillColorAlpha(COLOUR0, 0.3);
-  auto* g_nnpart_x_ncollnpartnpart_err = new TGraph(2 * ntotal + 2);
+  auto* g_nnpart_x_ncollnpartnpart_err = new TGraph(2 * ntotal + 2); g_nnpart_x_ncollnpartnpart_err->SetName("g_nnpart_x_ncollnpartnpart_err");
   xjjana::grzero(g_nnpart_x_ncollnpartnpart_err);
   gstyle(g_nnpart_x_ncollnpartnpart_err, 21, COLOUR0, 1.4); g_nnpart_x_ncollnpartnpart_err->SetFillColorAlpha(COLOUR0, 0.2);
 
@@ -225,6 +267,7 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
   auto* galice_pbpb_2p76 = alice_pbpb_2p76();
   auto* galice_pbpb_5p02 = alice_pbpb_5p02();
   auto* galice_pbpb_5p36 = alice_pbpb_5p36();
+  auto* galice_oo_5p36 = alice_oo_5p36();
   auto* gcms_xexe_5p44 = cms_xexe_5p44();
   auto* galice_xexe_5p44 = alice_xexe_5p44();
   auto* gphobos_auau_0p2 = phobos_auau_0p2();
@@ -238,7 +281,11 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
   gstyle(galice_xexe_5p44, 34, COLOR_XeXe_5_2, 1.2);
   gstyle(gphobos_auau_0p2, 29, COLOR_AuAu_2);
   gstyle(gphobos_cucu_0p2, 43, COLOUR9);
-
+  gstyle(galice_oo_5p36, 23, COLOR_PbPb_53_2, 1.5);
+  cleangrzero(galice_oo_5p36);
+  gstyle(galice_oo_5p36, 20, xjjroot::mycolor_satmiddle["red"], 1.5);
+  xjjroot::setlinestyle(galice_oo_5p36, xjjroot::mycolor_satmiddle["red"], 2, 3);
+    
   MAKE_SET_MC();
   
   float hline = 0.038;
@@ -281,7 +328,8 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
   lmc->AddEntry((TObject*)0, "", NULL);
   lmc->AddEntry(g_nnpart_x_npart, "Data", "p");
   lmc->AddEntry(ghijing_oo_5p36, get_mc_tex("hijing").c_str(), "l");
-  lmc->AddEntry(gangantyr_oo_5p36, get_mc_tex("angantyr").c_str(), "l");
+  // lmc->AddEntry(gangantyr_oo_5p36, get_mc_tex("angantyr").c_str(), "l");
+  lmc->AddEntry((TObject*)0, "", NULL);
   lmc->AddEntry(gamptnm_oo_5p36, get_mc_tex("amptnm").c_str(), "l");
   lmc->AddEntry(gamptsm_oo_5p36, get_mc_tex("amptsm").c_str(), "l");
   lmc->AddEntry(gepos_oo_5p36, get_mc_tex("epos").c_str(), "l");
@@ -334,7 +382,6 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
   moveleg_and_draw(lcms, 0.55, 0.4);
   moveleg_and_draw(lalice, 0.25, lcms->GetY2NDC()-hline);
   
-  // Figure 2a
   pdf.write(Form("figs/results/merged-%s-midy-int1.pdf", label.c_str()), "Q");
 
   auto* h_g = new TH1F("h_g", ";;", 20, 0, 100);
@@ -354,25 +401,6 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
                                 );
   hep_Table_2a.print(outf_Table_2a, 0, 1, 0, 80);
 
-  pdf.prepare();
-  pdf.getc()->SetLogy(0);
-  hrange(hframe, 0.1, 200);
-  axis = new TGaxis(100, hframe->GetYaxis()->GetXmin(), 0, hframe->GetYaxis()->GetXmin(), 0, 100, 510, "-");
-  axis->SetLabelOffset(-0.032); axis->SetLabelFont(42);
-  axis->SetLabelSize(0.045); 
-
-  hframe->Draw();
-  axis->Draw();
-  DRAW_MC();
-  g->Draw("3 same");
-  g->Draw("pX same");
-  watermark_inner(ismc);
-
-  xjjroot::rewidthleg(lmc, 1);
-  xjjroot::autoleg_n_draw(lmc, 0.25, 0.80);
-
-  pdf.write(Form("figs/results/merged-%s-midy-int1-mc.pdf", label.c_str()), "Q");
- 
   auto* hframe_zoom = new TH1F("hframe_zoom", "", 1, 25, 100);
   xjjroot::sethempty(hframe_zoom, 0, 0.2);
   htitle(hframe_zoom, ";Centrality (%);" + _t_dNdeta + "#scale[0.5]{ }" + _t_eta0p5);
@@ -385,8 +413,24 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
   axis_zoom->SetTitleSize(hframe_zoom->GetXaxis()->GetTitleSize());
   hframe_zoom->SetLabelOffset(999, "X"); hframe_zoom->SetTickLength(0, "X");
 
+  pdf.prepare();
+  pdf.getc()->SetLogy(0);
+
+  hframe_zoom->Draw();
+  axis_zoom->Draw();
+  DRAW_MC();
+  g->Draw("3 same");
+  g->Draw("pX same");
+  watermark_inner(ismc);
+
+  xjjroot::rewidthleg(lmc, 1);
+  xjjroot::autoleg_n_draw(lmc, 0.25, 0.80);
+
+  pdf.write(Form("figs/results/merged-%s-midy-int1-mc.pdf", label.c_str()), "Q");
+ 
   gStyle->SetHatchesSpacing(1);
   gStyle->SetHatchesLineWidth(2);
+  pdf.prepare();
   hframe_zoom->Draw();
   axis_zoom->Draw();
   DRAW_MC();
@@ -403,7 +447,18 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
   xjjroot::movetex_n_draw(ttraj, 0.255, lmc->GetY1NDC()-0.01);
 
   pdf.write(Form("figs/results/merged-%s-midy-int1-theory.pdf", label.c_str()), "Q");
- 
+
+  pdf.prepare();
+  hframe_zoom->Draw();
+  axis_zoom->Draw();
+  g->Draw("3 same");
+  galice_oo_5p36->Draw("3 same");
+  g->Draw("pX same");
+  galice_oo_5p36->Draw("pX same");
+  watermark_inner(ismc);
+  pdf.write(Form("figs/results/merged-%s-midy-int1-exp.pdf", label.c_str()), "Q");
+
+  
   gStyle->SetHatchesSpacing(1);
   gStyle->SetHatchesLineWidth(2);
   hframe_zoom->Draw();
@@ -519,6 +574,7 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
   auto* galice_pbpb_2p76_nnpart_x_npart = alice_pbpb_2p76_nnpart_x_npart();
   auto* galice_pbpb_5p02_nnpart_x_npart = alice_pbpb_5p02_nnpart_x_npart();
   auto* galice_pbpb_5p36_nnpart_x_npart = alice_pbpb_5p36_nnpart_x_npart();
+  auto* galice_oo_5p36_nnpart_x_npart = alice_oo_5p36_nnpart_x_npart();
   auto* gcms_xexe_5p44_nnpart_x_npart = cms_xexe_5p44_nnpart_x_npart();
   auto* galice_xexe_5p44_nnpart_x_npart = alice_xexe_5p44_nnpart_x_npart();
   auto* gphobos_auau_0p2_nnpart_x_npart = phobos_auau_0p2_nnpart_x_npart();
@@ -534,6 +590,9 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
   gstyle(gphobos_cucu_0p2_nnpart_x_npart, 43, COLOUR9, 1.7);
   // gstyle(gcms_pp_13p0_nnpart_x_npart, 43, COLOUR0);
   // gstyle(gcms_ppb_8p16_nnpart_x_npart, 45, COLOUR6);
+  cleangrzero(galice_oo_5p36_nnpart_x_npart);
+  gstyle(galice_oo_5p36_nnpart_x_npart, 20, xjjroot::mycolor_satmiddle["red"], 1.5);
+  xjjroot::setlinestyle(galice_oo_5p36_nnpart_x_npart, xjjroot::mycolor_satmiddle["red"], 2, 3);
 
   pdf.prepare();
   auto* hframe_nnpart_x_npart = new TH1F("hframe_nnpart_x_npart", "", 1, -20, 420);
@@ -602,7 +661,21 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
   xjjroot::autoleg_n_draw(lmodel, 0.23, lnpart->GetY1NDC()-0.03);
   xjjroot::movetex_n_draw(ttraj, 0.235, lnpart->GetY1NDC()-0.03);
 
-  pdf.write(Form("figs/results/merged-%s-midynorm-int1-mc.pdf", label.c_str()), "Q");
+  pdf.write(Form("figs/results/merged-%s-midynorm-int1-theory.pdf", label.c_str()), "Q");
+
+  pdf.prepare();
+  hframe_nnpart_x_npart_zoom->Draw("axis");
+  g_nnpart_x_npart_err->Draw("f same");
+  g_nnpart_x_npart->Draw("3 same");
+  xjjana::drawgroutline(g_nnpart_x_npart, COLOUR0, 2, 1);
+  galice_oo_5p36_nnpart_x_npart->Draw("3 same");
+  galice_oo_5p36_nnpart_x_npart->Draw("pX same");
+  g_nnpart_x_npart->Draw("pX same");
+  watermark_inner(ismc);
+  
+  moveleg_and_draw(lnpart, 0.23, 0.78);
+
+  pdf.write(Form("figs/results/merged-%s-midynorm-int1-exp.pdf", label.c_str()), "Q");
   
   //  
   auto* gcms_pbpb_2p76_nnpart_x_npart2a = cms_pbpb_2p76_nnpart_x_npart2a();
@@ -682,7 +755,7 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
   moveleg_and_draw(lnpart, 0.23, 0.78);
   xjjroot::autoleg_n_draw(lmc, 0.28, 0.35);
 
-  pdf.write(Form("figs/results/merged-%s-midynorm2a-int1-mc.pdf", label.c_str()), "Q");
+  pdf.write(Form("figs/results/merged-%s-midynorm2a-int1-theory.pdf", label.c_str()), "Q");
   
   auto* gcms_pbpb_2p76_nnpart_x_ncollnpart = cms_pbpb_2p76_nnpart_x_ncollnpart();
   auto* gcms_pbpb_5p36_nnpart_x_ncollnpart = cms_pbpb_5p36_nnpart_x_ncollnpart();
@@ -856,27 +929,27 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
 
   pdf.write("", "Q");
 
-  // g->Write("", TObject::kOverwrite);
-  // gcms_pbpb_2p76->Write("", TObject::kOverwrite);
-  // galice_pbpb_5p02->Write("", TObject::kOverwrite);
-  // gphobos_cucu_0p2->Write("", TObject::kOverwrite);
-  // gphobos_auau_0p2->Write("", TObject::kOverwrite);
+  auto* fout = TFile::Open(Form("results/centrality-%s.root", label.c_str()),
+                          "recreate");
 
-  // g_nnpart_x_npart->Write("", TObject::kOverwrite);
-  // g_nnpart_x_npart_err->Write("", TObject::kOverwrite);
-  // gcms_pbpb_2p76_nnpart_x_npart->Write("", TObject::kOverwrite);
-  // galice_pbpb_5p02_nnpart_x_npart->Write("", TObject::kOverwrite);
-  // gphobos_auau_0p2_nnpart_x_npart->Write("", TObject::kOverwrite);
-  // gphobos_cucu_0p2_nnpart_x_npart->Write("", TObject::kOverwrite);
-  // gcms_pp_13p0_nnpart_x_npart->Write("", TObject::kOverwrite);
-  // gcms_ppb_8p16_nnpart_x_npart->Write("", TObject::kOverwrite);
-
-  // fout->Write("", TObject::kOverwrite);
-  // fout->Close();
-
-  drawdNdeta(pdf, label);
+  drawdNdeta(pdf, label, fout);
   
   pdf.close();
+
+  fout->cd();
+  xjjroot::writehist(g);
+  xjjroot::writehist(g_n2a);
+  xjjroot::writehist(g_nnpart_x_npart);
+  xjjroot::writehist(g_nnpart_x_npart_err);
+  xjjroot::writehist(g_nnpart_x_npart2a);
+  xjjroot::writehist(g_nnpart_x_npart2a_err);
+  xjjroot::writehist(g_nnpart_x_ncollnpart);
+  xjjroot::writehist(g_nnpart_x_ncollnpart_err);
+  xjjroot::writehist(g_nnpart_x_ncollnpartnpart);
+  xjjroot::writehist(g_nnpart_x_ncollnpartnpart_err);
+  xjjroot::writehist(g_n2a_x_npart2a);
+
+  fout->Close();
   
   return 0;
 }
@@ -891,6 +964,7 @@ public:
   void set_tleg(float tleg) { resize_leg(-1, -1, tleg); }
   void move_leg(float xleg=-1, float yleg=-1) { resize_leg(xleg, yleg); }
   void reset_fhleg(float fhleg = 1.1) { if (fhleg > 0) { fhleg_ = fhleg; } resize_leg(); }
+  void save();
   TH1D* hsym;
   TGraphErrors* gsyst;
   std::vector<TGraphErrors*> gh1WGhadron;
@@ -999,11 +1073,17 @@ void spectrum::setgcolor(std::vector<int> color) {
   }
 }
 
+void spectrum::save() {
+  xjjroot::writehist(gsyst);
+  for (auto gg : gh1WGhadron)
+    xjjroot::writehist(gg);
+}
+
 void drawNormtext() {
   xjjroot::drawtex(xjjroot::getccenter(), 0.85, "Normalized to unity at#scale[0.5]{ }#eta = 0", 0.09, 22);  
 }
 
-void drawdNdeta(xjjroot::mypdf& pdf, std::string tag) {
+void drawdNdeta(xjjroot::mypdf& pdf, std::string tag, TFile* fout) {
   bool ismc = xjjc::str_contains(tag, "CLOSE");
   spectrum sp_0_20(Form("results/results-%s.s.%i.%i.root", tag.c_str(), 0, 20), "Cent. 0 - 100\%", 0.27, 0.4, 0.3, 0x02 /*2-col leg*/),
     sp_19_20(Form("results/results-%s.s.%i.%i.root", tag.c_str(), 19, 20), "Cent. 0 - 5\%", 0.23, 0.62),
@@ -1159,6 +1239,9 @@ void drawdNdeta(xjjroot::mypdf& pdf, std::string tag) {
 
   printnpart();
 
+  fout->cd();
+  sp_0_20.save();
+  
   // for (auto& im : _m_mc)
   //   print_mc_cent(im);
 }
