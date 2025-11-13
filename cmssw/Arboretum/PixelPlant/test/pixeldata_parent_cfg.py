@@ -58,17 +58,18 @@ process.schedule = cms.Schedule(
     process.output
 )
 
-from HLTrigger.HLTfilters.hltHighLevel_cfi import hltHighLevel
-process.hltfilter = hltHighLevel.clone(HLTPaths = ["HLT_MinimumBiasHF_OR_BptxAND_v1"])
-process.primaryVertexFilter = cms.EDFilter("VertexSelector",
-        src = cms.InputTag("offlinePrimaryVertices"),
-        cut = cms.string("!isFake && abs(z) <= 25 && position.Rho <= 2"),
-        filter = cms.bool(True),
-)
-process.filterSequence = cms.Sequence(process.hltfilter*process.primaryVertexFilter)
-process.prefilter = cms.Path(process.filterSequence)
-for path in process.paths:
-        getattr(process, path)._seq = process.filterSequence * getattr(process,path)._seq
+# HLT and primary vertex filter
+# from HLTrigger.HLTfilters.hltHighLevel_cfi import hltHighLevel
+# process.hltfilter = hltHighLevel.clone(HLTPaths = ["HLT_MinimumBiasHF_OR_BptxAND_v1"])
+# process.primaryVertexFilter = cms.EDFilter("VertexSelector",
+#         src = cms.InputTag("offlinePrimaryVertices"),
+#         cut = cms.string("!isFake && abs(z) <= 25 && position.Rho <= 2"),
+#         filter = cms.bool(True),
+# )
+# process.filterSequence = cms.Sequence(process.hltfilter*process.primaryVertexFilter)
+# process.prefilter = cms.Path(process.filterSequence)
+# for path in process.paths:
+#         getattr(process, path)._seq = process.filterSequence * getattr(process,path)._seq
 
 process.MessageLogger.cerr.FwkReport.reportEvery = 100
 

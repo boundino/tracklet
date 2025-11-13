@@ -1,1 +1,0 @@
-/afs/cern.ch/user/w/wangj/xjjanauti.h

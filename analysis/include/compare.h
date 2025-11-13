@@ -1,1 +1,0 @@
-/afs/cern.ch/user/w/wangj/csetup/xjjlibs/xjjroot/compare.h
