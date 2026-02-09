@@ -16,7 +16,7 @@ USEWEIGHT=-1
 movetosubmit=${1:-0}
 runjobs=${2:-0}
 
-PRIMARY="tt_250810"
+PRIMARY="tt_250825"
 [[ $USERANDOM -eq 1 ]] && PRIMARY=${PRIMARY}_randomvz
 [[ $USESPLIT -gt 0 ]] && PRIMARY=${PRIMARY}_split
 [[ $USEDROP -gt 0 ]] && PRIMARY=${PRIMARY}_drop
@@ -24,7 +24,7 @@ PRIMARY="tt_250810"
 
 INPUTS=(
     # fix maskf
-    /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/IonPhysics0/crab_pixel_250810_IonPhysics0_394153_mask/250810_232411/0000
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/IonPhysics0/crab_pixel_250810_IonPhysics0_394153_mask/250810_232411/0000
     # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/MinBias_Hijing_OO_5362GeV/crab_pixel_250810_MINI_0731_Hijing_OO_5362GeV_pf_realistic_maskf/250810_232533/0000
     
     # after smiling cut

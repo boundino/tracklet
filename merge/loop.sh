@@ -1,15 +1,44 @@
 
 make merge || exit 1
 
-CLUS=0 # 0: default; 1: clus; 3: randomvz
-NFDIV=10 # only merge 1/NFDIV of full stats
+# 0: default; 1: clus; 3: randomvz
+CLUS=0
+# only merge 1/NFDIV of full stats:
+NFDIV=1
 
 LIST=(
+    # up weight
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/tt_250825_weight_pixel_250810_MINI_0731_Hijing_OO_5362GeV_pf_realistic_maskf
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/tt_250825_weight_pixel_250809_MINI_0715_Pythia_Angantyr_OO_5362GeV_pf_realistic_maskf
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/tt_250825_weight_pixel_250809_MINI_0731_AMPT_NoStringMelting_OO_5362GeV_pf_realistic_maskf
+    /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/tt_250825_weight_pixel_250809_MINI_0731_AMPT_StringMelting_OO_5362GeV_pf_realistic_maskf
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/tt_250825_weight_pixel_250809_MINI_0731_EposLHC_ReggeGribovParton_OO_5362GeV_pf_realistic_maskf
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/tt_250825_weight_pixel_250809_MINI_0731_Hydjet_Cello_OO_5362GeV_pf_realistic_maskf
+    
+    # fix maskf and/or branches
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/tt_250810_pixel_250810_IonPhysics0_394153_mask
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/tt_250810_weight_pixel_250810_MINI_0731_Hijing_OO_5362GeV_pf_realistic_maskf
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/tt_250810_weight_pixel_250809_MINI_0731_EposLHC_ReggeGribovParton_OO_5362GeV_pf_realistic_maskf
+    # ## randomvz
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/tt_250810_randomvz_pixel_250810_IonPhysics0_394153_mask
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/tt_250810_randomvz_pixel_250810_MINI_0731_Hijing_OO_5362GeV_pf_realistic_maskf
+    
     # after smiling cut
-    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/tt_250806_pixel_250806_IonPhysics0_394153_mask
-    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/tt_250806_randomvz_pixel_250806_IonPhysics0_394153_mask
-    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/private/tt_250806_weight_pixel_250806_Hijing_OO_5362GeV_pf_realistic_smile
-    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/private/tt_250806_randomvz_pixel_250806_Hijing_OO_5362GeV_pf_realistic_smile
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/tt_250809_pixel_250809_IonPhysics0_394153_smile_maskf
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/tt_250809_weight_pixel_250809_MINI_0731_Hijing_OO_5362GeV_pf_realistic_smile_maskf
+
+    # after maskf
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/tt_250809_pixel_250809_IonPhysics0_394153_maskf
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/tt_250809_weight_pixel_250809_MINI_0715_Pythia_Angantyr_OO_5362GeV_pf_realistic_maskf
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/tt_250809_weight_pixel_250809_MINI_0731_AMPT_NoStringMelting_OO_5362GeV_pf_realistic_maskf
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/tt_250809_weight_pixel_250809_MINI_0731_AMPT_StringMelting_OO_5362GeV_pf_realistic_maskf
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/tt_250809_weight_pixel_250809_MINI_0731_EposLHC_ReggeGribovParton_OO_5362GeV_pf_realistic_maskf
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/tt_250809_weight_pixel_250809_MINI_0731_Hijing_OO_5362GeV_pf_realistic_maskf
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/tt_250809_weight_pixel_250809_MINI_0731_Hydjet_Cello_OO_5362GeV_pf_realistic_maskf
+    # ## randomvz
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/tt_250809_randomvz_pixel_250809_IonPhysics0_394153_maskf
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/tt_250809_randomvz_pixel_250809_MINI_0731_Hijing_OO_5362GeV_pf_realistic_maskf
+    
     # after mask    
     # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/tt_250727_pixel_250727_IonPhysics0_394153_mask
     # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/tt_250727_randomvz_pixel_250727_IonPhysics0_394153_mask

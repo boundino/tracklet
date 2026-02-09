@@ -8,19 +8,14 @@ process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 from Configuration.AlCa.GlobalTag import GlobalTag
 process.GlobalTag = GlobalTag(
     process.GlobalTag,
-    # '150X_mcRun3_2025_forOO_realistic_v1',
+    '150X_mcRun3_2025_forOO_realistic_v7',
     # '150X_dataRun3_Prompt_v3',
-    '150X_dataRun3_Express_v2',
     ''
 )
 
-#process.load("Geometry.CMSCommonData.cmsIdealGeometryXML_cfi")
 process.load("Configuration.Geometry.GeometryDB_cff")
 process.load("Geometry.TrackerNumberingBuilder.trackerNumberingGeometry_cfi")
 process.load("Geometry.TrackerGeometryBuilder.trackerGeometry_cfi")
-
-
-# process.load("CondCore.DBCommon.CondDBSetup_cfi")
 
 process.MessageLogger = cms.Service("MessageLogger",
                                     cerr = cms.untracked.PSet(
