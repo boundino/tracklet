@@ -258,7 +258,7 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
   cleangrzero(g_nnpart_x_ncollnpartnpart_err);
   cleangrzero(g_n2a_x_npart2a);
   
-  xjjroot::printgrvalue(g);
+  xjjroot::print_gr(g);
   
   // fout->cd();
 
@@ -322,17 +322,16 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
   lnpart->AddEntry(g_n2a_x_npart2a, "Expt. unc.", "f");
   lnpart->Draw();
 
-  auto* lmc = new TLegend(0., 0., 0.6, hline*4.1);
+  auto* lmc = new TLegend(0., 0., 0.6, hline*3.1);
   xjjroot::setleg(lmc, 0.037);
   lmc->SetNColumns(2);
   lmc->AddEntry((TObject*)0, "", NULL);
   lmc->AddEntry(g_nnpart_x_npart, "Data", "p");
   lmc->AddEntry(ghijing_oo_5p36, get_mc_tex("hijing").c_str(), "l");
-  // lmc->AddEntry(gangantyr_oo_5p36, get_mc_tex("angantyr").c_str(), "l");
-  lmc->AddEntry((TObject*)0, "", NULL);
+  lmc->AddEntry(gepos_oo_5p36, get_mc_tex("epos").c_str(), "l");
   lmc->AddEntry(gamptnm_oo_5p36, get_mc_tex("amptnm").c_str(), "l");
   lmc->AddEntry(gamptsm_oo_5p36, get_mc_tex("amptsm").c_str(), "l");
-  lmc->AddEntry(gepos_oo_5p36, get_mc_tex("epos").c_str(), "l");
+  // lmc->AddEntry(gangantyr_oo_5p36, get_mc_tex("angantyr").c_str(), "l");
   // lmc->AddEntry(ghydjet_oo_5p36, get_mc_tex("hydjet").c_str(), "l");
   lmc->Draw();
 
@@ -523,7 +522,7 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
   galice_pbpb_5p02_n2a->Draw("pX same");
   // gphobos_auau_0p2_n2a->Draw("pX same"); gphobos_cucu_0p2_n2a->Draw("pX same");
   g_n2a->Draw("pX same");
-  xjjroot::printgrvalue(g_n2a);
+  xjjroot::print_gr(g_n2a);
 
   watermark_inner(ismc);
 
@@ -615,7 +614,7 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
   galice_pbpb_5p02_nnpart_x_npart->Draw("pX same");
   // gphobos_auau_0p2_nnpart_x_npart->Draw("pX same"); gphobos_cucu_0p2_nnpart_x_npart->Draw("pX same");
   g_nnpart_x_npart->Draw("pX same");
-  xjjroot::printgrvalue(g_nnpart_x_npart);
+  xjjroot::print_gr(g_nnpart_x_npart);
 
   watermark_inner(ismc);
 
@@ -647,19 +646,19 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
   g_nnpart_x_npart->Draw("3 same");
   xjjana::drawgroutline(g_nnpart_x_npart, COLOUR0, 2, 1);
   MAKE_SET_MC(_nnpart_x_npart);
-  gnleft_oo_5p36_nnpart_x_npart->Draw("3 same");
-  gpgcm_oo_5p36_nnpart_x_npart->Draw("3 same");
+  // gnleft_oo_5p36_nnpart_x_npart->Draw("3 same");
+  // gpgcm_oo_5p36_nnpart_x_npart->Draw("3 same");
   DRAW_MC(_nnpart_x_npart);
-  gnleft_oo_5p36_nnpart_x_npart->Draw("cX same");
-  gpgcm_oo_5p36_nnpart_x_npart->Draw("cX same");
+  // gnleft_oo_5p36_nnpart_x_npart->Draw("cX same");
+  // gpgcm_oo_5p36_nnpart_x_npart->Draw("cX same");
   g_nnpart_x_npart->Draw("pX same");
   watermark_inner(ismc);
   
   moveleg_and_draw(lnpart, 0.23, 0.78);
   xjjroot::rewidthleg(lmc, 2);
   xjjroot::autoleg_n_draw(lmc, 0.28, 0.35);
-  xjjroot::autoleg_n_draw(lmodel, 0.23, lnpart->GetY1NDC()-0.03);
-  xjjroot::movetex_n_draw(ttraj, 0.235, lnpart->GetY1NDC()-0.03);
+  // xjjroot::autoleg_n_draw(lmodel, 0.23, lnpart->GetY1NDC()-0.03);
+  // xjjroot::movetex_n_draw(ttraj, 0.235, lnpart->GetY1NDC()-0.03);
 
   pdf.write(Form("figs/results/merged-%s-midynorm-int1-theory.pdf", label.c_str()), "Q");
 
@@ -720,7 +719,7 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
   galice_pbpb_5p02_nnpart_x_npart2a->Draw("pX same");
   // gphobos_auau_0p2_nnpart_x_npart2a->Draw("pX same"); gphobos_cucu_0p2_nnpart_x_npart2a->Draw("pX same");
   g_nnpart_x_npart2a->Draw("pX same");
-  xjjroot::printgrvalue(g_nnpart_x_npart2a);
+  xjjroot::print_gr(g_nnpart_x_npart2a);
   
   watermark_inner(ismc);
   
@@ -800,7 +799,7 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
   // galice_pbpb_5p02_nnpart_x_ncollnpart->Draw("pX same");
   // gphobos_auau_0p2_nnpart_x_ncollnpart->Draw("pX same"); gphobos_cucu_0p2_nnpart_x_ncollnpart->Draw("pX same");
   g_nnpart_x_ncollnpart->Draw("pX same");
-  xjjroot::printgrvalue(g_nnpart_x_ncollnpart);
+  xjjroot::print_gr(g_nnpart_x_ncollnpart);
   
   watermark_inner(ismc);
   
@@ -854,7 +853,7 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
   // galice_pbpb_5p02_nnpart_x_ncollnpartnpart->Draw("pX same");
   // gphobos_auau_0p2_nnpart_x_ncollnpartnpart->Draw("pX same"); gphobos_cucu_0p2_nnpart_x_ncollnpartnpart->Draw("pX same");
   g_nnpart_x_ncollnpartnpart->Draw("pX same");
-  xjjroot::printgrvalue(g_nnpart_x_ncollnpartnpart);
+  xjjroot::print_gr(g_nnpart_x_ncollnpartnpart);
   
   watermark_inner(ismc);
   
@@ -906,7 +905,7 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
   galice_pbpb_5p02_n2a_x_npart2a->Draw("pX same");
   // gphobos_auau_0p2_n2a_x_npart2a->Draw("pX same"); gphobos_cucu_0p2_n2a_x_npart2a->Draw("pX same");
   g_n2a_x_npart2a->Draw("pX same");
-  xjjroot::printgrvalue(g_n2a_x_npart2a);
+  xjjroot::print_gr(g_n2a_x_npart2a);
 
   watermark_inner(ismc);
 
@@ -1080,7 +1079,7 @@ void spectrum::save() {
 }
 
 void drawNormtext() {
-  xjjroot::drawtex(xjjroot::getccenter(), 0.85, "Normalized to unity at#scale[0.5]{ }#eta = 0", 0.09, 22);  
+  xjjroot::drawtex(xjjroot::get_pad_center(), 0.85, "Normalized to unity at#scale[0.5]{ }#eta = 0", 0.09, 22);  
 }
 
 void drawdNdeta(xjjroot::mypdf& pdf, std::string tag, TFile* fout) {

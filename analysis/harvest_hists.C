@@ -192,27 +192,27 @@ auto* fout = new TFile(Form("output/hh/%s.root", label), (recreate?"update":"rea
 }
 
 static const std::vector<varinfo_t> options_tracklet_1d = {
-   {
-      "deta", {"#Delta#eta"}, {"deta"},
-      {{100, -0.5, 0.5}},
-      {600, 600}, 0x11, "abs(deta)<0.5", "", 1000
-   }, {
-      "dphi", {"#Delta#phi"}, {"dphi"},
-      {{100, 0, 0.5}},
-      {600, 600}, 0x11, "abs(dphi)<0.5", "", 1000
-   }, {
-      "dr", {"#Deltar"}, {"sqrt(dr2)"},
-      {{100, 0, 0.5}},
-      {600, 600}, 0x11, "abs(dr2)<0.25", "", 1000
-   }, {
-      "ntracklet", {"number of tracklets"}, {"ntracklet"},
-      {{100, 0, 4000}},
-      {600, 600}, 0x01, sel_, "", TTree::kMaxEntries
-   }, {
-     "dr-wide", {"#Deltar"}, {"sqrt(dr2)"},
-     {{100, 0, 2.0}},
-     {600, 600}, 0x11, "abs(dr2)<4.0", "", 1000
-   },
+   // {
+   //    "deta", {"#Delta#eta"}, {"deta"},
+   //    {{100, -0.5, 0.5}},
+   //    {600, 600}, 0x11, "abs(deta)<0.5", "", 1000
+   // }, {
+   //    "dphi", {"#Delta#phi"}, {"dphi"},
+   //    {{100, 0, 0.5}},
+   //    {600, 600}, 0x11, "abs(dphi)<0.5", "", 1000
+   // }, {
+   //    "dr", {"#Deltar"}, {"sqrt(dr2)"},
+   //    {{100, 0, 0.5}},
+   //    {600, 600}, 0x11, "abs(dr2)<0.25", "", 1000
+   // }, {
+   //    "ntracklet", {"number of tracklets"}, {"ntracklet"},
+   //    {{100, 0, 4000}},
+   //    {600, 600}, 0x01, sel_, "", TTree::kMaxEntries
+   // }, {
+   //   "dr-wide", {"#Deltar"}, {"sqrt(dr2)"},
+   //   {{100, 0, 2.0}},
+   //   {600, 600}, 0x11, "abs(dr2)<4.0", "", 1000
+   // },
    {
       "vz", {"v_{z}"}, {"vz[1]"},
       {{100, -15, 15}},

@@ -19,11 +19,12 @@ std::string _t_dNdetatitle = ";#it{#eta};d#it{N}_{ch}/d#kern[-0.08]{#it{#eta}}";
 
 // std::string _t_truth = "hijing&H#scale[0.9]{IJING}&2,amptnm&A#scale[0.9]{MPT}&6,amptnm2&A#scale[0.9]{MPT}#scale[0.5]{ }#scale[0.9]{(varied params)}&4,hydjet&H#scale[0.8]{YDJET}&9";
 std::string _t_truth = "hijing&H#scale[0.9]{IJING}&2"
-  // ",angantyr&A#scale[0.9]{NGANTYR}&8"
-  ",&&"
+  ",epos&E#scale[0.9]{POS}#scale[0.5]{ }#scale[0.8]{LHC}&9"
   ",amptnm&A#scale[0.9]{MPT}&3"
   ",amptsm&A#scale[0.9]{MPT}#scale[0.5]{ }#scale[0.9]{(string melting)}&5"
-  ",epos&E#scale[0.9]{POS}#scale[0.5]{ }#scale[0.8]{LHC}&9";
+  ;
+  // ",&&"
+  // ",angantyr&A#scale[0.9]{NGANTYR}&8"
   // ",hydjet&H#scale[0.9]{YDJET}&10"
 
 std::map<std::string, int> _color_truth = {
@@ -208,7 +209,7 @@ TH1D* gethrelerr(TH1* havg, TH1D* hhigh, TH1D* hlow) {
 
 template<class T>
 T* makehempty(T* horg, std::string title=_t_dNdetatitle.c_str(), float ymax=1.5, float ymin=0, int hmaxdiv = 0) {
-  auto hempty = (T*)horg->Clone(Form("hempty-%s", xjjc::currenttime().c_str()));
+  auto hempty = (T*)horg->Clone(Form("hempty-%s", xjjc::current_time().c_str()));
   xjjroot::sethempty(hempty);
   if(title != "")
     hempty->SetTitle(title.c_str());
