@@ -4,7 +4,9 @@
 build/
 figs/
 figspdf/
-output/
+!output
+output/*
+!output/acceptances/
 logs/
 filelists/
 lxplus/filelists/
