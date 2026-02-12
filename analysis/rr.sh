@@ -1,4 +1,4 @@
- #!/bin/bash
+#!/bin/bash
 
 make reap_results || exit 1
 make merge_monde || exit 1
@@ -81,7 +81,7 @@ source tool.shinc
 
 multhandle=0
 ctable=0
-mkdir -p logs
+mkdir -p logs output
 
 #
 for mm in ${INPUTS_MC[@]}
@@ -134,24 +134,21 @@ do
         # ==> tag name
         # tages=$defaultsdf".m."$tagver".s."$cmin"."$cmax ;
         tages=$defaultsdf".m."$corrtagver".s."$cmin"."$cmax ;
-        # tages=$TAG_MC"."$tcgm"."$tagver".s."$cmin"."$cmax
-        [[ ${2:-0} -eq 2 ]] && {
+        [[ ${2:-0} -eq 2 || ( ${2:-0} -eq 1 && $TAG_MC == $defaultsdf ) ]] && {
             tages=$TAG_MC"."$tcgm"."$tagver".s."$cmin"."$cmax
             # [[ $cmin -eq 0 && $cmax -eq 20 ]] && tages="incl."$TAG_MC"."$tcgm"."$tagver
             echo $tages
             # <== tag name
-            [[ ${2:-0} -gt 0 ]] && {
-                for t in ${TYPES[@]} ; do
-                    set -x
-                    ./reap_results $t $INPUT_MC $tages $cmin $cmax \
-                                   0 ${cgm:0:1} ${cgm:1:1} ${cgm:2:1} "null" \
-                                   $multhandle $maxdr2 0 "null" \
-                                   $CENT_MC "(1)" \
-                                   2>&1 | tee logs/$tages-$t.txt & # \
-                        set +x
-                done # for t in ${TYPES[@]}
-                wait
-            }
+            for t in ${TYPES[@]} ; do
+                set -x
+                ./reap_results $t $INPUT_MC $tages $cmin $cmax \
+                               0 ${cgm:0:1} ${cgm:1:1} ${cgm:2:1} "null" \
+                               $multhandle $maxdr2 0 "null" \
+                               $CENT_MC "(1)" \
+                               2>&1 | tee logs/$tages-$t.txt & # \
+                    set +x
+            done # for t in ${TYPES[@]}
+            wait
         }
         
         trash figs/acceptance/accep-$tages-*.png
@@ -214,8 +211,8 @@ do
                 truth="hijing.m.v1.s."$cmin"."$cmax"&"${taglabel[hijing]}"&2","amptnm.m.v1.s."$cmin"."$cmax"&"${taglabel[amptnm]}"&6","amptsm.m.v1.s."$cmin"."$cmax"&"${taglabel[amptsm]}"&4","hydjet.m.v1.s."$cmin"."$cmax"&"${taglabel[hydjet]}"&9","angantyr.m.v1.s."$cmin"."$cmax"&"${taglabel[angantyr]}"&8","epos.m.v1.s."$cmin"."$cmax"&"${taglabel[epos]}"&10"
                 [[ $TAG_DATA == *CLOSE* ]] && {
                     truth=${TAG_DATA%%CLOSE}".m."$tagver".s."$cmin"."$cmax"&"${taglabel[${TAG_DATA%%CLOSE}]}"&2" ; 
-                    # [[ $cmin -eq 0 && $cmax -eq 20 ]] &&
-                        # { truth="incl."${TAG_DATA%%CLOSE}".m.v0&"${taglabel[${TAG_DATA%%CLOSE}]}"&1" ; }
+                    # [[ $cmin -eq 0 && $cmax -eq 20 ]] && {
+                    # truth="incl."${TAG_DATA%%CLOSE}".m.v0&"${taglabel[${TAG_DATA%%CLOSE}]}"&1" ; }
                 }
                 ./merge_monde $tagappl "$(ftaglabel ${TAG_DATA%%CLOSE}) corr. w. ${taglabel[$TAG_MC]}" $mergecomb "$truth"
             }
