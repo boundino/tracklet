@@ -102,7 +102,7 @@ int reap_results(int type,
 
    TCut ssel = Form("(dr2<%f)", maxdr2);
    TCut csel = Form("(hft>=%f && hft<%f)", hftmin, hftmax);
-   TCut osel = Form("(hlt && cluscomp && %s)", hfsel);
+   TCut osel = Form("(hlt && %s)", hfsel);
    TCut psel = "(process!=102 && process!=103 && process!=104)"; // ! only works for Epos but will affect Pythia
    // TCut psel = "(1)"; // ! only works for Epos but will affect Pythia
 

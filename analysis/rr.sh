@@ -52,8 +52,8 @@ INPUTS_MC=(
 
 INPUTS_DATA=(
     # fix maskf
-    /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/tt_250810_pixel_250810_IonPhysics0_394153_mask_p10.root,394153,0 # 10% full stats
-    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/tt_250810_pixel_250810_IonPhysics0_394153_mask.root,394153,0
+    # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/tt_250810_pixel_250810_IonPhysics0_394153_mask_p10.root,394153,0 # 10% full stats
+    /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/tt_250810_pixel_250810_IonPhysics0_394153_mask.root,394153,0
     
     # after maskf
     # /eos/cms/store/group/phys_heavyions/wangj/tracklet2025/tt_250809_pixel_250809_IonPhysics0_394153_maskf.root,394153,0

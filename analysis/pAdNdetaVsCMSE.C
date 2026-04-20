@@ -21,7 +21,7 @@
 
 // pp, pA, AA points from Constantin Loizides
 // INEL pp points from Jan Fiete's compilation
-float new_result = 5.227093, new_err = 0.134692;
+float new_result = 5.142595, new_err = 0.150439;
 int pAdNdetaVsCMSE(bool onlyAA = false, bool nonewr = false) {
     auto* c = new TCanvas("c", "", 600, 600);
     gStyle->SetOptStat(0);

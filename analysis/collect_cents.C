@@ -30,27 +30,50 @@
 
 const float _2a = 32;
 
-// Final version https://indico.cern.ch/event/1639872/contributions/6898973/attachments/3208558/5714166/o_cent_29Jan26.pdf
+// https://indico.cern.ch/event/1671579/contributions/7026967/attachments/3250765/5801385/o_cent_02apr26.pdf
 const float npart[NCENT] = {
   //95-100,  90-95,   85-90,   80-85,   75-80
-  0,         0,       0,       0,       3.996,
+  0,         0,       0,       0,       3.758,
   //70-75,   65-70,   60-65,   55-60,   50-55,
-  4.572,     5.258,   6.057,   7.014,   8.130,
+  4.344,     5.051,   5.880,   6.828,   7.931,
   //45-50,   40-45,   35-40,   30-35,   25-30,
-  9.389,     10.827,  12.418,  14.163,  16.038,
+  9.229,     10.704,  12.333,  14.124,  16.057,
   //20-25,   15-20,   10-15,   5-10,    0-5
-  17.985,    19.926,  21.795,  23.606,  25.880
+  18.068,    20.085,  22.046,  23.972,  26.251
 };
+
 const float nparterr[NCENT] = {
   //95-100,  90-95,  85-90,  80-85,  75-80
-  0,         0,      0,      0,      0.267,
+  0,         0,      0,      0,      0.345,
   //70-75,   65-70,  60-65,  55-60,  50-55,
-  0.306,     0.348,  0.370,  0.391,  0.411,
+  0.271,     0.321,  0.401,  0.453,  0.507,
   //45-50,   40-45,  35-40,  30-35,  25-30,
-  0.445,     0.473,  0.474,  0.448,  0.414,
+  0.578,     0.586,  0.552,  0.505,  0.476,
   //20-25,   15-20,  10-15,  5-10,   0-5
-  0.397,     0.390,  0.389,  0.390,  0.336
+  0.428,     0.368,  0.419,  0.581,  0.646
 };
+
+// // Final version https://indico.cern.ch/event/1639872/contributions/6898973/attachments/3208558/5714166/o_cent_29Jan26.pdf
+// const float npart[NCENT] = {
+//   //95-100,  90-95,   85-90,   80-85,   75-80
+//   0,         0,       0,       0,       3.996,
+//   //70-75,   65-70,   60-65,   55-60,   50-55,
+//   4.572,     5.258,   6.057,   7.014,   8.130,
+//   //45-50,   40-45,   35-40,   30-35,   25-30,
+//   9.389,     10.827,  12.418,  14.163,  16.038,
+//   //20-25,   15-20,   10-15,   5-10,    0-5
+//   17.985,    19.926,  21.795,  23.606,  25.880
+// };
+// const float nparterr[NCENT] = {
+//   //95-100,  90-95,  85-90,  80-85,  75-80
+//   0,         0,      0,      0,      0.267,
+//   //70-75,   65-70,  60-65,  55-60,  50-55,
+//   0.306,     0.348,  0.370,  0.391,  0.411,
+//   //45-50,   40-45,  35-40,  30-35,  25-30,
+//   0.445,     0.473,  0.474,  0.448,  0.414,
+//   //20-25,   15-20,  10-15,  5-10,   0-5
+//   0.397,     0.390,  0.389,  0.390,  0.336
+// };
 
 // // fix noise in Glauber fit, use average of fits
 // const float npart[NCENT] = {
@@ -165,9 +188,11 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
   g_n2a_x_npart2a->SetLineStyle(2);
 
   for (int c = OFFSET; c < NCENT; c+=1) {
-    auto* f = new TFile(Form("results/results-%s.s.%i.%i.root",
-                              label.c_str(), c, c + 1));
-    auto* h = (TH1F*)f->Get("hsyst");
+    const std::string infname = Form("results/results-%s.s.%i.%i.root",
+                                     label.c_str(), c, c + 1);
+    // std::cout<<infname<<std::endl;
+    auto* f = new TFile(infname.c_str());
+    auto* h = (TH1D*)f->Get("hsyst");
     int nbins = h->GetNbinsX();
     float midy = h->GetBinContent((nbins + 1) / 2);
     // float midyerr = (hsymhigh->GetBinContent((nbins + 1) / 2) - hsymlow->GetBinContent((nbins + 1) / 2)) / 2.;
@@ -647,19 +672,19 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
   g_nnpart_x_npart->Draw("3 same");
   xjjana::drawgroutline(g_nnpart_x_npart, COLOUR0, 2, 1);
   MAKE_SET_MC(_nnpart_x_npart);
-  // gnleft_oo_5p36_nnpart_x_npart->Draw("3 same");
-  // gpgcm_oo_5p36_nnpart_x_npart->Draw("3 same");
+  gnleft_oo_5p36_nnpart_x_npart->Draw("3 same");
+  gpgcm_oo_5p36_nnpart_x_npart->Draw("3 same");
   DRAW_MC(_nnpart_x_npart);
-  // gnleft_oo_5p36_nnpart_x_npart->Draw("cX same");
-  // gpgcm_oo_5p36_nnpart_x_npart->Draw("cX same");
+  gnleft_oo_5p36_nnpart_x_npart->Draw("cX same");
+  gpgcm_oo_5p36_nnpart_x_npart->Draw("cX same");
   g_nnpart_x_npart->Draw("pX same");
   watermark_inner(ismc);
   
   moveleg_and_draw(lnpart, 0.23, 0.78);
   xjjroot::rewidthleg(lmc, 2);
   xjjroot::autoleg_n_draw(lmc, 0.28, 0.35);
-  // xjjroot::autoleg_n_draw(lmodel, 0.23, lnpart->GetY1NDC()-0.03);
-  // xjjroot::movetex_n_draw(ttraj, 0.235, lnpart->GetY1NDC()-0.03);
+  xjjroot::autoleg_n_draw(lmodel, 0.23, lnpart->GetY1NDC()-0.03);
+  xjjroot::movetex_n_draw(ttraj, 0.235, lnpart->GetY1NDC()-0.03);
 
   pdf.write(Form("figs/results/merged-%s-midynorm-int1-theory.pdf", label.c_str()), "Q");
 
