@@ -44,7 +44,7 @@ int macro(std::string input_avg, std::string tag,
   std::vector<TH1D*> havg(iavg.n(), 0), hsym(iavg.n(), 0);
   std::vector<std::vector<int>> vgood(iavg.n(), std::vector<int>(neta, 1));
   for(int j=0; j<iavg.n(); j++) {
-    havg[j] = xjjroot::gethist<TH1D>("output/avg-"+iavg.value[j][0]+".root::havg");
+    havg[j] = xjjana::getobj<TH1D>("output/avg-"+iavg.value[j][0]+".root::havg");
     havg[j]->SetName(Form("%s-%i", havg[j]->GetName(), j));
     xjjroot::setthgrstyle(havg[j], cc[j], ms[j], 1.0, cc[j]);
     

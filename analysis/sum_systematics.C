@@ -23,7 +23,7 @@ int macro(std::string input_avg, std::string tag,
   bool ismc = xjjc::str_contains(tag, "CLOSE");
 
   std::vector<Color_t> cc = xjjroot::colorlist_light;
-  TH1F* hsym = xjjroot::gethist<TH1F>(iavg.value[0][0]+".root::hsym");
+  TH1F* hsym = xjjana::getobj<TH1F>(iavg.value[0][0]+".root::hsym");
   auto legPIX = new TLegend(0.3, 0.45-0.030*9, 0.3+0.2, 0.45);
   xjjroot::setleg(legPIX, 0.028);
   auto h1WEfinal = combh1WEfinal(iavg.value[0][0]+".root", legPIX);
@@ -36,7 +36,7 @@ int macro(std::string input_avg, std::string tag,
   std::vector<float> relerr2(hsym->GetNbinsX(), 0);
   std::vector<TH1F*> hrelerr(iavg.n(), 0);
   for(int j=0; j<iavg.n(); j++) {
-    hrelerr[j] = xjjroot::gethist<TH1F>(iavg.value[j][0]+".root::hrelerr");
+    hrelerr[j] = xjjana::getobj<TH1F>(iavg.value[j][0]+".root::hrelerr");
     hrelerr[j]->SetName(Form("%s-%i", hrelerr[j]->GetName(), j));
     xjjroot::setthgrstyle(hrelerr[j], cc[j], ms[j], 1.0, cc[j]);
 
@@ -51,7 +51,7 @@ int macro(std::string input_avg, std::string tag,
     hsyst->SetBinError(i+1, relerr2[i]*hsyst->GetBinContent(i+1));
     hrelerrtotal->SetBinContent(i+1, relerr2[i]);
   }
-  xjjroot::printhistvalue(hsyst, {17, 18, 19, 20});
+  // xjjroot::printhistvalue(hsyst, {17, 18, 19, 20});
   xjjroot::setthgrstyle(hrelerrtotal, kBlack, 21, 1.0, kBlack);
   TGraphErrors* gsyst = xjjana::shifthistcenter(hsyst, "gsyst");
   xjjroot::setthgrstyle(gsyst, kGray+3, 21, 0.8, 0, 0, 0, kGray+3, 0.2, 1001, 1, 1);
