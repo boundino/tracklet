@@ -42,7 +42,7 @@ const char* _t_collision = "OO (5.36 TeV)";
 #include "xjjrootuti.h"
 
 void watermark(bool ismc = false, float xshift=0, float yshift=0, float tsize=0.04, float yshift_right = 0) {
-  auto t_left = ismc ? xjjroot::CMS::simulation : xjjroot::CMS::preliminary;
+  auto t_left = ismc ? xjjroot::CMS::simulation : xjjroot::CMS::cms;
   xjjroot::drawCMSleft(t_left, xshift, yshift, tsize);
   xjjroot::drawCMSright(_t_collision, 0, yshift_right, tsize);
 }

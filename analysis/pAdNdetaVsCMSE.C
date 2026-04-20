@@ -21,7 +21,7 @@
 
 // pp, pA, AA points from Constantin Loizides
 // INEL pp points from Jan Fiete's compilation
-float new_result = 5.12045, new_err = 0.131944;
+float new_result = 5.227093, new_err = 0.134692;
 int pAdNdetaVsCMSE(bool onlyAA = false, bool nonewr = false) {
     auto* c = new TCanvas("c", "", 600, 600);
     gStyle->SetOptStat(0);
@@ -94,7 +94,7 @@ int pAdNdetaVsCMSE(bool onlyAA = false, bool nonewr = false) {
     lprelim->SetTextFont(53);
     lprelim->SetTextSize(18);
     lprelim->SetTextAlign(32);
-    lprelim->DrawLatexNDC(0.90, 0.84, "Preliminary");
+    // lprelim->DrawLatexNDC(0.90, 0.84, "Preliminary");
 
     /******************************************************
     pp NSD data points
