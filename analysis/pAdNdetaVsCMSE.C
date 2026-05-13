@@ -21,8 +21,8 @@
 
 // pp, pA, AA points from Constantin Loizides
 // INEL pp points from Jan Fiete's compilation
-float new_result = 5.142595, new_err = 0.150439;
-int pAdNdetaVsCMSE(bool onlyAA = false, bool nonewr = false) {
+const float new_result = 5.142595, data_err = 0.150439, npart = 26.251, npart_err = 0.646;
+int pAdNdetaVsCMSE(bool onlyAA = false, bool nonewr = false, bool fullsyst = false) {
     auto* c = new TCanvas("c", "", 600, 600);
     gStyle->SetOptStat(0);
     c->Range(0.6363689, -1.758823, 4.003324, 11.77059);
@@ -488,6 +488,18 @@ int pAdNdetaVsCMSE(bool onlyAA = false, bool nonewr = false) {
     Graph_AA_CMS->SetPointError(2, 0.0, 0.15*2);
     Graph_AA_CMS->Draw("E1P");
 
+    auto* Graph_AA_CMS_NEW_NPART = new TGraphAsymmErrors(1);
+    Graph_AA_CMS_NEW_NPART->SetName("Graph_AA_CMS_NEW_NPART");
+    Graph_AA_CMS_NEW_NPART->SetMarkerStyle(21);
+    Graph_AA_CMS_NEW_NPART->SetMarkerSize(size_s);
+    Graph_AA_CMS_NEW_NPART->SetMarkerColor(_HIGHLIGHT_COLOUR);
+    Graph_AA_CMS_NEW_NPART->SetFillColor(_HIGHLIGHT_COLOUR);
+    Graph_AA_CMS_NEW_NPART->SetFillColorAlpha(_HIGHLIGHT_COLOUR, 0.3);
+    Graph_AA_CMS_NEW_NPART->SetPoint(1, 5362.0, new_result*2);
+    Graph_AA_CMS_NEW_NPART->SetPointError(1, 5362*0.1, 5362*0.1, new_result*2*(1-npart/(npart+npart_err)), new_result*2*(npart/(npart-npart_err)-1));
+    if (!nonewr && !fullsyst)
+      Graph_AA_CMS_NEW_NPART->Draw("2 same");
+
     auto* Graph_AA_CMS_NEW = new TGraphErrors(1);
     Graph_AA_CMS_NEW->SetName("Graph_AA_CMS_NEW");
     Graph_AA_CMS_NEW->SetMarkerStyle(21);
@@ -495,9 +507,20 @@ int pAdNdetaVsCMSE(bool onlyAA = false, bool nonewr = false) {
     Graph_AA_CMS_NEW->SetMarkerColor(_HIGHLIGHT_COLOUR);
     Graph_AA_CMS_NEW->SetLineColor(_HIGHLIGHT_COLOUR);
     Graph_AA_CMS_NEW->SetPoint(1, 5362.0, new_result*2);
-    Graph_AA_CMS_NEW->SetPointError(1, 0.0, new_err*2);
-    if (!nonewr)
+    Graph_AA_CMS_NEW->SetPointError(1, 0.0, data_err*2);
+    if (!nonewr && !fullsyst)
       Graph_AA_CMS_NEW->Draw("E1P");
+
+    auto* Graph_AA_CMS_NEW_FULLSYST = new TGraphErrors(1);
+    Graph_AA_CMS_NEW_FULLSYST->SetName("Graph_AA_CMS_NEW_FULLSYST");
+    Graph_AA_CMS_NEW_FULLSYST->SetMarkerStyle(21);
+    Graph_AA_CMS_NEW_FULLSYST->SetMarkerSize(size_s);
+    Graph_AA_CMS_NEW_FULLSYST->SetMarkerColor(_HIGHLIGHT_COLOUR);
+    Graph_AA_CMS_NEW_FULLSYST->SetLineColor(_HIGHLIGHT_COLOUR);
+    Graph_AA_CMS_NEW_FULLSYST->SetPoint(1, 5362.0, new_result*2);
+    Graph_AA_CMS_NEW_FULLSYST->SetPointError(1, 0.0, new_result*2*TMath::Sqrt( data_err*data_err/new_result/new_result + npart_err*npart_err/npart/npart ));
+    if (!nonewr && fullsyst)
+      Graph_AA_CMS_NEW_FULLSYST->Draw("E1P");
 
     int nline = nonewr?9:11;
     auto* leg_AA = new TLegend(0.34, 0.92-0.04*nline, 0.47, 0.92, NULL, "brNDC");
@@ -739,6 +762,7 @@ int pAdNdetaVsCMSE(bool onlyAA = false, bool nonewr = false) {
     c->cd();
     c->SetSelected(c);
     std::string outputname = "figs/results/dNdeta_vs_CMSE";
+    if (fullsyst) outputname += "-fullsyst";
     if (nonewr) outputname += "-nonewresult";
     if (onlyAA) outputname += "-onlyAA";
     outputname += ".pdf";
@@ -769,7 +793,9 @@ CGC: http://arxiv.org/pdf/1209.2001v2.pdf
 */
 
 int main() {
+  // int pAdNdetaVsCMSE(bool onlyAA = false, bool nonewr = false, bool fullsyst = false) {
     pAdNdetaVsCMSE();
+    pAdNdetaVsCMSE(false, false, true);
     pAdNdetaVsCMSE(true);
     pAdNdetaVsCMSE(false, true);
 
