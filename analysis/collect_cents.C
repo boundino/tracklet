@@ -641,6 +641,7 @@ int collect_cents(std::string tag="362294.cgm.epos.m.v2") {
   // gphobos_auau_0p2_nnpart_x_npart->Draw("pX same"); gphobos_cucu_0p2_nnpart_x_npart->Draw("pX same");
   g_nnpart_x_npart->Draw("pX same");
   xjjroot::print_gr(g_nnpart_x_npart);
+  xjjroot::print_gr(g_nnpart_x_npart_err);
 
   watermark_inner(ismc);
 
@@ -1112,14 +1113,29 @@ void drawdNdeta(xjjroot::mypdf& pdf, std::string tag, TFile* fout) {
   bool ismc = xjjc::str_contains(tag, "CLOSE");
   spectrum sp_0_20(Form("results/results-%s.s.%i.%i.root", tag.c_str(), 0, 20), "Cent. 0 - 100\%", 0.27, 0.4, 0.3, 0x02 /*2-col leg*/),
     sp_19_20(Form("results/results-%s.s.%i.%i.root", tag.c_str(), 19, 20), "Cent. 0 - 5\%", 0.23, 0.62),
+    sp_18_19(Form("results/results-%s.s.%i.%i.root", tag.c_str(), 18, 19), "Cent. 5 - 10\%", 0.23, 0.62),
+    sp_17_18(Form("results/results-%s.s.%i.%i.root", tag.c_str(), 17, 18), "Cent. 10 - 15\%", 0.23, 0.62),
+    sp_15_16(Form("results/results-%s.s.%i.%i.root", tag.c_str(), 15, 16), "Cent. 20 - 25\%", 0.23, 0.62),
+    sp_13_14(Form("results/results-%s.s.%i.%i.root", tag.c_str(), 13, 14), "Cent. 30 - 35\%", 0.23, 0.62),
     sp_9_10(Form("results/results-%s.s.%i.%i.root", tag.c_str(), 9, 10), "Cent. 50 - 55\%", 0.59, 0.62);
+
+  std::vector<spectrum&> sp_examples = {
+    sp_19_20, sp_18_19, sp_17_18, sp_15_16, sp_13_14, sp_9_10
+  };
 
   sp_0_20.reset_fhleg(1.4);
   
   sp_0_20.style(COLOUR0, 21);
   sp_19_20.style(COLOUR1, 21);
-  sp_9_10.style(COLOUR5, 21);
+  sp_18_19.style(COLOUR2, 21);
+  sp_17_18.style(COLOUR4, 21);
+  sp_15_16.style(COLOUR10, 21);
+  sp_13_14.style(COLOUR5, 21);
+  sp_9_10.style(COLOUR6, 21);
 
+
+  xjjroot::print_gr(sp_0_20.gsyst);
+  
   // sp_0_20.setgcolor({COLOR_PbPb_53_1, COLOUR2, COLOUR5, COLOUR6, COLOUR3, COLOUR1});
   sp_0_20.setgcolor();
   
@@ -1128,7 +1144,7 @@ void drawdNdeta(xjjroot::mypdf& pdf, std::string tag, TFile* fout) {
   auto hemptyp1 = makehempty(sp_0_20.hsym, ";#it{#eta};" + _t_dNdeta + "", 1.7);
   hemptyp1->SetAxisRange(-3.0, 2.9, "X");
   hemptyp1->SetMinimum(0.1);
-  hemptyp1->SetMaximum(80); // !! Not auto-adjust yaxis range 
+  hemptyp1->SetMaximum(70); // !! Not auto-adjust yaxis range 
   auto hempty_ratio = (TH1F*)hemptyp1->Clone("hempty_ratio");
   hempty_ratio->GetYaxis()->SetTitle("MC / Data");
   hempty_ratio->SetMinimum(0.75); hempty_ratio->SetMaximum(1.25);
@@ -1137,6 +1153,8 @@ void drawdNdeta(xjjroot::mypdf& pdf, std::string tag, TFile* fout) {
   hempty2->SetAxisRange(-3.0, 2.9, "X");
   auto hempty2p1 = makehempty(sp_19_20.hsym, ";#it{#eta};" + _t_dNdeta + "", 3, 0.1);
   hempty2p1->SetAxisRange(-3.0, 2.9, "X");
+  auto hempty2p2 = makehempty(sp_19_20.hsym, ";#it{#eta};" + _t_dNdeta + "", 1.3, 0.);
+  hempty2p2->SetAxisRange(-3.0, 2.9, "X");
   
   xjjroot::setgstyle(1);
   xjjc::sconfig itext("", ",", "&");
@@ -1183,6 +1201,27 @@ void drawdNdeta(xjjroot::mypdf& pdf, std::string tag, TFile* fout) {
   }
   pdf.write(Form("figs/results/merged-%s-fulleta-1.pdf", tag.c_str()), "Q");
   pdf.getc()->SaveAs(Form("figs/results/merged-%s-fulleta-1.C", tag.c_str()));
+
+  pdf.prepare();
+  hempty2p2->Draw("axis");
+  for (auto& isp : sp_examples) {
+    isp.gsyst->Draw("2 same");
+    isp.hsym->Draw("p same");
+  }
+  DRAWTEX;
+  pdf.write(Form("figs/results/merged-%s-fulleta-2nomc.pdf", tag.c_str()), "Q");
+
+  pdf.getc()->SetLogy();
+  pdf.prepare();
+  hempty2->Draw("axis");
+  for (auto& isp : sp_examples) {
+    isp.gsyst->Draw("2 same");
+    isp.hsym->Draw("p same");
+  }
+  DRAWTEX;
+  pdf.write(Form("figs/results/merged-%s-fulleta-2nomc-logy.pdf", tag.c_str()), "Q");
+  pdf.getc()->SetLogy(0);
+
 
   pdf.getc()->SetLogy();
   pdf.prepare();
@@ -1236,6 +1275,8 @@ void drawdNdeta(xjjroot::mypdf& pdf, std::string tag, TFile* fout) {
   pdf.write(Form("figs/results/merged-%s-fulleta-2.pdf", tag.c_str()), "Q");
   // pdf.write(Form("figs/results/merged-%s-fulleta-2.C", tag.c_str()), "Q");
 
+
+  
   std::ofstream outf_Table_1("hepdatas/Table_1.yaml");
   xjjroot::hepdata hep_0_20(sp_0_20.hsym, sp_0_20.gsyst,
                             {"'$\\eta$'", "", ""},
